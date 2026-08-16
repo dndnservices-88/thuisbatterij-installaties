@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-kop: "Work Sans";
+  --font-tekst: "Open Sans";
+  --font-accent: "Libre Baskerville";
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-n-000 text-n-900 font-tekst antialiased;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-kop tracking-tight;
+    line-height: 1.15;
+  }
+  h1 {
+    @apply text-[2rem] font-extrabold sm:text-[2.75rem];
+  }
+  h2 {
+    @apply text-[1.6rem] font-extrabold sm:text-[2rem];
+  }
+  h3 {
+    @apply text-[1.15rem] font-semibold;
+  }
+  /* Zichtbare focusrand — vereiste uit de specificatie, sectie 7. */
+  :focus-visible {
+    outline: 3px solid #370060;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Markering voor nog niet bevestigde claims. Alleen zichtbaar in de preview. */
+  .placeholder {
+    background: repeating-linear-gradient(135deg, #fff9c4, #fff9c4 6px, #fff3a8 6px, #fff3a8 12px);
+    border-bottom: 2px dotted #a08a00;
+    padding: 0 3px;
+  }
+  .placeholder-label {
+    @apply ml-1 rounded px-1 py-[1px] align-middle text-[10px] font-semibold uppercase tracking-wide text-white;
+    background: #a08a00;
+  }
+}
