@@ -12,10 +12,15 @@ import logoKleur from "@/public/beeld/logo-kleur.webp";
  * dus las het oog het logo als onderdeel van het heroblok in plaats van als
  * afzender. Wit geeft die rand wél, en op wit kan het kleurenlogo gebruikt
  * worden — het merk zoals het is ontworpen.
+ *
+ * De afsluitlijn is geel en niet grijs. Grijs op wit verdween tegen de paarse
+ * hero eronder; geel is de accentkleur uit het brandbook en houdt stand tegen
+ * zowel wit als paars. Dit is de enige plek waar geel als vlak wordt gebruikt —
+ * als tekstkleur mag het nooit (1,18:1 op wit).
  */
 export default function Kopbalk() {
   return (
-    <header className="border-b border-n-200 bg-n-000 px-s3 py-s3">
+    <header className="border-b-[3px] border-geel bg-n-000 px-s3 py-s3">
       <div className="mx-auto max-w-inhoud">
         <Link
           href="/"
