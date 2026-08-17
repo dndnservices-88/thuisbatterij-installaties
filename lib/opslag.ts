@@ -6,9 +6,10 @@ import path from "node:path";
  * Opslag van leads. Server-side, in app/api/lead/route.ts aangeroepen.
  *
  * ⚠️ Vercel heeft een tijdelijk bestandssysteem: het lokale ndjson-bestand is
- * alleen voor lokaal testen. In productie MOET LEAD_WEBHOOK_URL of een echte
- * database ingesteld zijn. Ontbreekt beide in productie, dan geeft de route een
- * fout terug — liever een zichtbare fout dan een lead die stil verdwijnt.
+ * alleen voor lokaal testen. Zodra NEXT_PUBLIC_LIVE op "true" staat MOET
+ * LEAD_WEBHOOK_URL of een echte database ingesteld zijn. Ontbreekt die, dan geeft
+ * de route een fout terug — liever een zichtbare fout dan een lead die stil
+ * verdwijnt. Zolang de site niet live is, belandt een testlead in het logboek.
  */
 
 export type Lead = {
@@ -79,17 +80,34 @@ async function naarWebhook(lead: Lead, url: string) {
 
 export async function bewaarLead(lead: Lead): Promise<void> {
   const webhook = process.env.LEAD_WEBHOOK_URL;
-  const productie = process.env.NODE_ENV === "production";
 
   if (webhook) {
     await naarWebhook(lead, webhook);
     return;
   }
-  if (productie) {
+
+  // Geen webhook. Of dat mag, hangt af van NEXT_PUBLIC_LIVE en níét van NODE_ENV:
+  // Vercel draait ook voorvertoningen met NODE_ENV=production, dus daarop sturen
+  // betekent dat je het formulier nooit kunt testen voordat er een echte
+  // leadbestemming is.
+  if (process.env.NEXT_PUBLIC_LIVE === "true") {
     throw new Error(
-      "Geen LEAD_WEBHOOK_URL ingesteld. In productie mag een lead nooit alleen naar het tijdelijke bestandssysteem worden geschreven."
+      "Geen LEAD_WEBHOOK_URL ingesteld terwijl de site live staat. Een lead mag nooit alleen naar het tijdelijke bestandssysteem worden geschreven."
     );
   }
+
+  if (process.env.NODE_ENV === "production") {
+    // Voorvertoning op Vercel: het bestandssysteem is tijdelijk, dus schrijven we
+    // naar het logboek. Terug te vinden onder Deployments → Runtime Logs.
+    //
+    // ⚠️ Hier staan persoonsgegevens in. Dat kan alleen omdat de site niet live is
+    // en de URL niet gedeeld wordt: het zijn je eigen testleads. Zodra
+    // NEXT_PUBLIC_LIVE op "true" gaat, is deze tak onbereikbaar en is een echte
+    // leadbestemming verplicht.
+    console.info("[TESTLEAD]", JSON.stringify(lead));
+    return;
+  }
+
   await naarBestand(lead);
 }
 

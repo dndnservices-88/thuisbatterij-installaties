@@ -1,3 +1,4 @@
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { Sectie, Kop } from "@/components/ui/Sectie";
 import { KnopLink } from "@/components/ui/Knop";
@@ -5,6 +6,22 @@ import { Claim, AlsClaim } from "@/components/ui/Claim";
 import { isLive, mag } from "@/lib/claims";
 import { ATTRIBUTIE, ENTITEIT, LIMSOLAR } from "@/lib/site";
 import type { Variant } from "@/lib/varianten";
+
+// Statische imports: Next kent daardoor de afmetingen, zet ze in de HTML en
+// voorkomt dat de pagina verspringt terwijl het beeld laadt.
+import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
+import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
+import fotoVerdeelkast from "@/public/beeld/verdeelkast-1600.webp";
+import fotoMonteur from "@/public/beeld/monteur-portret-1600.webp";
+import logoWit from "@/public/beeld/logo-wit.webp";
+
+/**
+ * Beeldregel, en die is niet vrijblijvend. Het zijn stockfoto's, dus:
+ * geen bijschrift of alt-tekst die suggereert dat dit een eigen project is,
+ * geen "onze monteur", geen herkenbaar merk van een fabrikant. Een foto is
+ * juridisch net zo goed een mededeling als een zin (claimregister, blok V).
+ */
+const SFEERBEELD = "Sfeerbeeld, geen foto van een eigen project.";
 
 /**
  * De elf secties uit het sectieplan (playbook fase 2), in die volgorde.
@@ -17,25 +34,41 @@ import type { Variant } from "@/lib/varianten";
 /* 1 ── Hero ───────────────────────────────────────────────────────────────── */
 export function Hero({ variant }: { variant: Variant }) {
   return (
-    <header className="bg-paars px-s3 py-s6 text-n-000">
-      <div className="mx-auto max-w-inhoud">
-        <p className="mb-s3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-geel">
-          Thuisbatterij Installaties
-        </p>
-        <h1 className="max-w-[18ch]">{variant.hero.kop}</h1>
-        <p className="mt-s4 max-w-lees text-[1.05rem] leading-relaxed text-n-200">
-          {variant.hero.sub}
-        </p>
-        <div className="mt-s5 max-w-[420px]">
-          <KnopLink href="#calculator" volleBreedte>
-            {variant.hero.knop}
-          </KnopLink>
-          <p className="mt-s2 text-[0.85rem] text-n-200">
-            Vijf vragen, geen gegevens nodig voor de uitkomst.
+    // Geen <header> meer: dat is nu de kopbalk met het logo, waar deze sectie
+    // naadloos op aansluit doordat het paars doorloopt.
+    <section className="bg-paars px-s3 pb-s6 pt-s5 text-n-000">
+      <div className="mx-auto grid max-w-inhoud items-center gap-s5 lg:grid-cols-[1.05fr_0.95fr]">
+        <div>
+          <h1 className="max-w-[18ch]">{variant.hero.kop}</h1>
+          <p className="mt-s4 max-w-lees text-[1.05rem] leading-relaxed text-n-200">
+            {variant.hero.sub}
           </p>
+          <div className="mt-s5 max-w-[420px]">
+            <KnopLink href="#calculator" volleBreedte>
+              {variant.hero.knop}
+            </KnopLink>
+            <p className="mt-s2 text-[0.85rem] text-n-200">
+              Vijf vragen, geen gegevens nodig voor de uitkomst.
+            </p>
+          </div>
         </div>
+
+        {/* Op mobiel staat het beeld onder de knop: de actie blijft boven de vouw. */}
+        <figure className="order-last">
+          <Image
+            src={fotoBatterij}
+            alt="Een thuisbatterij tegen een buitenmuur, met de omvormer erboven"
+            priority
+            placeholder="blur"
+            sizes="(min-width: 1024px) 46vw, 100vw"
+            className="h-auto w-full rounded-merk"
+          />
+          <figcaption className="mt-s2 text-[0.78rem] text-n-200">
+            {SFEERBEELD} Welk systeem bij jou past, bepalen we in het adviesgesprek.
+          </figcaption>
+        </figure>
       </div>
-    </header>
+    </section>
   );
 }
 
@@ -137,7 +170,37 @@ export function HoeHetWerkt() {
           </li>
         ))}
       </ol>
+
+      <div className="mt-s5 grid gap-s3 sm:grid-cols-2">
+        <Beeld
+          src={fotoMeterkast}
+          alt="Monteur meet met een multimeter aan een groepenkast"
+          bij="Aansluiting op de groepenkast"
+        />
+        <Beeld
+          src={fotoVerdeelkast}
+          alt="Monteur werkt in een elektrische verdeelkast"
+          bij="Aanmelding bij de netbeheerder wordt geregeld"
+        />
+      </div>
+      <p className="mt-s2 text-[0.78rem] text-n-500">{SFEERBEELD}</p>
     </Sectie>
+  );
+}
+
+/** Foto met bijschrift. Vaste verhouding, zodat de pagina niet verspringt. */
+function Beeld({ src, alt, bij }: { src: StaticImageData; alt: string; bij: string }) {
+  return (
+    <figure>
+      <Image
+        src={src}
+        alt={alt}
+        placeholder="blur"
+        sizes="(min-width: 640px) 46vw, 100vw"
+        className="h-auto w-full rounded-merk"
+      />
+      <figcaption className="mt-s2 text-[0.85rem] text-n-500">{bij}</figcaption>
+    </figure>
   );
 }
 
@@ -320,17 +383,29 @@ export function Faq() {
 export function SlotCta({ variant }: { variant: Variant }) {
   return (
     <Sectie fond="paars">
-      <div className="max-w-lees">
-        <h2>Reken het eerst uit</h2>
-        <p className="mt-s3 text-[1.02rem] leading-relaxed text-n-200">
-          Vijf vragen, twee minuten. Je krijgt een eerlijke bandbreedte te zien — en als een
-          thuisbatterij bij jou niet uitkomt, staat dat er gewoon.
-        </p>
-        <div className="mt-s4 max-w-[420px]">
-          <KnopLink href="#calculator" volleBreedte>
-            {variant.hero.knop}
-          </KnopLink>
+      <div className="grid items-center gap-s5 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="max-w-lees">
+          <h2>Reken het eerst uit</h2>
+          <p className="mt-s3 text-[1.02rem] leading-relaxed text-n-200">
+            Vijf vragen, twee minuten. Je krijgt een eerlijke bandbreedte te zien — en als een
+            thuisbatterij bij jou niet uitkomt, staat dat er gewoon.
+          </p>
+          <div className="mt-s4 max-w-[420px]">
+            <KnopLink href="#calculator" volleBreedte>
+              {variant.hero.knop}
+            </KnopLink>
+          </div>
         </div>
+        <figure className="order-last">
+          <Image
+            src={fotoMonteur}
+            alt="Installateur in werkkleding met een veiligheidshelm"
+            placeholder="blur"
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            className="h-auto w-full rounded-merk"
+          />
+          <figcaption className="mt-s2 text-[0.78rem] text-n-200">{SFEERBEELD}</figcaption>
+        </figure>
       </div>
     </Sectie>
   );
@@ -341,6 +416,12 @@ export function Footer() {
   return (
     <footer className="bg-paars-donker px-s3 py-s5 text-n-200">
       <div className="mx-auto max-w-inhoud text-[0.85rem] leading-relaxed">
+        <Image
+          src={logoWit}
+          alt="Thuisbatterij Installaties"
+          sizes="220px"
+          className="mb-s4 h-[22px] w-auto"
+        />
         {/* De uitvoerder staat er altijd bij, ook als de eigen entiteit nog niet
             gekozen is. Wat een bezoeker minimaal moet kunnen zien is wie de
             installatie doet en waar die partij ingeschreven staat. */}

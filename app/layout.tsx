@@ -13,6 +13,7 @@ import "@fontsource/libre-baskerville/400-italic.css";
 import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
 import Bouwstatus from "@/components/Bouwstatus";
+import Kopbalk from "@/components/Kopbalk";
 import { kiesVariant } from "@/lib/varianten";
 
 export const metadata: Metadata = {
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <Bouwstatus variant={variant} />
+        <Kopbalk />
         {children}
         <ConsentBanner />
       </body>
