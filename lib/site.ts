@@ -15,6 +15,13 @@ export const ENTITEIT = {
   ingevuld: false,
 };
 
+/**
+ * Het domein, op één plek. Het staat onder het logo in de kopbalk en komt terug
+ * in de advertenties: die twee moeten letterlijk gelijk zijn, anders valt de
+ * herkenning tussen advertentie en landingspagina weg.
+ */
+export const DOMEIN = "thuisbatterij-installaties.nl";
+
 /** Opdrachtgever en uitvoerder. Bevestigd, claimregister V6. */
 export const LIMSOLAR = {
   naam: "Limsolar B.V.",

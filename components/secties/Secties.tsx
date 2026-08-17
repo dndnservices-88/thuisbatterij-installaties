@@ -34,8 +34,9 @@ const SFEERBEELD = "Sfeerbeeld, geen foto van een eigen project.";
 /* 1 ── Hero ───────────────────────────────────────────────────────────────── */
 export function Hero({ variant }: { variant: Variant }) {
   return (
-    // Geen <header> meer: dat is nu de kopbalk met het logo, waar deze sectie
-    // naadloos op aansluit doordat het paars doorloopt.
+    // Geen <header> meer: dat is de witte kopbalk met het logo. Deze sectie zet
+    // daar het paarse vlak tegenaan, zodat er een harde scheiding ontstaat
+    // tussen afzender en aanbod.
     <section className="bg-paars px-s3 pb-s6 pt-s5 text-n-000">
       <div className="mx-auto grid max-w-inhoud items-center gap-s5 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
