@@ -130,6 +130,36 @@ export const CLAIMS = {
     tekst: "Limsolar B.V., KvK 86584081, Jelle Zijlstraweg 62-A, 1689 ZX Zwaag",
     status: "bevestigd",
   },
+
+  // ── Keurmerken en beeldmerken van derden ─────────────────────────────────
+  // Een keurmerklogo is een zwaardere mededeling dan de zin eronder: het oog
+  // leest het als een oordeel van een onafhankelijke partij. Het tonen van een
+  // vertrouwens- of kwaliteitsmerk zonder toestemming van de houder staat op de
+  // zwarte lijst van bijlage I bij de richtlijn oneerlijke handelspraktijken —
+  // misleiding per definitie, zonder verdere toets, net als V5.
+  //
+  // Daarom heeft elk merk hier TWEE bewijsstukken nodig en niet één:
+  // (a) dat de aansluiting/certificering bestaat en geldig is, en
+  // (b) dat de houder het beeldmerk mag laten voeren door déze partij.
+  V7: {
+    id: "V7",
+    tekst: "Installatiewerk door een InstallQ-erkend installateur",
+    status: "open",
+    nodig:
+      "Certificaat of registratienummer InstallQ op naam van Limsolar B.V., met geldigheidsdatum, PLUS de beeldmerkvoorwaarden van InstallQ",
+  },
+  V8: {
+    id: "V8",
+    // Let op de formulering. Het Nationaal Warmtefonds is geen keurmerk maar
+    // een financier: het logo tonen zegt niet "wij zijn gekeurd" maar "je kunt
+    // hier lenen". Dat is een financiële mededeling, en die moet kloppen tot
+    // en met de voorwaarden. Zet hem dus nooit in een rij die "keurmerken"
+    // heet zonder dit onderscheid erbij te schrijven.
+    tekst: "Financiering via het Nationaal Warmtefonds is mogelijk",
+    status: "open",
+    nodig:
+      "Bevestiging dat een thuisbatterij onder de regeling valt en dat Limsolar als uitvoerder wordt geaccepteerd, PLUS toestemming voor het beeldmerk. Zonder rentepercentage, looptijd en voorwaarden erbij is dit bovendien een financiële claim die je niet los mag tonen.",
+  },
 } as const satisfies Record<string, ClaimRegel>;
 
 export type ClaimId = keyof typeof CLAIMS;

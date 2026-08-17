@@ -14,6 +14,7 @@ import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
 import Bouwstatus from "@/components/Bouwstatus";
 import Kopbalk from "@/components/Kopbalk";
+import Keurmerken from "@/components/Keurmerken";
 import { kiesVariant } from "@/lib/varianten";
 
 export const metadata: Metadata = {
@@ -57,6 +58,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Bouwstatus variant={variant} />
         <Kopbalk />
+        {/* Staat in de layout en niet in page.tsx, omdat de balk bij de afzender
+            hoort en niet bij het aanbod: hij moet op élke pagina onder het logo
+            staan, ook op de privacyverklaring. */}
+        <Keurmerken />
         {children}
         <ConsentBanner />
       </body>
