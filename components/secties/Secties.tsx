@@ -298,15 +298,144 @@ export function Usps() {
 }
 
 /* 8 ── Reviews ────────────────────────────────────────────────────────────── */
-export function Reviews() {
-  // Bewust leeg tot er echte, verifieerbare reviews zijn. Verzonnen reviews staan
-  // op de zwarte lijst van misleidende handelspraktijken (claimregister V5).
-  if (!mag("V3")) return null;
+
+type Review = {
+  /** Initiaal + plaats. Bewust geen volledige naam: dat is een persoonsgegeven
+   *  dat je niet nodig hebt om geloofwaardig te zijn (AVG, minimalisatie). */
+  naam: string;
+  maand: string;
+  score: 1 | 2 | 3 | 4 | 5;
+  tekst: string;
+};
+
+/**
+ * Echte reviews. Leeg, en dat blijft zo tot er een verifieerbare bron is —
+ * bij voorkeur het Google-bedrijfsprofiel van Limsolar, zodat de bezoeker ze
+ * kan nakijken. Vullen gaat samen met claimregister V4 op "bevestigd".
+ */
+const REVIEWS: Review[] = [];
+
+/**
+ * Voorbeeldreviews. Uitsluitend om de vormgeving te beoordelen.
+ *
+ * Deze array is hard afgesloten van de live-modus: niet via het claimregister
+ * (dat kun je per ongeluk op "bevestigd" zetten) maar via isLive, zodat geen
+ * enkele instelling ze naar buiten kan brengen. Verzonnen reviews staan op de
+ * zwarte lijst van bijlage I bij de richtlijn oneerlijke handelspraktijken —
+ * misleiding per definitie, zonder verdere belangenafweging. Precies hier ging
+ * de vorige versie van deze site de fout in (claimregister V5).
+ */
+const VOORBEELDREVIEWS: Review[] = [
+  {
+    naam: "S. uit Hoorn",
+    maand: "juni 2026",
+    score: 5,
+    tekst:
+      "Vooraf een eerlijk verhaal gekregen over wat een batterij bij ons wel en niet oplevert. De monteur was op tijd, heeft alles netjes weggewerkt en na afloop uitgelegd hoe ik het systeem uitlees.",
+  },
+  {
+    naam: "M. uit Alkmaar",
+    maand: "mei 2026",
+    score: 5,
+    tekst:
+      "Ik twijfelde tussen twee capaciteiten. Ze hebben mijn verbruik doorgerekend en kwamen uit op het kleinere systeem. Dat scheelde me een paar duizend euro — dat had ik niet verwacht.",
+  },
+  {
+    naam: "R. uit Purmerend",
+    maand: "mei 2026",
+    score: 4,
+    tekst:
+      "Installatie liep een week uit door levering, daar was ik niet blij mee. Verder prima geregeld: aanmelding bij de netbeheerder gedaan en de facturering klopte tot op de cent.",
+  },
+];
+
+/** Sterrenrij. */
+function Sterren({ score }: { score: number }) {
+  // Geel is per brandbook nooit tekstkleur (1,18:1 op wit). Sterren dragen
+  // informatie, dus ze moeten leesbaar zijn: paars gevuld, grijs leeg. De score
+  // staat ook als tekst in de aria-label, want kleurverschil alleen is geen
+  // toegankelijke manier om een waarde over te brengen.
   return (
-    <Sectie id="reviews" fond="wit">
-      <Kop boven="Ervaringen">
-        <Claim id="V3" />
+    <p className="text-[1.05rem] leading-none text-paars" aria-label={`${score} van de 5 sterren`}>
+      <span aria-hidden="true">
+        {"\u2605".repeat(score)}
+        <span className="text-n-200">{"\u2605".repeat(5 - score)}</span>
+      </span>
+    </p>
+  );
+}
+
+function ReviewKaart({ review, voorbeeld }: { review: Review; voorbeeld: boolean }) {
+  return (
+    <figure
+      className={`flex h-full flex-col rounded-merk bg-n-000 p-s4 ${
+        voorbeeld ? "border-2 border-[#A08A00]" : "border border-n-200"
+      }`}
+    >
+      {voorbeeld && (
+        <span className="placeholder-label mb-s3 ml-0 self-start">Voorbeeld · V5</span>
+      )}
+      <Sterren score={review.score} />
+      <blockquote className="mt-s3 grow text-[0.95rem] leading-relaxed">
+        {review.tekst}
+      </blockquote>
+      <figcaption className="mt-s3 text-[0.85rem] text-n-500">
+        {review.naam} · {review.maand}
+      </figcaption>
+    </figure>
+  );
+}
+
+export function Reviews() {
+  const echt = REVIEWS.length > 0 && mag("V4");
+  const reviews = echt ? REVIEWS : isLive ? [] : VOORBEELDREVIEWS;
+
+  // Live zonder echte reviews: de hele sectie verdwijnt, inclusief kop. Een lege
+  // reviewsectie is erger dan geen reviewsectie.
+  if (reviews.length === 0 && !mag("V3")) return null;
+
+  return (
+    <Sectie id="reviews" fond="tint">
+      <Kop
+        boven="Ervaringen"
+        onder={
+          <>
+            De installatie wordt uitgevoerd door {LIMSOLAR.naam}. Deze beoordelingen gaan dus over{" "}
+            {LIMSOLAR.naam} en niet over de berekening op deze pagina — dat is een bewuste keuze,
+            want je hoort te weten wie er straks bij je thuis staat.
+          </>
+        }
+      >
+        Wat klanten over de installateur zeggen
       </Kop>
+
+      {!echt && !isLive && (
+        <p className="mb-s4 rounded-merk border-2 border-[#A08A00] bg-[#FFF9C4] p-s3 text-[0.9rem]">
+          <strong>Voorbeeld, geen echte reviews.</strong> Ze staan er alleen om de vormgeving te
+          beoordelen en kunnen niet live: zodra <code>NEXT_PUBLIC_LIVE</code> op <code>true</code>{" "}
+          staat, verdwijnt de hele reviewsectie van de pagina. Vervang ze door echte beoordelingen
+          met bron — dan gaat V4 in het claimregister naar &quot;bevestigd&quot;.
+        </p>
+      )}
+
+      {mag("V3") && (
+        <p className="mb-s4 text-[0.95rem] font-semibold">
+          <Claim id="V3" />
+        </p>
+      )}
+
+      <div className="grid gap-s3 sm:grid-cols-2 lg:grid-cols-3">
+        {reviews.map((r) => (
+          <ReviewKaart key={r.naam} review={r} voorbeeld={!echt} />
+        ))}
+      </div>
+
+      <p className="mt-s4 max-w-lees text-[0.85rem] text-n-500">
+        <Claim
+          id="V4"
+          alsWeg="Zodra hier echte beoordelingen staan, vermelden we erbij waar ze vandaan komen en hoe we controleren dat ze van echte klanten zijn. Dat is sinds 2022 verplicht — en zonder die bron heeft een review geen enkele waarde."
+        />
+      </p>
     </Sectie>
   );
 }

@@ -108,6 +108,23 @@ export const CLAIMS = {
     status: "open",
     nodig: "Export uit het reviewplatform",
   },
+  V4: {
+    id: "V4",
+    tekst:
+      "Deze beoordelingen komen uit het openbare Google-bedrijfsprofiel van Limsolar B.V. Wij plaatsen ze niet zelf en kunnen ze niet wijzigen of verwijderen.",
+    status: "open",
+    nodig: "URL van het Google-bedrijfsprofiel + je controleprocedure op schrift",
+  },
+  // Sinds 2022 verplicht: vermelden óf en hóé je controleert dat een review van
+  // een echte klant komt. Doe je dat niet, dan is de review zelf al misleidend,
+  // ook als hij echt is.
+  V5: {
+    id: "V5",
+    tekst: "Klantreview zonder verifieerbare bron",
+    status: "verboden",
+    nodig:
+      "Niet publiceren, onder geen enkele voorwaarde. Verzonnen reviews staan op de zwarte lijst van bijlage I bij de richtlijn oneerlijke handelspraktijken: misleiding per definitie, zonder verdere toets.",
+  },
   V6: {
     id: "V6",
     tekst: "Limsolar B.V., KvK 86584081, Jelle Zijlstraweg 62-A, 1689 ZX Zwaag",
