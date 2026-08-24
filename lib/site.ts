@@ -32,6 +32,24 @@ export const LIMSOLAR = {
 };
 
 /**
+ * Contactpunt van de afzender.
+ *
+ * ⚠️ NOG IN TE VULLEN. Dit is geen nette-om-te-hebben maar een verplichting op
+ * twee gronden tegelijk: de AVG eist een adres waar iemand zijn rechten kan
+ * uitoefenen, en een toestemming die je niet kunt intrekken is geen geldige
+ * toestemming. Zonder dit adres mag de bevestigingsmail niet de deur uit — dat
+ * is in lib/berichten.ts afgedwongen en niet per ongeluk te omzeilen.
+ *
+ * Het e-mailadres hoort bij JOUW entiteit, niet bij Limsolar: jij bent de partij
+ * die de gegevens verzamelt en de toestemming vastlegt.
+ */
+export const CONTACT = {
+  email: "[CONTACT-EMAIL]",
+  telefoon: "[CONTACT-TELEFOON]",
+  ingevuld: false,
+};
+
+/**
  * De attributieregel. Verplicht in de footer en bij het formulier.
  * Dit is wat de uitvoeringsclaims bij de partij legt die ze waarmaakt.
  */

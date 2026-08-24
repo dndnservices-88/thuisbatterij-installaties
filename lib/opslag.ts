@@ -38,6 +38,25 @@ export type Lead = {
   /** ── De berekening zelf: invoer én getoonde uitkomst (claimregister R4) ── */
   calc_snapshot: unknown;
 
+  /**
+   * Onze eigen herberekening van diezelfde antwoorden, server-side.
+   *
+   * Twee versies van hetzelfde getal naast elkaar is geen dubbelop maar het
+   * punt: calc_snapshot is wat de bezoeker zag, calc_controle is wat ons
+   * systeem ervan maakt. Komen ze niet overeen, dan weet je dát meteen in
+   * plaats van maanden later. De bevestigingsmail gebruikt uitsluitend
+   * calc_controle.
+   */
+  calc_controle: {
+    route: string | null;
+    besparing_midden: number | null;
+    terugverdientijd_midden: number | null;
+    terugleverkosten: number | null;
+    rekenversie: string | null;
+    komt_overeen: boolean | null;
+    opmerking?: string;
+  };
+
   /** ── Overig ── */
   bron_domein: string;
   event_id: string;

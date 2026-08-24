@@ -309,6 +309,27 @@ export function bereken(a: Antwoorden): Uitkomst {
 export const euro = (n: number) =>
   new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
+/**
+ * Bedragen kleiner dan een euro, met drie decimalen: kWh-tarieven dus.
+ *
+ * Dit bestaat omdat euro() bewust afrondt op hele euro's — prima voor een
+ * besparing van € 383, dodelijk voor een terugleverkostentarief. euro(0,109)
+ * geeft "€ 0", en die "€ 0" belandde in een bevestigingsmail waarin de
+ * terugverdientijd wél mét die 10,9 cent was doorgerekend. De klant leest dan
+ * dat hij niets betaalt bij een som die aanneemt dat hij dat wel doet.
+ *
+ * Drie decimalen en niet twee: leveranciers publiceren deze tarieven zelf in
+ * tienden van centen (€ 0,109), en afronden naar € 0,11 maakt van hun tarief
+ * ons tarief.
+ */
+export const centen = (n: number) =>
+  new Intl.NumberFormat("nl-NL", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  }).format(n);
+
 export const getal = (n: number) => new Intl.NumberFormat("nl-NL").format(Math.round(n));
 
 export const jaren = (n: number) =>
