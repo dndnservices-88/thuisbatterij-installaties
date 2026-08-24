@@ -34,6 +34,8 @@ type Concept = {
   verbruikmodus: "kwh" | "huishouden";
   contract?: Contract;
   eigenaar?: boolean;
+  /** Geen vraag, maar een keuze op het resultaatscherm. Zie Terugleverkosten.tsx. */
+  terugleverkosten?: number;
 };
 
 const leeg: Concept = { paneelmodus: "aantal", verbruikmodus: "kwh" };
@@ -71,7 +73,14 @@ export default function Calculator() {
       c.verbruikmodus === "kwh"
         ? { soort: "kwh" as const, kwh: Number(c.kwh || 0) }
         : { soort: "huishouden" as const, grootte: c.huishouden! };
-    return { zonnepanelen: c.zonnepanelen, panelen, verbruik, contract: c.contract, eigenaar: c.eigenaar };
+    return {
+      zonnepanelen: c.zonnepanelen,
+      panelen,
+      verbruik,
+      contract: c.contract,
+      eigenaar: c.eigenaar,
+      terugleverkosten: c.terugleverkosten,
+    };
   }, [c]);
 
   const uitkomst: Uitkomst | null = useMemo(
@@ -329,10 +338,17 @@ export default function Calculator() {
                 setZachteLead(true);
                 setStap("formulier");
               }}
+              terugleverkosten={c.terugleverkosten}
+              onTerugleverkosten={(n) => setC({ ...c, terugleverkosten: n })}
             />
           )}
           {uitkomst.route === "lead" && (
-            <Resultaat uitkomst={uitkomst} onDoorgaan={() => setStap("formulier")} />
+            <Resultaat
+              uitkomst={uitkomst}
+              onDoorgaan={() => setStap("formulier")}
+              terugleverkosten={c.terugleverkosten}
+              onTerugleverkosten={(n) => setC({ ...c, terugleverkosten: n })}
+            />
           )}
         </>
       )}

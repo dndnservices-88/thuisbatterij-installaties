@@ -1,9 +1,10 @@
 "use client";
 
-import { euro, getal, jaren, PEILDATUM_TARIEVEN, type Berekening } from "@/lib/calc";
+import { euro, getal, jaren, type Berekening } from "@/lib/calc";
 import { REKEN_DISCLAIMER } from "@/lib/site";
 import { Knop } from "@/components/ui/Knop";
 import { Claim } from "@/components/ui/Claim";
+import Terugleverkosten from "./Terugleverkosten";
 
 /**
  * Het resultaat.
@@ -16,9 +17,13 @@ import { Claim } from "@/components/ui/Claim";
 export default function Resultaat({
   uitkomst,
   onDoorgaan,
+  terugleverkosten,
+  onTerugleverkosten,
 }: {
   uitkomst: Berekening & { route: string };
   onDoorgaan: () => void;
+  terugleverkosten: number | undefined;
+  onTerugleverkosten: (n: number | undefined) => void;
 }) {
   return (
     <div>
@@ -61,17 +66,15 @@ export default function Resultaat({
         </p>
       )}
 
+      <Terugleverkosten waarde={terugleverkosten} onKies={onTerugleverkosten} />
+
+      {/* De peildatum loopt via het claimregister en niet via een losse
+          if-vergelijking. Zolang R2 niet is afgetekend valt de hele zin weg —
+          zonder punt, zonder gat, zonder dat iemand er iets voor hoeft te doen.
+          De rekendisclaimer zelf staat er wél altijd: die valt onder R1 en is
+          verplicht, ook als er verder niets is bevestigd. */}
       <p className="mt-s4 text-[0.85rem] leading-relaxed text-n-500">
-        {REKEN_DISCLAIMER} Tarieven gecontroleerd op{" "}
-        {PEILDATUM_TARIEVEN === "nog niet bevestigd" ? (
-          <span className="placeholder">
-            [peildatum]
-            <span className="placeholder-label">R2</span>
-          </span>
-        ) : (
-          PEILDATUM_TARIEVEN
-        )}
-        .
+        {REKEN_DISCLAIMER} <Claim id="R2" />
       </p>
 
       <div className="mt-s4 rounded-merk bg-n-100 p-s3">

@@ -2,6 +2,7 @@
 
 import { jaren, type Berekening } from "@/lib/calc";
 import { Knop } from "@/components/ui/Knop";
+import Terugleverkosten from "./Terugleverkosten";
 
 /**
  * De drie uitkomsten die géén standaardlead zijn (specificatie 3.4).
@@ -49,12 +50,27 @@ export function GeenPv() {
   );
 }
 
+/**
+ * Let op de terugleverkosten-schakelaar hieronder. Die hoort juist hier te
+ * staan, want dit is het enige scherm waar hij de uitkomst kan omdraaien: zet
+ * de bezoeker hem aan, dan zakt de terugverdientijd en verspringt de route van
+ * "niet rendabel" naar een gewone lead. Andersom kan niet — de schakelaar maakt
+ * de som alleen gunstiger.
+ *
+ * Dat is geen achterdeurtje om dit scherm te omzeilen. Als iemand werkelijk
+ * € 0,18 per teruggeleverde kWh betaalt, was "niet rendabel" simpelweg het
+ * verkeerde antwoord, en dan hoort dat rechtgezet te worden.
+ */
 export function NietRendabel({
   uitkomst,
   onDoorgaan,
+  terugleverkosten,
+  onTerugleverkosten,
 }: {
   uitkomst: Berekening;
   onDoorgaan: () => void;
+  terugleverkosten: number | undefined;
+  onTerugleverkosten: (n: number | undefined) => void;
 }) {
   return (
     <Uitleg titel="Bij jouw verbruik komt een thuisbatterij krap uit">
@@ -68,6 +84,7 @@ export function NietRendabel({
         weinig over om op te slaan. Wordt je verbruik hoger — een warmtepomp, een elektrische auto,
         thuiswerken — dan verandert dit beeld.
       </p>
+      <Terugleverkosten waarde={terugleverkosten} onKies={onTerugleverkosten} />
       <div className="pt-s2">
         <Knop soort="zacht" onClick={onDoorgaan}>
           Toch even laten meekijken?

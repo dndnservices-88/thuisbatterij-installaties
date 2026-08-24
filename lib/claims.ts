@@ -45,6 +45,35 @@ export const CLAIMS = {
     nodig: "Datasheet van de fabrikant",
   },
 
+  // ── Reken- en besparingsclaims ───────────────────────────────────────────
+  // R2 in het register is de regel over de constanten van de calculator:
+  // tarieven, terugleververgoeding, terugleverkosten, opbrengst per paneel,
+  // rendement. Het register schrijft voor dat elke constante een bron en een
+  // datum heeft, in één blok in de code — dat blok is TARIEFBRONNEN in
+  // lib/calc.ts.
+  //
+  // De tekst hieronder is de zichtbare kant van R2: de zin die onder de
+  // uitkomst verschijnt zodra de constanten zijn afgetekend. Zolang R2 op
+  // "open" staat, verschijnt die zin niet. Dat is streng en dat hoort zo: de
+  // zin zegt tegen de bezoeker dat iemand het heeft nagekeken en ervoor
+  // instaat. Zolang Limsolar niet heeft getekend, staat er niemand voor in, en
+  // dan is een weggelaten zin beter dan een datum die je niet kunt onderbouwen.
+  //
+  // Merk op: dit gaat NIET over de rekendisclaimer zelf. Die valt onder R1 en
+  // staat er altijd, ongeacht status. Een indicatie zonder de mededeling dát
+  // het een indicatie is, is precies de claim die je niet wilt maken.
+  R2: {
+    id: "R2",
+    // Punt hoort hier ín de tekst, anders dan bij de andere regels. Die zijn
+    // zinsdelen; dit is een hele zin die achter de rekendisclaimer wordt
+    // geplakt. Zonder punt in de regel blijft er bij het wegvallen van de claim
+    // een losse punt achter op de pagina.
+    tekst: "Tarieven gecontroleerd op 24 augustus 2026.",
+    status: "open",
+    nodig:
+      "Aftekening door Limsolar van de vier tarieven in lib/calc.ts (leveringstarief, terugleververgoeding, terugleverkosten, dynamische marge), met eigen peildatum. Bij aftekening ook TARIEVEN_STATUS op 'bevestigd' zetten en REKENVERSIE verhogen.",
+  },
+
   // ── Uitvoerings- en servicebeloften (altijd op naam van Limsolar) ─────────
   U1: {
     id: "U1",

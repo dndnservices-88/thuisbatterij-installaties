@@ -6,16 +6,36 @@
  * en herbruikbaar in een offertetool of e-mail.
  *
  * ────────────────────────────────────────────────────────────────────────────
- * TARIEFCONTROLE: nog niet uitgevoerd. Constanten hieronder zijn voorstellen
- * uit de specificatie, geen door Limsolar bevestigde waarden.
- * Zodra bevestigd: pas CONSTANTEN aan, zet PEILDATUM_TARIEVEN op de datum van
- * bevestiging en verhoog REKENVERSIE. De rekenversie wordt per lead opgeslagen,
- * zodat oude leads reproduceerbaar blijven (claimregister R4).
+ * TARIEFCONTROLE: uitgevoerd op 24 augustus 2026 op openbare bronnen, als
+ * VOORSTEL aan Limsolar. Nog niet afgetekend — zie TARIEVEN_STATUS.
+ * Zodra Limsolar tekent: TARIEVEN_STATUS op "bevestigd", claimregister R2 op
+ * "bevestigd", en REKENVERSIE verhogen. De rekenversie wordt per lead
+ * opgeslagen, zodat oude leads reproduceerbaar blijven (claimregister R4).
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-export const REKENVERSIE = "1.0.0";
-export const PEILDATUM_TARIEVEN = "nog niet bevestigd";
+export const REKENVERSIE = "1.1.0";
+export const PEILDATUM_TARIEVEN = "24 augustus 2026";
+
+/**
+ * "voorstel" = door ons opgezocht, nog niet door Limsolar afgetekend.
+ * Zolang dit op "voorstel" staat, mag de peildatum niet als feit onder het
+ * resultaat verschijnen. Dat wordt afgedwongen via claimregister R2: de
+ * disclaimer toont de datum alleen als R2 op "bevestigd" staat.
+ */
+export const TARIEVEN_STATUS: "voorstel" | "bevestigd" = "voorstel";
+
+/**
+ * Waar de voorgestelde waarden vandaan komen. Staat hier en niet in een los
+ * document, omdat een constante zonder herkomst over drie maanden niemand meer
+ * kan navertellen — en dat is precies wanneer de ACM het vraagt.
+ */
+export const TARIEFBRONNEN = [
+  "Leveringstarief: gemiddelde all-in kWh-prijs vaste en variabele contracten, juni 2026 € 0,263, bandbreedte 21 aug 2026 € 0,238–0,316 (energievergelijk.nl). Wij rekenen met € 0,26, dus onder het midden van de bandbreedte.",
+  "Terugleververgoeding: € 0,01–0,165 per leverancier, gemiddeld € 0,04–0,09 (energievergelijk.nl, overstappen.nl, aug 2026). Wij rekenen met € 0,07, dus aan de hoge kant van het gemiddelde.",
+  "Terugleverkosten: € 0,109 (laagste, Budget Energie) tot € 0,182 (hoogste, Eneco) bij vaste contracten in 2026; veel leveranciers rekenen niets. Standaard € 0,00 omdat wij niet vragen wie de leverancier is.",
+  "Dynamische marge: gerealiseerde spread € 0,15–0,25 per kWh bij actief gestuurde handel (slimster.nl, aug 2026). Wij rekenen met € 0,05, omdat actieve sturing een aparte dienst is die Limsolar nog niet toezegt.",
+] as const;
 
 export const CONSTANTEN = {
   /** kWh per paneel per jaar. Conservatief; de geleverde site rekende met 400. */
@@ -28,19 +48,36 @@ export const CONSTANTEN = {
   BRUIKBARE_FRACTIE: 0.9,
   /** Retourrendement laden/ontladen. */
   RENDEMENT: 0.9,
-  /** €/kWh leveringstarief. TE BEVESTIGEN door Limsolar, met peildatum. */
-  LEVERINGSTARIEF: 0.28,
-  /** €/kWh terugleververgoeding. TE BEVESTIGEN. */
-  TERUGLEVERVERGOEDING: 0.05,
   /**
-   * €/kWh vermeden terugleverkosten. TE BEVESTIGEN; verschilt per leverancier
-   * en loopt volgens de specificatie van €0,00 tot €0,12.
-   * Default bewust op 0,00 gezet: bij een onbevestigde constante is de
-   * conservatieve waarde de enige die claim-technisch verdedigbaar is.
+   * Iedere constante hieronder is bewust de kant op gezet die de uitkomst
+   * SLECHTER maakt, niet beter. Waarde per opgeslagen kWh is
+   * leveringstarief − terugleververgoeding + terugleverkosten, dus:
+   * leveringstarief laag inschatten, terugleververgoeding hoog inschatten.
+   * Wie het omgekeerd doet, verkoopt een rekensom in plaats van een advies.
+   */
+
+  /** €/kWh all-in leveringstarief. Onder het midden van de marktbandbreedte. */
+  LEVERINGSTARIEF: 0.26,
+  /** €/kWh terugleververgoeding. Aan de hoge kant van het gemiddelde. */
+  TERUGLEVERVERGOEDING: 0.07,
+  /**
+   * €/kWh vermeden terugleverkosten. Standaard 0,00 en dat blijft zo.
+   *
+   * In 2026 rekent een deel van de leveranciers € 0,109 tot € 0,182 per
+   * teruggeleverde kWh, en juist die kosten vermijd je met een batterij. Het is
+   * verreweg de grootste post in de hele som. Maar de calculator vraagt niet
+   * wie je leverancier is, dus dit meerekenen zou een bewering zijn over een
+   * contract dat wij niet kennen. De bezoeker kan het zelf aanzetten op het
+   * resultaatscherm — dan is het zíjn invoer en niet onze claim.
    */
   TERUGLEVERKOSTEN: 0.0,
-  /** €/kWh extra waarde bij een dynamisch contract. TE BEVESTIGEN. */
-  DYN_MARGE: 0.03,
+  /**
+   * €/kWh extra waarde bij een dynamisch contract. Bewust laag: de spread van
+   * € 0,15–0,25 die je overal leest, geldt bij actief gestuurde handel op de
+   * day-ahead- of onbalansmarkt. Dat is een aparte dienst met eigen software,
+   * en zolang Limsolar die niet levert, mag hij niet in deze som zitten.
+   */
+  DYN_MARGE: 0.05,
   /** Vaste spreiding rond elke uitkomst. Resultaat wordt NOOIT als één getal getoond. */
   BANDBREEDTE_ONDER: 0.8,
   BANDBREEDTE_BOVEN: 1.2,
@@ -83,6 +120,23 @@ export const ASSORTIMENT: Product[] = [
 export type Panelen = { soort: "aantal"; aantal: number } | { soort: "dak_m2"; m2: number };
 export type Contract = "vast" | "dynamisch" | "onbekend";
 
+/**
+ * De keuzes die de bezoeker zelf kan maken voor terugleverkosten.
+ *
+ * De bedragen zijn de werkelijke uitersten in de markt van 2026: Budget Energie
+ * rekent het laagste tarief, Eneco het hoogste. Een deel van de leveranciers
+ * rekent niets, en dat is bewust de standaard.
+ *
+ * Dit staat hier als expliciete lijst en niet als vrij invoerveld, omdat een
+ * vrij veld uitnodigt tot het invullen van een fantasiebedrag — en dan staat er
+ * een terugverdientijd op het scherm die nergens op slaat.
+ */
+export const TERUGLEVERKOSTEN_OPTIES = [
+  { waarde: 0.0, label: "Ik betaal niets", onder: "Geldt bij een deel van de leveranciers" },
+  { waarde: 0.109, label: "€ 0,109 per kWh", onder: "Laagste tarief in de markt, 2026" },
+  { waarde: 0.182, label: "€ 0,182 per kWh", onder: "Hoogste tarief in de markt, 2026" },
+] as const;
+
 export type Antwoorden = {
   /** Vraag 1 */
   zonnepanelen: "ja" | "nee" | "binnenkort";
@@ -94,6 +148,16 @@ export type Antwoorden = {
   contract: Contract;
   /** Vraag 5 — de harde kwalificatievraag */
   eigenaar: boolean;
+  /**
+   * Geen vraag in de vragenreeks, maar een keuze ná het resultaat.
+   *
+   * Staat hier tussen de antwoorden en niet als los argument van bereken(),
+   * omdat het formulier het hele antwoordobject als snapshot meestuurt. Zo ligt
+   * automatisch vast dát de bezoeker dit zelf heeft aangezet en op welk bedrag —
+   * en dat is precies het verschil tussen zijn aanname en onze claim.
+   * Ongedefinieerd = de conservatieve standaard uit CONSTANTEN.
+   */
+  terugleverkosten?: number;
 };
 
 export type Band = { min: number; max: number; midden: number };
@@ -113,6 +177,14 @@ export type Berekening = {
   besparing_eur: Band;
   terugverdientijd_jaar: Band;
   waarde_per_kwh: number;
+  /**
+   * De terugleverkosten waarmee gerekend is. Apart opgeslagen naast
+   * waarde_per_kwh, zodat de adviseur vóór het telefoontje ziet of de bezoeker
+   * de schakelaar heeft aangezet. Staat hier 0,00 en klopt dat niet met het
+   * contract van de klant, dan valt de terugverdientijd in het gesprek gunstiger
+   * uit — dat is de goede kant om je te vergissen.
+   */
+  terugleverkosten_eur: number;
   product: Product;
   /** true als het opslagpotentieel groter is dan het grootste product met bekende prijs */
   product_is_begrensd: boolean;
@@ -140,9 +212,20 @@ export function jaarverbruik(v: Antwoorden["verbruik"]): number {
   return v.soort === "kwh" ? v.kwh : CONSTANTEN.VERBRUIK_PER_HUISHOUDEN[v.grootte];
 }
 
-export function waardePerKwh(contract: Contract): number {
-  const basis =
-    CONSTANTEN.LEVERINGSTARIEF - CONSTANTEN.TERUGLEVERVERGOEDING + CONSTANTEN.TERUGLEVERKOSTEN;
+/**
+ * Waarde van één opgeslagen kWh.
+ *
+ * terugleverkosten is optioneel en wordt alleen ingevuld als de bezoeker het op
+ * het resultaatscherm zelf heeft aangezet. Negatieve waarden worden genegeerd:
+ * de som mag nooit slechter worden dan de conservatieve standaard door invoer
+ * die niet klopt.
+ */
+export function waardePerKwh(contract: Contract, terugleverkosten?: number): number {
+  const tlk =
+    typeof terugleverkosten === "number" && isFinite(terugleverkosten) && terugleverkosten > 0
+      ? terugleverkosten
+      : CONSTANTEN.TERUGLEVERKOSTEN;
+  const basis = CONSTANTEN.LEVERINGSTARIEF - CONSTANTEN.TERUGLEVERVERGOEDING + tlk;
   return contract === "dynamisch" ? basis + CONSTANTEN.DYN_MARGE : basis;
 }
 
@@ -184,7 +267,7 @@ export function bereken(a: Antwoorden): Uitkomst {
   const { product, begrensd } = kiesProduct(opslagpotentieel);
   const opslagWerkelijk = Math.min(opslagpotentieel, doorzet(product)) * CONSTANTEN.RENDEMENT;
 
-  const waarde = waardePerKwh(a.contract);
+  const waarde = waardePerKwh(a.contract, a.terugleverkosten);
   const besparing = opslagWerkelijk * waarde;
 
   const besparingBand = band(besparing);
@@ -205,6 +288,10 @@ export function bereken(a: Antwoorden): Uitkomst {
     besparing_eur: besparingBand,
     terugverdientijd_jaar: tvt,
     waarde_per_kwh: rond(waarde, 3),
+    terugleverkosten_eur:
+      typeof a.terugleverkosten === "number" && a.terugleverkosten > 0
+        ? a.terugleverkosten
+        : CONSTANTEN.TERUGLEVERKOSTEN,
     product,
     product_is_begrensd: begrensd,
     jaarverbruik_kwh: verbruik,
