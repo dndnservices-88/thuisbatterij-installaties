@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   bereken,
+  tariefVoorAntwoord,
+  TERUGLEVERKOSTEN_OPTIES,
   type Antwoorden,
   type Contract,
+  type TerugleverAntwoord,
   type Uitkomst,
 } from "@/lib/calc";
 import { meld, nieuwEventId } from "@/lib/tracking";
@@ -15,14 +18,21 @@ import { GeenPv, Huurder, NietRendabel } from "./Uitzonderingen";
 import Formulier from "./Formulier";
 
 /**
- * De calculator. Vijf vraagschermen, dan het resultaat, dan het formulier.
+ * De calculator. Zes vraagschermen, dan het resultaat, dan het formulier.
  *
  * Antwoorden staan in één state-object en blijven bewaard bij terugnavigeren —
  * niemand vult twee keer in (specificatie sectie 7). Automatisch doorspringen
  * gebeurt alleen bij keuzeknoppen, niet bij getalinvoer.
+ *
+ * Waarom zes en niet vijf: de terugleverkosten waren een schakelaar ónder het
+ * resultaat. Zie de toelichting bij Antwoorden.terugleverkosten in lib/calc.ts —
+ * kort gezegd bepaalde die aanname niet alleen het getal maar ook of iemand het
+ * afwijzingsscherm kreeg, en dat mag geen aanname zijn die wij zelf invullen.
+ * De zesde stap kost afhakers; hoeveel, dat lees je af aan calc_step_5 tegen
+ * calc_step_6 in GA4.
  */
 
-type Stap = 1 | 2 | 3 | 4 | 5 | "resultaat" | "formulier";
+type Stap = 1 | 2 | 3 | 4 | 5 | 6 | "resultaat" | "formulier";
 
 type Concept = {
   zonnepanelen?: "ja" | "nee" | "binnenkort";
@@ -34,8 +44,12 @@ type Concept = {
   verbruikmodus: "kwh" | "huishouden";
   contract?: Contract;
   eigenaar?: boolean;
-  /** Geen vraag, maar een keuze op het resultaatscherm. Zie Terugleverkosten.tsx. */
-  terugleverkosten?: number;
+  /**
+   * Vraag 5. Alleen het antwoord staat in de state, niet het bedrag: het bedrag
+   * volgt er met tariefVoorAntwoord() uit. Zo kunnen die twee niet uit elkaar
+   * lopen, ook niet als iemand later een tarief bijstelt.
+   */
+  terugleverkosten_antwoord?: TerugleverAntwoord;
 };
 
 const leeg: Concept = { paneelmodus: "aantal", verbruikmodus: "kwh" };
@@ -79,7 +93,8 @@ export default function Calculator() {
       verbruik,
       contract: c.contract,
       eigenaar: c.eigenaar,
-      terugleverkosten: c.terugleverkosten,
+      terugleverkosten: tariefVoorAntwoord(c.terugleverkosten_antwoord),
+      terugleverkosten_antwoord: c.terugleverkosten_antwoord,
     };
   }, [c]);
 
@@ -108,12 +123,12 @@ export default function Calculator() {
 
   function volgende(vanaf: number, antwoord: unknown) {
     meld(`calc_step_${vanaf}` as "calc_step_1", { antwoord: String(antwoord) });
-    setStap(vanaf === 5 ? "resultaat" : ((vanaf + 1) as Stap));
+    setStap(vanaf === 6 ? "resultaat" : ((vanaf + 1) as Stap));
   }
 
   function terug() {
     if (stap === "formulier") return setStap("resultaat");
-    if (stap === "resultaat") return setStap(5);
+    if (stap === "resultaat") return setStap(6);
     if (typeof stap === "number" && stap > 1) return setStap((stap - 1) as Stap);
   }
 
@@ -129,7 +144,7 @@ export default function Calculator() {
     >
       {typeof stap === "number" && (
         <>
-          <Voortgang stap={stap} van={5} />
+          <Voortgang stap={stap} van={6} />
           <div className="mt-s4">
             {stap === 1 && (
               <Vraag titel="Heb je zonnepanelen?">
@@ -146,14 +161,16 @@ export default function Calculator() {
                       gekozen={c.zonnepanelen === w}
                       onClick={() => {
                         if (w === "nee") {
-                          // Zonder panelen zijn vraag 2 en 3 zinloos: door naar
-                          // de eigendomsvraag, want die bepaalt of er überhaupt
-                          // een gesprek mogelijk is. Contract vullen we op
-                          // "onbekend" zodat het antwoordobject compleet is —
-                          // anders blijft het resultaatscherm leeg.
+                          // Zonder panelen zijn vraag 2 tot en met 5 zinloos:
+                          // door naar de eigendomsvraag, want die bepaalt of er
+                          // überhaupt een gesprek mogelijk is. Terugleverkosten
+                          // slaan we over omdat er zonder opwek niets terug te
+                          // leveren valt. Contract vullen we op "onbekend" zodat
+                          // het antwoordobject compleet is — anders blijft het
+                          // resultaatscherm leeg.
                           setC({ ...c, zonnepanelen: w, contract: "onbekend" });
                           meld("calc_step_1", { antwoord: w });
-                          setStap(5);
+                          setStap(6);
                         } else {
                           setC({ ...c, zonnepanelen: w });
                           volgende(1, w);
@@ -298,6 +315,31 @@ export default function Calculator() {
 
             {stap === 5 && (
               <Vraag
+                titel="Betaal je terugleverkosten aan je energieleverancier?"
+                onder="Dit is de zwaarste post in de hele som. Sommige leveranciers rekenen een bedrag per kilowattuur die je teruglevert — juist die kosten vermijd je met een batterij. Het staat op je jaarafrekening of in je contractvoorwaarden."
+              >
+                <div className="grid gap-s2">
+                  {TERUGLEVERKOSTEN_OPTIES.map((o) => (
+                    <Keuzekaart
+                      key={o.id}
+                      gekozen={c.terugleverkosten_antwoord === o.id}
+                      onClick={() => {
+                        setC({ ...c, terugleverkosten_antwoord: o.id });
+                        volgende(5, o.id);
+                      }}
+                    >
+                      <span className="block font-semibold">{o.label}</span>
+                      <span className="mt-s1 block text-[0.85rem] font-normal text-n-500">
+                        {o.onder}
+                      </span>
+                    </Keuzekaart>
+                  ))}
+                </div>
+              </Vraag>
+            )}
+
+            {stap === 6 && (
+              <Vraag
                 titel="Is de woning je eigendom?"
                 onder="Een thuisbatterij hoort bij de woning, dus dit bepaalt of het kan."
               >
@@ -306,7 +348,7 @@ export default function Calculator() {
                     gekozen={c.eigenaar === true}
                     onClick={() => {
                       setC({ ...c, eigenaar: true });
-                      volgende(5, "koop");
+                      volgende(6, "koop");
                     }}
                   >
                     Ja, ik ben eigenaar
@@ -315,7 +357,7 @@ export default function Calculator() {
                     gekozen={c.eigenaar === false}
                     onClick={() => {
                       setC({ ...c, eigenaar: false });
-                      volgende(5, "huur");
+                      volgende(6, "huur");
                     }}
                   >
                     Nee, ik huur
@@ -338,16 +380,16 @@ export default function Calculator() {
                 setZachteLead(true);
                 setStap("formulier");
               }}
-              terugleverkosten={c.terugleverkosten}
-              onTerugleverkosten={(n) => setC({ ...c, terugleverkosten: n })}
+              antwoord={c.terugleverkosten_antwoord}
+              onTerugleverkosten={(id) => setC({ ...c, terugleverkosten_antwoord: id })}
             />
           )}
           {uitkomst.route === "lead" && (
             <Resultaat
               uitkomst={uitkomst}
               onDoorgaan={() => setStap("formulier")}
-              terugleverkosten={c.terugleverkosten}
-              onTerugleverkosten={(n) => setC({ ...c, terugleverkosten: n })}
+              antwoord={c.terugleverkosten_antwoord}
+              onTerugleverkosten={(id) => setC({ ...c, terugleverkosten_antwoord: id })}
             />
           )}
         </>

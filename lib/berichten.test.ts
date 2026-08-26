@@ -72,6 +72,7 @@ function maakLead(overschrijf: Partial<Lead> = {}): Lead {
       besparing_midden: g?.besparing_eur.midden ?? null,
       terugverdientijd_midden: g?.terugverdientijd_jaar.midden ?? null,
       terugleverkosten: g?.terugleverkosten_eur ?? null,
+      terugleverkosten_antwoord: g?.terugleverkosten_antwoord ?? null,
       rekenversie: g?.rekenversie ?? null,
       komt_overeen: controle.komt_overeen,
     },
@@ -110,6 +111,69 @@ test("zonder terugleverkosten staat er geen zin over terugleverkosten in", () =>
   const controle = controleer(zonder);
   const mail = bevestigingAanKlant(maakLead({ calc_snapshot: zonder }), controle);
   assert.doesNotMatch(mail.tekst, /terugleverkosten betaalt/);
+});
+
+// ── Vraag 5: nul euro betekent twee verschillende dingen ────────────────────
+
+const SNAPSHOT_WEET_NIET = {
+  ...SNAPSHOT_MET_TLK,
+  antwoorden: {
+    ...SNAPSHOT_MET_TLK.antwoorden,
+    terugleverkosten: undefined,
+    terugleverkosten_antwoord: "weet_niet",
+  },
+};
+
+const SNAPSHOT_GEEN = {
+  ...SNAPSHOT_MET_TLK,
+  antwoorden: {
+    ...SNAPSHOT_MET_TLK.antwoorden,
+    terugleverkosten: undefined,
+    terugleverkosten_antwoord: "geen",
+  },
+};
+
+test("bij 'weet ik niet' krijgt de adviseur een actiepunt, bij 'ik betaal niets' niet", () => {
+  // Allebei nul euro in de som. Het verschil zit alleen in wat er nog na te
+  // trekken valt, en dat is precies wat de adviseur vóór het telefoontje moet
+  // weten. Verdwijnt dit onderscheid, dan belt hij een klant wiens uitkomst nog
+  // kan kantelen alsof die vaststaat.
+  const weetNiet = controleer(SNAPSHOT_WEET_NIET);
+  const geen = controleer(SNAPSHOT_GEEN);
+
+  const mailOnbekend = meldingAanAdviseur(maakLead({ calc_snapshot: SNAPSHOT_WEET_NIET }), weetNiet);
+  const mailGeen = meldingAanAdviseur(maakLead({ calc_snapshot: SNAPSHOT_GEEN }), geen);
+
+  assert.match(mailOnbekend.tekst, /weet niet of hij terugleverkosten betaalt/);
+  assert.match(mailOnbekend.tekst, /jaarafrekening/);
+  assert.doesNotMatch(mailGeen.tekst, /weet niet of hij terugleverkosten betaalt/);
+});
+
+test("de klantmail vraagt bij 'weet ik niet' om de jaarafrekening, en verzint geen tarief", () => {
+  const controle = controleer(SNAPSHOT_WEET_NIET);
+  const mail = bevestigingAanKlant(maakLead({ calc_snapshot: SNAPSHOT_WEET_NIET }), controle);
+  assert.match(mail.tekst, /met nul gerekend/);
+  assert.match(mail.tekst, /jaarafrekening/);
+  // En nergens een bedrag dat de bezoeker niet heeft opgegeven.
+  assert.doesNotMatch(mail.tekst, /0,109|0,182/);
+});
+
+test("een verzonnen antwoord op vraag 5 haalt de mail niet", () => {
+  // Het snapshot komt uit de browser en is dus manipuleerbaar. Alleen de vier
+  // ids die wij zelf aanbieden mogen erdoor; al het andere wordt genegeerd en
+  // valt terug op geen antwoord.
+  const rommel = {
+    ...SNAPSHOT_MET_TLK,
+    antwoorden: {
+      ...SNAPSHOT_MET_TLK.antwoorden,
+      terugleverkosten: undefined,
+      terugleverkosten_antwoord: "gratis_batterij",
+    },
+  };
+  const controle = controleer(rommel);
+  assert.equal(controle.antwoorden?.terugleverkosten_antwoord, undefined);
+  const mail = meldingAanAdviseur(maakLead({ calc_snapshot: rommel }), controle);
+  assert.doesNotMatch(mail.tekst, /gratis_batterij/);
 });
 
 // ── Fout 2: het bijschrift boven de bedragen ────────────────────────────────

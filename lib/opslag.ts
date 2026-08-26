@@ -52,6 +52,13 @@ export type Lead = {
     besparing_midden: number | null;
     terugverdientijd_midden: number | null;
     terugleverkosten: number | null;
+    /**
+     * Het antwoord op vraag 5 naast het bedrag. Nul euro kan twee dingen
+     * betekenen — "ik betaal niets" of "weet ik niet" — en dat verschil is
+     * precies wat je later wilt kunnen uitsplitsen als je je afvraagt hoeveel
+     * leads er op een onbekende aanname zijn afgewezen.
+     */
+    terugleverkosten_antwoord: string | null;
     rekenversie: string | null;
     komt_overeen: boolean | null;
     opmerking?: string;

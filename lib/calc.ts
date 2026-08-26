@@ -130,12 +130,46 @@ export type Contract = "vast" | "dynamisch" | "onbekend";
  * Dit staat hier als expliciete lijst en niet als vrij invoerveld, omdat een
  * vrij veld uitnodigt tot het invullen van een fantasiebedrag — en dan staat er
  * een terugverdientijd op het scherm die nergens op slaat.
+ *
+ * "Weet ik niet" hoort er sinds 26 augustus 2026 bij, omdat dit sindsdien een
+ * echte vraag is in plaats van een schakelaar achteraf. Een verplichte vraag
+ * zonder uitweg voor wie het antwoord niet weet, is een doodlopende weg: dan
+ * gokt iemand, en een gegokt tarief is erger dan geen tarief. Het rekent op nul,
+ * dus precies zo voorzichtig als wanneer er niets was ingevuld — maar het staat
+ * wél apart in de snapshot, zodat de adviseur het verschil ziet tussen "betaalt
+ * niets" en "weet het niet".
  */
 export const TERUGLEVERKOSTEN_OPTIES = [
-  { waarde: 0.0, label: "Ik betaal niets", onder: "Geldt bij een deel van de leveranciers" },
-  { waarde: 0.109, label: "€ 0,109 per kWh", onder: "Laagste tarief in de markt, 2026" },
-  { waarde: 0.182, label: "€ 0,182 per kWh", onder: "Hoogste tarief in de markt, 2026" },
+  {
+    id: "geen",
+    waarde: 0.0,
+    label: "Ik betaal niets",
+    onder: "Geldt bij een deel van de leveranciers",
+  },
+  { id: "laag", waarde: 0.109, label: "€ 0,109 per kWh", onder: "Laagste tarief in de markt, 2026" },
+  { id: "hoog", waarde: 0.182, label: "€ 0,182 per kWh", onder: "Hoogste tarief in de markt, 2026" },
+  {
+    id: "weet_niet",
+    waarde: 0.0,
+    label: "Weet ik niet",
+    onder: "Dan rekenen we zonder — de voorzichtige kant",
+  },
 ] as const;
+
+export type TerugleverAntwoord = (typeof TERUGLEVERKOSTEN_OPTIES)[number]["id"];
+
+export const TERUGLEVER_ANTWOORDEN = TERUGLEVERKOSTEN_OPTIES.map((o) => o.id) as readonly string[];
+
+/**
+ * Het tarief dat bij een antwoord hoort. Eén functie, zodat het bedrag en het
+ * antwoord nooit uit elkaar kunnen lopen: er is geen plek waar iemand een tarief
+ * kan zetten zonder het bijbehorende antwoord.
+ */
+export function tariefVoorAntwoord(antwoord: TerugleverAntwoord | undefined): number | undefined {
+  if (!antwoord) return undefined;
+  const optie = TERUGLEVERKOSTEN_OPTIES.find((o) => o.id === antwoord);
+  return optie && optie.waarde > 0 ? optie.waarde : undefined;
+}
 
 export type Antwoorden = {
   /** Vraag 1 */
@@ -146,18 +180,36 @@ export type Antwoorden = {
   verbruik: { soort: "kwh"; kwh: number } | { soort: "huishouden"; grootte: "1" | "2-3" | "4-5" | "6+" };
   /** Vraag 4 */
   contract: Contract;
-  /** Vraag 5 — de harde kwalificatievraag */
+  /** Vraag 6 — de harde kwalificatievraag */
   eigenaar: boolean;
   /**
-   * Geen vraag in de vragenreeks, maar een keuze ná het resultaat.
+   * Vraag 5. Het bedrag waarmee gerekend is.
+   *
+   * Stond tot 26 augustus 2026 niet in de vragenreeks maar als schakelaar ónder
+   * het resultaat. Dat was verkeerd om: bij de standaard van nul valt een
+   * doorsnee tweepersoonshuishouden over de grens GRENS_NIET_RENDABEL heen en
+   * krijgt het afwijzingsscherm te zien. Zet dezelfde bezoeker het tarief aan,
+   * dan halveert de terugverdientijd en is het een gewone lead. De aanname
+   * bepaalde dus niet alleen het getal maar ook wélk scherm iemand kreeg, en
+   * dat is te veel gewicht voor iets wat we nooit gevraagd hadden.
    *
    * Staat hier tussen de antwoorden en niet als los argument van bereken(),
    * omdat het formulier het hele antwoordobject als snapshot meestuurt. Zo ligt
-   * automatisch vast dát de bezoeker dit zelf heeft aangezet en op welk bedrag —
+   * automatisch vast dát de bezoeker dit zelf heeft opgegeven en op welk bedrag —
    * en dat is precies het verschil tussen zijn aanname en onze claim.
    * Ongedefinieerd = de conservatieve standaard uit CONSTANTEN.
    */
   terugleverkosten?: number;
+  /**
+   * Vraag 5, maar dan het antwoord zelf in plaats van het bedrag.
+   *
+   * Nodig omdat "ik betaal niets" en "weet ik niet" allebei op nul rekenen en
+   * dus niet uit het bedrag zijn af te leiden. Voor de rekensom maakt het geen
+   * verschil, voor het telefoongesprek alles: bij "weet ik niet" is er iets na
+   * te trekken en kan de uitkomst nog gunstiger worden, bij "ik betaal niets"
+   * niet. Die zin staat in de adviseurmail.
+   */
+  terugleverkosten_antwoord?: TerugleverAntwoord;
 };
 
 export type Band = { min: number; max: number; midden: number };
@@ -185,6 +237,12 @@ export type Berekening = {
    * uit — dat is de goede kant om je te vergissen.
    */
   terugleverkosten_eur: number;
+  /**
+   * Het antwoord dat bij dat bedrag hoort. Reist mee tot in de adviseurmail,
+   * want nul euro met "weet ik niet" erachter is een actiepunt en nul euro met
+   * "ik betaal niets" erachter niet.
+   */
+  terugleverkosten_antwoord?: TerugleverAntwoord;
   product: Product;
   /** true als het opslagpotentieel groter is dan het grootste product met bekende prijs */
   product_is_begrensd: boolean;
@@ -288,6 +346,7 @@ export function bereken(a: Antwoorden): Uitkomst {
     besparing_eur: besparingBand,
     terugverdientijd_jaar: tvt,
     waarde_per_kwh: rond(waarde, 3),
+    terugleverkosten_antwoord: a.terugleverkosten_antwoord,
     terugleverkosten_eur:
       typeof a.terugleverkosten === "number" && a.terugleverkosten > 0
         ? a.terugleverkosten

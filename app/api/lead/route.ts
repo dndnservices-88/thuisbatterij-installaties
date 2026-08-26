@@ -96,6 +96,7 @@ export async function POST(request: Request) {
       besparing_midden: gecontroleerd?.besparing_eur.midden ?? null,
       terugverdientijd_midden: gecontroleerd?.terugverdientijd_jaar.midden ?? null,
       terugleverkosten: gecontroleerd?.terugleverkosten_eur ?? null,
+      terugleverkosten_antwoord: gecontroleerd?.terugleverkosten_antwoord ?? null,
       rekenversie: gecontroleerd?.rekenversie ?? null,
       komt_overeen: controle.komt_overeen,
       ...(controle.opmerking ? { opmerking: controle.opmerking } : {}),

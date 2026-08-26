@@ -1,6 +1,6 @@
 "use client";
 
-import { euro, getal, jaren, type Berekening } from "@/lib/calc";
+import { euro, getal, jaren, type Berekening, type TerugleverAntwoord } from "@/lib/calc";
 import { REKEN_DISCLAIMER } from "@/lib/site";
 import { Knop } from "@/components/ui/Knop";
 import { Claim } from "@/components/ui/Claim";
@@ -18,14 +18,21 @@ import Terugleverkosten from "./Terugleverkosten";
 export default function Resultaat({
   uitkomst,
   onDoorgaan,
-  terugleverkosten,
+  antwoord,
   onTerugleverkosten,
 }: {
   uitkomst: Berekening & { route: string };
   onDoorgaan: () => void;
-  terugleverkosten: number | undefined;
-  onTerugleverkosten: (n: number | undefined) => void;
+  antwoord: TerugleverAntwoord | undefined;
+  onTerugleverkosten: (id: TerugleverAntwoord) => void;
 }) {
+  // Alleen bij "weet ik niet". Wie heeft geantwoord dat hij niets betaalt, hoeft
+  // niet te horen dat het korter kan als hij wél betaalt — dat is geen hulp maar
+  // een duwtje richting een gunstiger antwoord, en dat is precies wat we niet
+  // doen. Bij "weet ik niet" is het wél informatie: die bezoeker kijkt naar een
+  // getal dat op een onbekende staat en hoort te weten welke kant dat op valt.
+  const onbekend = antwoord === "weet_niet" || antwoord === undefined;
+
   return (
     <div>
       <p className="mb-s2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-paars">
@@ -57,6 +64,14 @@ export default function Resultaat({
           waarde={`${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(
             uitkomst.terugverdientijd_jaar.max
           )} jaar`}
+          onder={
+            onbekend ? (
+              <>
+                Gerekend zonder terugleverkosten, want die wist je niet. Betaal je ze wel, dan valt
+                dit korter uit — pas het hieronder aan.
+              </>
+            ) : undefined
+          }
         />
       </dl>
 
@@ -67,7 +82,7 @@ export default function Resultaat({
         </p>
       )}
 
-      <Terugleverkosten waarde={terugleverkosten} onKies={onTerugleverkosten} />
+      <Terugleverkosten antwoord={antwoord} onKies={onTerugleverkosten} />
 
       {/* De peildatum loopt via het claimregister en niet via een losse
           if-vergelijking. Zolang R2 niet is afgetekend valt de hele zin weg —

@@ -184,8 +184,9 @@ export function WaaromNu() {
       </div>
       <p className="mt-s4 max-w-lees text-[0.85rem] text-n-500">
         Sommige leveranciers brengen daarnaast terugleverkosten in rekening. Die verschillen per
-        leverancier en per contract; in de berekening rekenen we daar behoudend mee, zodat de
-        uitkomst niet mooier wordt dan hij is.
+        leverancier en per contract, en ze wegen zwaar in de uitkomst — daarom vragen we ernaar in
+        plaats van er zelf iets voor in te vullen. Weet je het niet, dan rekenen we met nul, zodat
+        de uitkomst niet mooier wordt dan hij is.
       </p>
     </Sectie>
   );
@@ -587,7 +588,7 @@ export function SlotCta({ variant }: { variant: Variant }) {
         <div className="max-w-lees">
           <h2>Reken het eerst uit</h2>
           <p className="mt-s3 text-[1.02rem] leading-relaxed text-n-200">
-            Vijf vragen, twee minuten. Je krijgt een eerlijke bandbreedte te zien — en als een
+            Zes vragen, twee minuten. Je krijgt een eerlijke bandbreedte te zien — en als een
             thuisbatterij bij jou niet uitkomt, staat dat er gewoon.
           </p>
           <div className="mt-s4 max-w-[420px]">

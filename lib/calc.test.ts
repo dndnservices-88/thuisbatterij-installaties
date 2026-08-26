@@ -1,6 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { bereken, CONSTANTEN, doorzet, ASSORTIMENT, waardePerKwh } from "./calc.ts";
+import {
+  bereken,
+  CONSTANTEN,
+  doorzet,
+  ASSORTIMENT,
+  tariefVoorAntwoord,
+  TERUGLEVERKOSTEN_OPTIES,
+  waardePerKwh,
+} from "./calc.ts";
 import type { Antwoorden } from "./calc.ts";
 
 /**
@@ -130,6 +138,50 @@ test("terugleverkosten staan conservatief op nul zolang ze onbevestigd zijn", ()
   const u = bereken(basis);
   if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("verkeerde route");
   assert.equal(u.terugleverkosten_eur, 0);
+});
+
+test("'weet ik niet' rekent nooit gunstiger dan nul", () => {
+  // De kern van vraag 5. Wie niet weet of hij terugleverkosten betaalt, mag
+  // geen cent voordeel krijgen van die onwetendheid: dan zouden wij een tarief
+  // invullen dat de bezoeker nooit heeft opgegeven, en dat is precies de
+  // aanname die hier niet gemaakt mag worden. Verdwijnt deze test, dan kan
+  // iemand "weet ik niet" ooit op een gemiddeld markttarief zetten omdat dat
+  // "realistischer" oogt — en dan verkoopt de calculator een belofte.
+  const onbekend = bereken({
+    ...basis,
+    terugleverkosten: tariefVoorAntwoord("weet_niet"),
+    terugleverkosten_antwoord: "weet_niet",
+  });
+  const niets = bereken({
+    ...basis,
+    terugleverkosten: tariefVoorAntwoord("geen"),
+    terugleverkosten_antwoord: "geen",
+  });
+  if (onbekend.route === "huurder" || onbekend.route === "geen_pv") return assert.fail("route");
+  if (niets.route === "huurder" || niets.route === "geen_pv") return assert.fail("route");
+  assert.equal(onbekend.terugleverkosten_eur, 0);
+  assert.equal(onbekend.besparing_eur.midden, niets.besparing_eur.midden);
+  assert.equal(onbekend.terugverdientijd_jaar.midden, niets.terugverdientijd_jaar.midden);
+  // Maar het antwoord zelf blijft wél te onderscheiden — daar hangt de zin in
+  // de adviseurmail aan.
+  assert.equal(onbekend.terugleverkosten_antwoord, "weet_niet");
+  assert.equal(niets.terugleverkosten_antwoord, "geen");
+});
+
+test("tariefVoorAntwoord geeft alleen bij een echt tarief een bedrag terug", () => {
+  assert.equal(tariefVoorAntwoord(undefined), undefined);
+  assert.equal(tariefVoorAntwoord("geen"), undefined);
+  assert.equal(tariefVoorAntwoord("weet_niet"), undefined);
+  assert.equal(tariefVoorAntwoord("laag"), 0.109);
+  assert.equal(tariefVoorAntwoord("hoog"), 0.182);
+});
+
+test("de vier keuzes bij vraag 5 zijn uniek en kennen geen verzonnen bedragen", () => {
+  const ids = TERUGLEVERKOSTEN_OPTIES.map((o) => o.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const o of TERUGLEVERKOSTEN_OPTIES) {
+    assert.ok([0, 0.109, 0.182].includes(o.waarde), `${o.id} heeft een onbekend bedrag`);
+  }
 });
 
 test("de schakelaar kan de som alleen gunstiger maken, nooit ongunstiger", () => {

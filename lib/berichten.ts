@@ -125,11 +125,20 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
   const belAlinea = `Wij bellen je ${DAGDEELTEKST[lead.dagdeel]}. Het gesprek duurt ongeveer tien minuten. Komt het dan toch niet uit? Laat het weten via ${CONTACT.email} of ${CONTACT.telefoon}, dan verzetten we het.`;
 
   // centen() en niet euro(): het gaat hier om een tarief van tienden van centen.
-  const disclaimerAlinea = `${REKEN_DISCLAIMER}${peildatumzin()}${
+  //
+  // Drie mogelijke slotzinnen, want nul euro betekent twee verschillende dingen.
+  // Wie zei dat hij niets betaalt, hoeft niets te doen. Wie het niet wist, kijkt
+  // naar een uitkomst die nog kan meevallen — en dat hoort hij te weten vóór het
+  // telefoongesprek, niet erna. Dat is geen verkooppraatje maar de enige
+  // openstaande onbekende in zijn eigen som.
+  const tlkZin =
     tlk > 0
       ? ` Je hebt zelf aangegeven dat je ${centen(tlk)} per teruggeleverde kWh aan terugleverkosten betaalt; daar is bovenstaande mee doorgerekend. Wij controleren dat aan de telefoon.`
-      : ""
-  }`;
+      : u && u.route !== "huurder" && u.route !== "geen_pv" && u.terugleverkosten_antwoord === "weet_niet"
+        ? " Je wist niet of je terugleverkosten betaalt, dus hebben we met nul gerekend — de voorzichtige kant. Zoek het voor het gesprek even op je jaarafrekening op: betaal je ze wel, dan valt bovenstaande gunstiger uit."
+        : "";
+
+  const disclaimerAlinea = `${REKEN_DISCLAIMER}${peildatumzin()}${tlkZin}`;
 
   const tekst = [
     ...alinea,
@@ -204,15 +213,20 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
       "Let op: de entiteit in lib/site.ts staat nog op [ENTITEIT]. De bevestigingsmail noemt daarom alleen Limsolar."
     );
   }
-  if (
-    u &&
-    u.route !== "huurder" &&
-    u.route !== "geen_pv" &&
-    u.terugleverkosten_eur > 0
-  ) {
-    waarschuwingen.push(
-      `De klant heeft zelf terugleverkosten van ${centen(u.terugleverkosten_eur)} per kWh aangezet. Trek dat als eerste na — hierop staat of valt de terugverdientijd.`
-    );
+  if (u && u.route !== "huurder" && u.route !== "geen_pv") {
+    if (u.terugleverkosten_eur > 0) {
+      waarschuwingen.push(
+        `De klant heeft zelf terugleverkosten van ${centen(u.terugleverkosten_eur)} per kWh opgegeven. Trek dat als eerste na — hierop staat of valt de terugverdientijd.`
+      );
+    } else if (u.terugleverkosten_antwoord === "weet_niet") {
+      // Nul euro met "weet ik niet" erachter is iets heel anders dan nul euro
+      // met "ik betaal niets" erachter: in het eerste geval ligt er een vraag
+      // open die de uitkomst nog gunstiger kan maken, in het tweede niet. In de
+      // som schelen ze niets, aan de telefoon alles.
+      waarschuwingen.push(
+        "De klant weet niet of hij terugleverkosten betaalt. Er is met nul gerekend, de voorzichtige kant. Vraag naar zijn jaarafrekening — betaalt hij ze wel, dan valt de terugverdientijd fors korter uit dan wat hij op het scherm zag."
+      );
+    }
   }
 
   // De kop boven de bedragen. Deze regels komen uit de server-side

@@ -1,6 +1,6 @@
 "use client";
 
-import { jaren, type Berekening } from "@/lib/calc";
+import { jaren, type Berekening, type TerugleverAntwoord } from "@/lib/calc";
 import { Knop } from "@/components/ui/Knop";
 import Terugleverkosten from "./Terugleverkosten";
 
@@ -40,7 +40,7 @@ export function GeenPv() {
       <p>
         Er blijft één route over: laden op goedkope uren van een dynamisch contract. Dat kan
         rendabel zijn, maar de uitkomst hangt sterk af van je verbruikspatroon en van de
-        prijsverschillen per dag. Daar doen wij geen belofte over op basis van vijf vragen.
+        prijsverschillen per dag. Daar doen wij geen belofte over op basis van zes vragen.
       </p>
       <p>
         Overweeg je zonnepanelen én een batterij? Kom dan terug zodra je weet hoeveel panelen er
@@ -51,26 +51,31 @@ export function GeenPv() {
 }
 
 /**
- * Let op de terugleverkosten-schakelaar hieronder. Die hoort juist hier te
- * staan, want dit is het enige scherm waar hij de uitkomst kan omdraaien: zet
- * de bezoeker hem aan, dan zakt de terugverdientijd en verspringt de route van
- * "niet rendabel" naar een gewone lead. Andersom kan niet — de schakelaar maakt
+ * Let op het terugleverkostenblok hieronder. Dat hoort juist hier te staan, want
+ * dit is het enige scherm waar het antwoord de uitkomst kan omdraaien: zet de
+ * bezoeker een tarief aan, dan zakt de terugverdientijd en verspringt de route
+ * van "niet rendabel" naar een gewone lead. Andersom kan niet — een tarief maakt
  * de som alleen gunstiger.
  *
  * Dat is geen achterdeurtje om dit scherm te omzeilen. Als iemand werkelijk
  * € 0,18 per teruggeleverde kWh betaalt, was "niet rendabel" simpelweg het
  * verkeerde antwoord, en dan hoort dat rechtgezet te worden.
+ *
+ * Sinds terugleverkosten vraag 5 zijn, komt hier bijna niemand meer terecht die
+ * alleen door onze eigen standaardaanname is afgewezen. Dat was de reden voor de
+ * verhuizing: dit scherm hoort te gaan over te weinig verbruik of te weinig
+ * panelen, niet over een tarief dat we nooit gevraagd hadden.
  */
 export function NietRendabel({
   uitkomst,
   onDoorgaan,
-  terugleverkosten,
+  antwoord,
   onTerugleverkosten,
 }: {
   uitkomst: Berekening;
   onDoorgaan: () => void;
-  terugleverkosten: number | undefined;
-  onTerugleverkosten: (n: number | undefined) => void;
+  antwoord: TerugleverAntwoord | undefined;
+  onTerugleverkosten: (id: TerugleverAntwoord) => void;
 }) {
   return (
     <Uitleg titel="Bij jouw verbruik komt een thuisbatterij krap uit">
@@ -84,7 +89,14 @@ export function NietRendabel({
         weinig over om op te slaan. Wordt je verbruik hoger — een warmtepomp, een elektrische auto,
         thuiswerken — dan verandert dit beeld.
       </p>
-      <Terugleverkosten waarde={terugleverkosten} onKies={onTerugleverkosten} />
+      {(antwoord === "weet_niet" || antwoord === undefined) && (
+        <p>
+          Eén ding kan dit beeld nog kantelen: je wist niet of je terugleverkosten betaalt, dus
+          hebben we met nul gerekend. Doe je dat wél, dan kan deze uitkomst er heel anders uitzien.
+          Kijk het na op je jaarafrekening en pas het hieronder aan.
+        </p>
+      )}
+      <Terugleverkosten antwoord={antwoord} onKies={onTerugleverkosten} />
       <div className="pt-s2">
         <Knop soort="zacht" onClick={onDoorgaan}>
           Toch even laten meekijken?

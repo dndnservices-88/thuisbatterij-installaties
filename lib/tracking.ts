@@ -41,10 +41,12 @@ export type CalcEvent =
   | "calc_step_3"
   | "calc_step_4"
   | "calc_step_5"
+  | "calc_step_6"
   | "calc_result"
-  // Bezoeker zet zelf terugleverkosten aan op het resultaatscherm. Los event,
-  // omdat het twee dingen tegelijk meet: hoe vaak mensen weten wat hun
-  // leverancier rekent, en of een gunstigere uitkomst tot meer leads leidt.
+  // Bezoeker herziet zijn terugleverkosten ná het resultaat. Los event naast
+  // calc_step_5, want het meet iets anders: stap 5 zegt wat mensen antwoordden
+  // op de vraag, dit zegt of ze dat antwoord terugdraaien zodra ze het getal
+  // zien. Loopt dit vol, dan deugt de vraagtekst van stap 5 niet.
   | "calc_terugleverkosten"
   | "calc_disqualified_huur"
   | "calc_no_pv"

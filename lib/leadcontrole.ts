@@ -1,4 +1,10 @@
-import { bereken, type Antwoorden, type Contract, type Uitkomst } from "./calc";
+import {
+  bereken,
+  TERUGLEVER_ANTWOORDEN,
+  type Antwoorden,
+  type Contract,
+  type Uitkomst,
+} from "./calc";
 
 /**
  * Hercontrole van de berekening, server-side.
@@ -93,6 +99,17 @@ export function leesAntwoorden(snapshot: unknown): Antwoorden | null {
   const terugleverkosten =
     typeof tlk === "number" && [0.109, 0.182].includes(tlk) ? tlk : undefined;
 
+  // Het antwoord op vraag 5 komt uit dezelfde snapshot en verdient dezelfde
+  // achterdocht: alleen de vier ids die wij zelf aanbieden komen erdoor. Het
+  // stuurt de rekensom niet aan — dat doet het bedrag hierboven — maar het komt
+  // wél als zin in de adviseurmail terecht, en een verzonnen waarde zou daar een
+  // onzinnig actiepunt van maken.
+  const ta = o.terugleverkosten_antwoord;
+  const terugleverkosten_antwoord =
+    typeof ta === "string" && TERUGLEVER_ANTWOORDEN.includes(ta)
+      ? (ta as Antwoorden["terugleverkosten_antwoord"])
+      : undefined;
+
   return {
     zonnepanelen: o.zonnepanelen as Antwoorden["zonnepanelen"],
     panelen,
@@ -100,6 +117,7 @@ export function leesAntwoorden(snapshot: unknown): Antwoorden | null {
     contract: o.contract as Contract,
     eigenaar: o.eigenaar,
     terugleverkosten,
+    terugleverkosten_antwoord,
   };
 }
 
