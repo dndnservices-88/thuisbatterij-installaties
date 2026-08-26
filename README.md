@@ -177,6 +177,11 @@ niets — alle componenten zijn gedeeld.
 ## Wat er nog moet gebeuren voordat dit live kan
 
 - [ ] Claimregister afgetekend door Limsolar, bewijsstukken gearchiveerd
+- [ ] **Keurmerken (op kantoor regelen, ligt op papier):** deelnamebewijs SGZE met
+      geldigheidsdatum en het InstallQ-certificaat op naam van Limsolar B.V.,
+      plus de beeldmerkvoorwaarden van InstallQ. Scans in
+      `06 - Legal & Compliance/Bewijs/`, daarna V1 en V7 in `lib/claims.ts` op
+      `bevestigd`. Tot die tijd staan de logo's wél in de preview en niet live.
 - [ ] Tarieven bevestigd mét peildatum → `CONSTANTEN` en `PEILDATUM_TARIEVEN` bij
 - [ ] Assortiment met werkelijke prijzen → `ASSORTIMENT` aanvullen
 - [ ] Consenttekst juridisch nagelezen
@@ -193,7 +198,7 @@ niets — alle componenten zijn gedeeld.
 - [ ] Google Ads-conversie in testmodus geregistreerd, met `transaction_id` in het
       veld Transactie-ID
 - [ ] `UITKOMST_TOKEN` gezet en `UITKOMST_WEBHOOK_URL` naar het CRM doorgemeten
-- [ ] Drie importconversieacties aangemaakt, "verbeterde conversies voor leads"
+- [ ] Twee importconversieacties aangemaakt, "verbeterde conversies voor leads"
       uit — anders verwacht Google gehashte e-mailadressen in plaats van klik-ID's
 - [ ] Bevestigingsmail ingericht (staat nog niet in deze codebase)
 - [ ] Logo, iconen en foto's geplaatst
