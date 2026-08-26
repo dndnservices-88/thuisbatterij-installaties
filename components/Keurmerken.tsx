@@ -3,7 +3,6 @@ import { CLAIMS, isLive, mag, type ClaimId } from "@/lib/claims";
 
 import sgze from "@/public/beeld/keurmerk-sgze.webp";
 import installq from "@/public/beeld/keurmerk-installq.webp";
-import warmtefonds from "@/public/beeld/keurmerk-warmtefonds.webp";
 
 /**
  * De keurmerkenstrip, onderin het paarse heroblok.
@@ -20,12 +19,12 @@ import warmtefonds from "@/public/beeld/keurmerk-warmtefonds.webp";
  * eis, en beweging die je niet kunt stoppen is voor sommige mensen fysiek
  * vervelend.
  *
- * ⚠️ ALLES HIERONDER IS VOORBEELD. Geen van deze drie merken is aangetoond,
- * en dus staat elk van de drie in het claimregister op "open". Gevolg: in de
- * preview zie je ze met een gele markering, en zodra NEXT_PUBLIC_LIVE=true is
- * rendert deze balk helemaal niet. Dat is precies de afspraak "dit moeten we
- * later allemaal aanpassen als we live gaan" — hier afgedwongen in code in
- * plaats van op een lijstje.
+ * ⚠️ ALLES HIERONDER IS VOORBEELD. Geen van beide merken is aangetoond, en dus
+ * staan ze allebei in het claimregister op "open". Gevolg: in de preview zie je
+ * ze met een gele rand, en zodra NEXT_PUBLIC_LIVE=true is rendert deze strip
+ * helemaal niet. Dat is precies de afspraak "dit moeten we later allemaal
+ * aanpassen als we live gaan" — hier afgedwongen in code in plaats van op een
+ * lijstje.
  *
  * Waarom die hardheid: een keurmerklogo is een zwaardere mededeling dan de zin
  * eronder. Het oog leest een beeldmerk als een oordeel van een onafhankelijke
@@ -38,13 +37,13 @@ import warmtefonds from "@/public/beeld/keurmerk-warmtefonds.webp";
  * Elk merk heeft daarom twee bewijsstukken nodig, niet één: dat de aansluiting
  * bestaat én dat de houder Limsolar toestaat het beeldmerk te voeren.
  *
- * En één inhoudelijk punt dat geen juridische maar een merkkeuze is: het
- * Nationaal Warmtefonds is géén keurmerk. Het is een financier. Zijn logo in
- * een rij keurmerken zetten zegt tegen de bezoeker "wij zijn gekeurd door drie
- * partijen", terwijl het in werkelijkheid zegt "je kunt hiervoor lenen". In een
- * lopende rij is dat verschil helemaal niet meer te maken — een scheidingslijn
- * die voorbijschuift leest niemand als scheiding. Daarom zit het Warmtefonds
- * niet in de strip maar staat het eronder als zin. Zie ook regel V8.
+ * Het Nationaal Warmtefonds hoort hier niet en stond er ook niet in: dat is een
+ * financier en geen keurmerk. Zijn logo in een rij keurmerken zetten zegt tegen
+ * de bezoeker "wij zijn gekeurd door drie partijen", terwijl het in
+ * werkelijkheid zegt "je kunt hiervoor lenen" — en in een lopende rij is dat
+ * verschil helemaal niet meer te maken, want een scheidingslijn die
+ * voorbijschuift leest niemand als scheiding. Het staat nu onder de uitkomst
+ * van de rekensom, zie components/Financiering.tsx en regel V8.
  */
 
 type Merk = {
@@ -52,6 +51,8 @@ type Merk = {
   bron: StaticImageData;
   /** Wat het merk is. Komt in de alt-tekst én in het onderschrift. */
   naam: string;
+  /** Alleen voor de voorbeeldregel, die op één regel moet passen. */
+  kort: string;
   /** Wat het merk over Limsolar zégt. Bewust kort en letterlijk. */
   zegt: string;
 };
@@ -61,22 +62,15 @@ const KEURMERKEN: Merk[] = [
     claim: "V1",
     bron: sgze,
     naam: "Stichting Garantiefonds ZonneEnergie",
+    kort: "SGZE",
     zegt: "Aanbetaling en garantie gedekt",
   },
   {
     claim: "V7",
     bron: installq,
     naam: "InstallQ",
+    kort: "InstallQ",
     zegt: "Erkend installatiebedrijf",
-  },
-];
-
-const FINANCIERS: Merk[] = [
-  {
-    claim: "V8",
-    bron: warmtefonds,
-    naam: "Nationaal Warmtefonds",
-    zegt: "Financiering mogelijk",
   },
 ];
 
@@ -117,9 +111,8 @@ function Merkje({ merk }: { merk: Merk }) {
 
 export default function Keurmerken() {
   const keurmerken = KEURMERKEN.filter((m) => mag(m.claim));
-  const financiers = FINANCIERS.filter((m) => mag(m.claim));
   // Niets aangetoond, niets te tonen. Geen lege balk, geen restrand.
-  if (keurmerken.length + financiers.length === 0) return null;
+  if (keurmerken.length === 0) return null;
 
   // Welke er in de preview geel omrand staan. Alleen de merken uit de strip:
   // het Warmtefonds staat eronder als zin en heeft dus geen rand, en die er
@@ -136,15 +129,16 @@ export default function Keurmerken() {
   const rij = Array.from({ length: 6 }, () => keurmerken).flat();
 
   return (
-    <section aria-label="Aansluitingen en erkenningen" className="mt-s5">
+    <section aria-label="Aansluitingen en erkenningen" className="mt-s4">
+      {/* Bewust kort gehouden, op één regel. Deze regel bestaat alleen in de
+          preview, en elke regel die hij extra wordt maakt het paarse blok in
+          de preview hoger dan het live wordt — dan beoordeel je een indeling
+          die niemand ooit te zien krijgt. */}
       {!isLive && open.length > 0 && (
-        <p className="mb-s3 text-[0.8rem] text-n-200">
-          <span className="placeholder-label">Voorbeeld</span> Geel omrand ={" "}
-          nog niet aangetoond:{" "}
-          {open.map((m) => `${m.claim} ${m.naam}`).join(", ")}. Deze logo&apos;s
-          staan er alleen om de vormgeving te beoordelen; in live-modus verdwijnt
-          de strip van de pagina en komt pas terug als per merk zowel de
-          aansluiting als de toestemming voor het beeldmerk op papier staat.
+        <p className="mb-s2 text-[0.8rem] text-n-200">
+          <span className="placeholder-label">Voorbeeld</span> Geel omrand = nog
+          niet aangetoond ({open.map((m) => `${m.claim} ${m.kort}`).join(", ")});
+          live verdwijnt de strip tot het bewijs binnen is.
         </p>
       )}
 
@@ -162,19 +156,6 @@ export default function Keurmerken() {
             ))}
           </div>
         </div>
-      )}
-
-      {/* Geen verwijzing naar een pagina die er nog niet is: een link naar
-          "de voorwaarden" die nergens heen gaat is zelf al een misleidende
-          mededeling. Zodra V8 op bevestigd staat, hoort hier de vindplaats
-          van rente, looptijd en voorwaarden te staan. */}
-      {financiers.length > 0 && (
-        <p className="mt-s3 max-w-lees text-[0.8rem] text-n-200">
-          Financiering via het Nationaal Warmtefonds is mogelijk. Dat is een
-          financier en geen keurmerk, en daarom staat het niet tussen de merken
-          hierboven. Of het in jouw situatie kan, en tegen welke voorwaarden,
-          bespreken we in het adviesgesprek.
-        </p>
       )}
     </section>
   );

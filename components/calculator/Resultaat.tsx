@@ -4,6 +4,7 @@ import { euro, getal, jaren, type Berekening } from "@/lib/calc";
 import { REKEN_DISCLAIMER } from "@/lib/site";
 import { Knop } from "@/components/ui/Knop";
 import { Claim } from "@/components/ui/Claim";
+import Financiering from "@/components/Financiering";
 import Terugleverkosten from "./Terugleverkosten";
 
 /**
@@ -76,6 +77,11 @@ export default function Resultaat({
       <p className="mt-s4 text-[0.85rem] leading-relaxed text-n-500">
         {REKEN_DISCLAIMER} <Claim id="R2" />
       </p>
+
+      {/* Hier en niet in de hero: het geldbezwaar ontstaat op het moment dat er
+          een bedrag op het scherm staat, en dat is precies nu. Vóór de knop,
+          zodat het weggenomen is voordat er om gegevens wordt gevraagd. */}
+      <Financiering />
 
       <div className="mt-s4 rounded-merk bg-n-100 p-s3">
         <h4 className="mb-s2 font-kop text-[1.05rem] font-semibold">Wat je hierboven níét ziet</h4>

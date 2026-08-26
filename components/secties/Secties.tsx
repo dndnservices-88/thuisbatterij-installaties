@@ -13,8 +13,11 @@ import type { Variant } from "@/lib/varianten";
 // voorkomt dat de pagina verspringt terwijl het beeld laadt.
 import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
 // Aangeleverd door de ontwerper: 1400×1900 met echte transparantie, zonder
-// tekst en zonder slagschaduw. Hier alleen bijgesneden op de figuur (er zat
-// 285 pixels leegte boven het hoofd) en opgeslagen als webp — 1160×1623, 147 kB.
+// tekst en zonder slagschaduw. Hier bijgesneden op de figuur (er zat 285 pixels
+// leegte boven het hoofd) en daarna afgesneden op de gereedschapsgordel, want
+// voluit bepaalde hij in zijn eentje de hoogte van het paarse vlak. Wat telt
+// blijft staan: gezicht, helm, duim en het logo op de borst. Resultaat
+// 1160×1298, 99 kB.
 //
 // Twee dingen bewust zo:
 // — Doorzichtig en niet met het paars ingevuld. Webp met verlies verschuift een
@@ -56,8 +59,19 @@ export function Hero({ variant }: { variant: Variant }) {
     // heeft zijn eigen ruimte al, en die twee bij elkaar duwden de kop en de
     // knop onnodig ver naar beneden. Onderin is de ruimte juist kleiner geworden
     // omdat de keurmerkenstrip die plek nu vult.
-    <section className="bg-paars px-s3 pb-s5 pt-s3 text-n-000">
-      <div className="mx-auto grid max-w-inhoud items-center gap-s4 lg:grid-cols-[1.05fr_0.95fr]">
+    <section className="bg-paars px-s3 pb-s4 pt-s3 text-n-000">
+      {/* items-start, niet items-center en ook niet items-end. De tekstkolom is
+          305 pixels hoog en de beeldkolom 454; met centreren wordt dat verschil
+          gelijk verdeeld en staat er 75 pixels lucht bóven de H1, met
+          items-end zelfs 149. Beide duwen de kop naar beneden zonder dat er
+          iets in die ruimte staat. Bovenaan uitlijnen zet de kop direct onder
+          de kopbalk; het verschil valt nu onder de knop, waar het als aanloop
+          naar de keurmerkenstrip leest.
+
+          Let op: dít maakt het blok niet korter — de hoogte wordt bepaald door
+          de langste kolom, en dat is het beeld. Korter wordt het alleen door
+          het beeld kleiner te tonen, zie hieronder. */}
+      <div className="mx-auto grid max-w-inhoud items-start gap-s4 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <h1 className="max-w-[18ch]">{variant.hero.kop}</h1>
           <p className="mt-s4 max-w-lees text-[1.05rem] leading-relaxed text-n-200">
@@ -73,20 +87,28 @@ export function Hero({ variant }: { variant: Variant }) {
           </div>
         </div>
 
-        {/* Op mobiel staat het beeld onder de knop: de actie blijft boven de vouw. */}
-        <figure className="order-last">
+        {/* Op mobiel staat het beeld onder de knop: de actie blijft boven de vouw.
+            self-end zodat de monteur op de onderrand van de rij staat als de
+            tekstkolom ooit de langste wordt — bij een langere kop in een andere
+            campagnevariant gebeurt dat vanzelf. */}
+        <figure className="order-last self-end">
           {/* Geen afgeronde hoeken en geen kader: de achtergrond is doorzichtig,
               dus elke rand zou juist zichtbaar maken waar het beeld ophoudt.
-              Het bronbestand is nu 1160 pixels breed, dus 460 tonen kan zonder
-              dat hij zacht wordt — ook op een scherm met dubbele puntdichtheid
-              blijft er marge over. */}
+              380 en niet 460: het beeld is de langste kolom en bepaalt daarmee
+              in zijn eentje de hoogte van het paarse vlak. Elke pixel die het
+              hier korter wordt, is een pixel die de calculator omhoog schuift —
+              en dat is het hele doel. 460 gaf een blok van 739 pixels op een
+              scherm van 729, dus er paste niets meer onder; 380 brengt het op
+              612 in de preview en 574 live. Het bronbestand is 1160 breed, dus
+              op 380 blijft er ook op een scherm met dubbele puntdichtheid ruim
+              marge over. */}
           <Image
             src={fotoMonteurHero}
             alt="Een installateur met helm en gereedschapsgordel steekt zijn duim op"
             priority
             placeholder="blur"
-            sizes="(min-width: 1024px) 460px, 300px"
-            className="mx-auto h-auto w-full max-w-[300px] lg:max-w-[460px]"
+            sizes="(min-width: 1024px) 380px, 260px"
+            className="mx-auto h-auto w-full max-w-[260px] lg:max-w-[380px]"
           />
           <figcaption className="mt-s2 text-center text-[0.78rem] text-n-200">
             {SFEERBEELD}
