@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Sectie, Kop } from "@/components/ui/Sectie";
 import { KnopLink } from "@/components/ui/Knop";
 import { Claim, AlsClaim } from "@/components/ui/Claim";
+import Cookievoorkeuren from "@/components/ui/Cookievoorkeuren";
 import { isLive, mag } from "@/lib/claims";
 import { ATTRIBUTIE, ENTITEIT, LIMSOLAR } from "@/lib/site";
 import type { Variant } from "@/lib/varianten";
@@ -578,6 +579,7 @@ export function Footer() {
           <Link href="/privacyverklaring" className="underline">
             Privacyverklaring
           </Link>
+          <Cookievoorkeuren />
           {!isLive && (
             <span className="placeholder">
               Algemene voorwaarden

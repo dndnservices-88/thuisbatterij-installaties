@@ -136,7 +136,10 @@ export async function bewaarLead(lead: Lead): Promise<void> {
  * we het stil over — de lead zelf mag hier nooit op stuklopen.
  */
 export async function stuurNaarMetaCapi(lead: Lead): Promise<void> {
-  const pixel = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  // Alleen de serverzijdige variabele. De NEXT_PUBLIC-variant is per 26 aug 2026
+  // vervallen: de browserpixel hangt nu in Tag Manager en het dataset-ID hoeft
+  // dus niet meer mee de bundel in.
+  const pixel = process.env.META_PIXEL_ID;
   const token = process.env.META_CAPI_TOKEN;
   if (!pixel || !token) return;
 

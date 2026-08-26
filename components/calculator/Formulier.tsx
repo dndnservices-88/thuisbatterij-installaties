@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Antwoorden, Uitkomst } from "@/lib/calc";
 import { CONSENT } from "@/lib/site";
 import { leesAttributie } from "@/lib/klikids";
-import { meld, meldAdsConversie } from "@/lib/tracking";
+import { meld } from "@/lib/tracking";
 import { Knop } from "@/components/ui/Knop";
 import { Veld, GetalVeld } from "@/components/ui/Veld";
 
@@ -99,9 +99,14 @@ export default function Formulier({
       });
       if (!res.ok) throw new Error(await res.text());
 
-      // Zelfde event_id als de server meestuurt, anders telt Meta dubbel.
-      meld("Lead", { event_id: eventId, zacht });
-      meldAdsConversie(eventId);
+      // Eén gebeurtenis, drie afnemers. GA4, de Google Ads-conversie en de
+      // Meta-tag hangen in GTM allemaal onder dit ene event.
+      //
+      // event_id en transaction_id zijn hetzelfde nummer onder twee namen, en
+      // dat is met opzet: Meta ontdubbelt op event_id tegen wat de server via
+      // de CAPI stuurt, Google Ads ontdubbelt op transaction_id tegen een
+      // herladen bedankscherm. Eén bron, dus ze kunnen niet uit elkaar lopen.
+      meld("Lead", { event_id: eventId, transaction_id: eventId, zacht });
       setScherm("klaar");
     } catch (e) {
       setServerfout(
