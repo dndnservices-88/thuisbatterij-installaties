@@ -14,7 +14,7 @@
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-export const REKENVERSIE = "1.1.0";
+export const REKENVERSIE = "1.2.0";
 export const PEILDATUM_TARIEVEN = "24 augustus 2026";
 
 /**
@@ -35,6 +35,9 @@ export const TARIEFBRONNEN = [
   "Terugleververgoeding: € 0,01–0,165 per leverancier, gemiddeld € 0,04–0,09 (energievergelijk.nl, overstappen.nl, aug 2026). Wij rekenen met € 0,07, dus aan de hoge kant van het gemiddelde.",
   "Terugleverkosten: € 0,109 (laagste, Budget Energie) tot € 0,182 (hoogste, Eneco) bij vaste contracten in 2026; veel leveranciers rekenen niets. Standaard € 0,00 omdat wij niet vragen wie de leverancier is.",
   "Dynamische marge: gerealiseerde spread € 0,15–0,25 per kWh bij actief gestuurde handel (slimster.nl, aug 2026). Wij rekenen met € 0,05, omdat actieve sturing een aparte dienst is die Limsolar nog niet toezegt.",
+  "Dagaandeel verbruik: aandeel van het jaarverbruik dat in de zonuren valt. Wij rekenen met een derde. Marktonderzoek 26 aug 2026 (Milieu Centraal, 1KOMMA5) — nog geen puntbron, daarom voorzichtig gekozen en als voorstel gemarkeerd.",
+  "Cycli per jaar: 300–500 bij gewoon zelfverbruik, tot 700 bij actieve handel (1komma5.nl, zonneplan.nl, aug 2026). Wij rekenen met 250, onder de onderkant van de band, als korting voor de wintermaanden waarin er geen zonoverschot is.",
+  "Handelsmarge restcycli: netto € 0,05–0,08 per kWh in 2026 na energiebelasting en leverancierskosten (energienerds.nl, aug 2026). Wij rekenen met € 0,05, de onderkant, en alleen bij een dynamisch contract.",
 ] as const;
 
 export const CONSTANTEN = {
@@ -42,7 +45,37 @@ export const CONSTANTEN = {
   OPBRENGST_PER_PANEEL: 380,
   /** Aandeel opwek dat zonder batterij direct wordt verbruikt. Brandbook: "ongeveer 35%". */
   ZELFVERBRUIK_ZONDER_BATTERIJ: 0.35,
-  /** Volledige laadcycli per jaar, realistisch voor Nederland. */
+  /**
+   * Aandeel van het JAARVERBRUIK dat in de zonuren valt — de bovengrens van wat
+   * je zonder batterij direct kunt verbruiken.
+   *
+   * Waarom deze constante bestaat: tot rekenversie 1.1.0 was het directe verbruik
+   * gelijk aan 35% van de OPWEK. Bij veel panelen leverde dat onzin op — een
+   * tweepersoonshuishouden met 20 panelen zou 2.660 van zijn 3.000 kWh overdag
+   * verbruiken, terwijl iedereen op zijn werk zit. Gevolg: elk extra paneel maakte
+   * de batterij in ons model slechter, precies omgekeerd aan de werkelijkheid, en
+   * huishoudens met veel panelen kregen ten onrechte het niet-rendabel-scherm.
+   *
+   * Je kunt niet meer zon direct verbruiken dan je overdag daadwerkelijk gebruikt.
+   * Vandaar min(35% van de opwek, dagaandeel × jaarverbruik).
+   */
+  DAGAANDEEL_VERBRUIK: 1 / 3,
+  /**
+   * Volledige laadcycli per jaar.
+   *
+   * De markt noemt 300–500 (1komma5, Zonneplan). Wij blijven bewust op 250, en
+   * dat is geen slordigheid maar de enige plek waar seizoen in dit model zit:
+   * van november tot februari is er nauwelijks zonoverschot om op te slaan,
+   * terwijl overschot en avondbehoefte hierboven jaartotalen zijn. Zonder die
+   * korting zou de calculator een batterij twaalf maanden per jaar laten werken
+   * op zon die er vier maanden niet is.
+   *
+   * Op 300 gezet tijdens rekenversie 1.2.0 en weer teruggedraaid: bij het
+   * probleemprofiel (2-3 personen, veel panelen) verandert het niets, omdat de
+   * avondbehoefte daar de begrenzing is en niet de cycli. Het maakte alleen
+   * grote huishoudens gunstiger, en dat is precies de groep waar we het minst
+   * hoeven op te rekken.
+   */
   CYCLI_PER_JAAR: 250,
   /** Bruikbare fractie van de nominale capaciteit (ontlaaddiepte). */
   BRUIKBARE_FRACTIE: 0.9,
@@ -78,6 +111,17 @@ export const CONSTANTEN = {
    * en zolang Limsolar die niet levert, mag hij niet in deze som zitten.
    */
   DYN_MARGE: 0.05,
+  /**
+   * €/kWh op de cycli die ná de zon-opslag overblijven: laden van het net bij een
+   * lage prijs, ontladen bij een hoge. Alleen bij een dynamisch contract, want
+   * zonder uurprijzen bestaat die marge niet.
+   *
+   * Netto € 0,05–0,08 in 2026 na energiebelasting en leverancierskosten; wij
+   * nemen de onderkant. Bewust laag gehouden om een tweede reden: deze post daalt
+   * naarmate meer batterijen meedoen, en hij vereist actieve sturing. Zolang
+   * Limsolar die sturing niet levert, hoort hij klein te blijven.
+   */
+  HANDELSMARGE_RESTCYCLI: 0.05,
   /** Vaste spreiding rond elke uitkomst. Resultaat wordt NOOIT als één getal getoond. */
   BANDBREEDTE_ONDER: 0.8,
   BANDBREEDTE_BOVEN: 1.2,
@@ -97,6 +141,17 @@ export const CONSTANTEN = {
  * Middenklasse en premium ontbreken bewust: hun prijzen zijn nog niet bekend
  * (claimregister P3). Zodra ze er zijn, hier toevoegen — verder hoeft er niets
  * te veranderen.
+ *
+ * Merk en type staan hier alleen als interne herkomst van de prijs. Ze worden
+ * NERGENS aan de bezoeker getoond: het resultaatscherm en beide mails noemen
+ * uitsluitend een passende capaciteit. De calculator geeft een schatting van de
+ * besparing met een standaard thuisbatterij die bij het profiel past, niet een
+ * offerte voor één toestel. Limsolar voert alle gangbare maten; welke het wordt,
+ * bepaalt de verkoper aan tafel.
+ *
+ * OPEN: prijslijst per capaciteit is toegezegd (26 aug 2026, nog niet ontvangen).
+ * Zodra die er is, komen de overige maten hier bij en schaalt kiesProduct mee.
+ * Tot die tijd rekent de calculator met de instapmaat, wat de voorzichtige kant is.
  */
 export type Product = {
   id: string;
@@ -109,8 +164,9 @@ export type Product = {
 
 export const ASSORTIMENT: Product[] = [
   {
-    id: "marstek-venus-e-3-0",
-    naam: "Marstek Venus E 3.0",
+    id: "instap-10-kwh",
+    /** Intern label. Wordt niet getoond; herkomst van de prijs is Marstek Venus E 3.0. */
+    naam: "Instapmodel 10 kWh",
     capaciteit_kwh: 10.24,
     prijs_eur: 3999,
     prijs_status: "toegezegd", // claimregister P2
@@ -226,6 +282,13 @@ export type Berekening = {
   avondbehoefte_kwh: number;
   opslagpotentieel_kwh: number;
   extra_zelfverbruik_kwh: Band;
+  /**
+   * Doorzet die na de eigen zonnestroom overblijft en alleen met een dynamisch
+   * contract nog iets opbrengt. Bij een vast contract altijd 0.
+   */
+  restcycli_kwh: number;
+  /** Wat die restcycli opleveren. Apart van de zon-besparing, zodat de adviseur ziet waar het geld vandaan komt. */
+  handelsopbrengst_eur: number;
   besparing_eur: Band;
   terugverdientijd_jaar: Band;
   waarde_per_kwh: number;
@@ -248,6 +311,8 @@ export type Berekening = {
   product_is_begrensd: boolean;
   jaarverbruik_kwh: number;
   aantal_panelen: number;
+  /** Het gekozen contract. Bepaalt of de restcycli iets opleveren, dus hoort het in de snapshot. */
+  contract: Contract;
   rekenversie: string;
   constanten: typeof CONSTANTEN;
 };
@@ -315,7 +380,13 @@ export function bereken(a: Antwoorden): Uitkomst {
   const verbruik = jaarverbruik(a.verbruik);
 
   const opwek = panelen * CONSTANTEN.OPBRENGST_PER_PANEEL;
-  const direct = opwek * CONSTANTEN.ZELFVERBRUIK_ZONDER_BATTERIJ;
+  // Dubbele begrenzing op het directe verbruik: nooit meer dan 35% van de opwek,
+  // en nooit meer dan wat er overdag daadwerkelijk verbruikt wordt. Zie
+  // DAGAANDEEL_VERBRUIK voor waarom die tweede grens er sinds 1.2.0 staat.
+  const direct = Math.min(
+    opwek * CONSTANTEN.ZELFVERBRUIK_ZONDER_BATTERIJ,
+    verbruik * CONSTANTEN.DAGAANDEEL_VERBRUIK,
+  );
   const overschot = Math.max(0, opwek - direct);
   const avondbehoefte = Math.max(0, verbruik - direct);
   // Dubbele begrenzing: overschot én werkelijke avondbehoefte. Alleen naar het
@@ -323,10 +394,21 @@ export function bereken(a: Antwoorden): Uitkomst {
   const opslagpotentieel = Math.min(overschot, avondbehoefte);
 
   const { product, begrensd } = kiesProduct(opslagpotentieel);
-  const opslagWerkelijk = Math.min(opslagpotentieel, doorzet(product)) * CONSTANTEN.RENDEMENT;
+
+  // De batterij heeft een jaarbudget aan doorzet. Eerst gaat dat naar eigen
+  // zonnestroom, want die kWh is het meest waard. Wat daarna overblijft kan
+  // alleen nog verdiend worden door van het net te laden bij een lage prijs —
+  // en dat kan uitsluitend met uurtarieven, dus met een dynamisch contract.
+  const budget = doorzet(product);
+  const opslagWerkelijk = Math.min(opslagpotentieel, budget) * CONSTANTEN.RENDEMENT;
+  const restcycli_kwh =
+    a.contract === "dynamisch"
+      ? Math.max(0, budget - opslagpotentieel) * CONSTANTEN.RENDEMENT
+      : 0;
 
   const waarde = waardePerKwh(a.contract, a.terugleverkosten);
-  const besparing = opslagWerkelijk * waarde;
+  const handelsopbrengst = restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI;
+  const besparing = opslagWerkelijk * waarde + handelsopbrengst;
 
   const besparingBand = band(besparing);
   // Terugverdientijd draait om: hoge besparing = korte tijd.
@@ -343,6 +425,8 @@ export function bereken(a: Antwoorden): Uitkomst {
     avondbehoefte_kwh: rond(avondbehoefte),
     opslagpotentieel_kwh: rond(opslagpotentieel),
     extra_zelfverbruik_kwh: band(opslagWerkelijk),
+    restcycli_kwh: rond(restcycli_kwh),
+    handelsopbrengst_eur: rond(handelsopbrengst),
     besparing_eur: besparingBand,
     terugverdientijd_jaar: tvt,
     waarde_per_kwh: rond(waarde, 3),
@@ -355,6 +439,7 @@ export function bereken(a: Antwoorden): Uitkomst {
     product_is_begrensd: begrensd,
     jaarverbruik_kwh: verbruik,
     aantal_panelen: panelen,
+    contract: a.contract,
     rekenversie: REKENVERSIE,
     constanten: CONSTANTEN,
   };

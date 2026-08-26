@@ -40,9 +40,14 @@ export const CLAIMS = {
   },
   P6: {
     id: "P6",
-    tekst: "Marstek Venus E 3.0, 10,24 kWh",
+    // Bewust geen merk en type meer sinds 26 aug 2026. De calculator schat de
+    // besparing met een standaard thuisbatterij die bij het profiel past;
+    // Limsolar voert alle gangbare maten en kiest het toestel aan tafel. Een
+    // merknaam op het resultaatscherm zou een toezegging zijn die de verkoper
+    // daarna niet meer kan bijstellen.
+    tekst: "Rekenvoorbeeld met een standaard thuisbatterij van deze capaciteit",
     status: "open",
-    nodig: "Datasheet van de fabrikant",
+    nodig: "Prijslijst per capaciteit van Limsolar (toegezegd 26 aug 2026)",
   },
 
   // ── Reken- en besparingsclaims ───────────────────────────────────────────

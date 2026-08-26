@@ -96,6 +96,14 @@ export function NietRendabel({
           Kijk het na op je jaarafrekening en pas het hieronder aan.
         </p>
       )}
+      {uitkomst.contract !== "dynamisch" && (
+        <p>
+          Er is nog een tweede route. Met een dynamisch contract kan de batterij ook laden op uren
+          dat stroom goedkoop is en dat later gebruiken. Dat levert bovenop het opslaan van je eigen
+          zon nog iets op, en het maakt deze som korter. Wij rekenen die opbrengst voorzichtig mee en
+          alleen als je zo&apos;n contract hebt — dus reken op de bandbreedte, niet op de bovenkant.
+        </p>
+      )}
       <Terugleverkosten antwoord={antwoord} onKies={onTerugleverkosten} />
       <div className="pt-s2">
         <Knop soort="zacht" onClick={onDoorgaan}>

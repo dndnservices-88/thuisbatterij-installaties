@@ -52,7 +52,7 @@ test("case A — de persona uit het brandbook blijft een lead en komt niet op 13
     u.terugverdientijd_jaar.midden < CONSTANTEN.GRENS_NIET_RENDABEL,
     `middenwaarde ${u.terugverdientijd_jaar.midden} moet onder de grens blijven`
   );
-  assert.equal(u.product.id, "marstek-venus-e-3-0");
+  assert.equal(u.product.id, "instap-10-kwh");
 });
 
 test("case A blijft een lead met een marge van minstens een jaar tot de grens", () => {
@@ -219,4 +219,97 @@ test("de waarde per kWh is leveringstarief min terugleververgoeding plus terugle
   );
   assert.equal(waardePerKwh("dynamisch"), waardePerKwh("vast") + CONSTANTEN.DYN_MARGE);
   assert.equal(waardePerKwh("onbekend"), waardePerKwh("vast"));
+});
+
+// ── Rekenversie 1.2.0: de monotonie-fout ────────────────────────────────────
+// Tot 1.1.0 was het directe verbruik 35% van de OPWEK. Daardoor kromp de
+// avondbehoefte bij elk extra paneel en werd de terugverdientijd langer naarmate
+// iemand meer zon had. Een tweepersoonshuishouden met 16 panelen kwam op 26,8
+// jaar en werd afgewezen, terwijl hetzelfde huishouden met 8 panelen op 12,1 jaar
+// uitkwam en wél een lead werd. Die tests hieronder pinnen vast dat dit niet kan
+// terugkeren — ze horen te breken vóór een bezoeker het merkt.
+
+test("meer panelen maakt de terugverdientijd nooit langer", () => {
+  let vorige = Infinity;
+  for (const aantal of [6, 8, 10, 12, 14, 16, 18, 20, 24]) {
+    const u = bereken({ ...basis, panelen: { soort: "aantal", aantal } });
+    if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+    assert.ok(
+      u.terugverdientijd_jaar.midden <= vorige + 0.05,
+      `${aantal} panelen geeft ${u.terugverdientijd_jaar.midden} jaar, meer dan de ${vorige} bij minder panelen`
+    );
+    vorige = Math.min(vorige, u.terugverdientijd_jaar.midden);
+  }
+});
+
+test("het directe verbruik is nooit groter dan het dagdeel van het jaarverbruik", () => {
+  // De kern van de correctie in één regel: je kunt overdag niet meer zon
+  // gebruiken dan je overdag stroom verbruikt, hoeveel panelen je ook legt.
+  for (const aantal of [6, 12, 20, 30, 40]) {
+    const u = bereken({ ...basis, panelen: { soort: "aantal", aantal } });
+    if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+    assert.ok(
+      u.direct_verbruik_kwh <= u.jaarverbruik_kwh * CONSTANTEN.DAGAANDEEL_VERBRUIK + 1,
+      `${aantal} panelen: direct ${u.direct_verbruik_kwh} van jaarverbruik ${u.jaarverbruik_kwh}`
+    );
+    assert.ok(u.avondbehoefte_kwh > 0, `${aantal} panelen laat geen avondbehoefte over`);
+  }
+});
+
+test("het profiel dat ten onrechte werd afgewezen, is nu een lead", () => {
+  // 12 panelen, 2-3 personen, vast contract, geen terugleverkosten. Kwam in
+  // 1.1.0 op 13,9–20,8 jaar en dus in het niet-rendabel-scherm. Dit is de
+  // grootste groep huiseigenaren met zonnepanelen in Nederland.
+  const u = bereken({
+    zonnepanelen: "ja",
+    panelen: { soort: "aantal", aantal: 12 },
+    verbruik: { soort: "huishouden", grootte: "2-3" },
+    contract: "vast",
+    eigenaar: true,
+  });
+  assert.equal(u.route, "lead");
+  if (u.route !== "lead") return;
+  assert.ok(
+    u.terugverdientijd_jaar.midden < CONSTANTEN.GRENS_NIET_RENDABEL,
+    `middenwaarde ${u.terugverdientijd_jaar.midden}`
+  );
+});
+
+test("restcycli leveren alleen iets op bij een dynamisch contract", () => {
+  const vast = bereken({ ...basis, contract: "vast" });
+  const onbekend = bereken({ ...basis, contract: "onbekend" });
+  const dyn = bereken({ ...basis, contract: "dynamisch" });
+  for (const u of [vast, onbekend]) {
+    if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+    assert.equal(u.restcycli_kwh, 0);
+    assert.equal(u.handelsopbrengst_eur, 0);
+  }
+  if (dyn.route === "huurder" || dyn.route === "geen_pv") return assert.fail("route");
+  assert.ok(dyn.restcycli_kwh >= 0);
+  assert.equal(
+    dyn.handelsopbrengst_eur,
+    Math.round(dyn.restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI)
+  );
+});
+
+test("de handelspost blijft klein genoeg om geen verkooppraatje te worden", () => {
+  // Bewaking, geen berekening. Zou deze post ooit meer dan een kwart van de
+  // besparing worden, dan verkopen we handel in plaats van zelfverbruik — en
+  // handel is precies de post waar de ACM op let en die na 2027 kan wegvallen.
+  for (const aantal of [8, 12, 16, 20]) {
+    const u = bereken({ ...basis, contract: "dynamisch", panelen: { soort: "aantal", aantal } });
+    if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+    const aandeel = u.handelsopbrengst_eur / u.besparing_eur.midden;
+    assert.ok(aandeel < 0.25, `${aantal} panelen: handel is ${Math.round(aandeel * 100)}% van de besparing`);
+  }
+});
+
+test("de contractkeuze reist mee in de snapshot", () => {
+  // De adviseurmail leunt hierop: zonder contract in de uitkomst weet de
+  // verkoper niet of het handelsbedrag in de som zat.
+  for (const contract of ["vast", "dynamisch", "onbekend"] as const) {
+    const u = bereken({ ...basis, contract });
+    if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+    assert.equal(u.contract, contract);
+  }
 });

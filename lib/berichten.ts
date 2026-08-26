@@ -227,6 +227,18 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
         "De klant weet niet of hij terugleverkosten betaalt. Er is met nul gerekend, de voorzichtige kant. Vraag naar zijn jaarafrekening — betaalt hij ze wel, dan valt de terugverdientijd fors korter uit dan wat hij op het scherm zag."
       );
     }
+    // Twee kanten van dezelfde post. Bij een vast contract laten we geld liggen
+    // dat de klant zou kunnen pakken; bij een dynamisch contract zit er een
+    // bedrag in de som dat alleen klopt als er ook echt gestuurd wordt.
+    if (u.contract === "dynamisch" && u.restcycli_kwh > 0) {
+      waarschuwingen.push(
+        `In de som zit ${euro(u.handelsopbrengst_eur)} per jaar uit ${getal(u.restcycli_kwh)} kWh restcycli: laden op goedkope uren. Dat geldt alleen mét actieve sturing. Kan Limsolar dat niet leveren, noem dit bedrag dan niet aan de telefoon.`
+      );
+    } else if (u.contract !== "dynamisch") {
+      waarschuwingen.push(
+        "De klant heeft geen dynamisch contract, dus er is niets gerekend voor laden op goedkope uren. Overweegt hij over te stappen, dan valt de terugverdientijd korter uit."
+      );
+    }
   }
 
   // De kop boven de bedragen. Deze regels komen uit de server-side
