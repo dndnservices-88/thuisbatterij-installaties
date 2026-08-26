@@ -4,6 +4,7 @@ import { Sectie, Kop } from "@/components/ui/Sectie";
 import { KnopLink } from "@/components/ui/Knop";
 import { Claim, AlsClaim } from "@/components/ui/Claim";
 import Cookievoorkeuren from "@/components/ui/Cookievoorkeuren";
+import Keurmerken from "@/components/Keurmerken";
 import { isLive, mag } from "@/lib/claims";
 import { ATTRIBUTIE, ENTITEIT, LIMSOLAR } from "@/lib/site";
 import type { Variant } from "@/lib/varianten";
@@ -11,12 +12,18 @@ import type { Variant } from "@/lib/varianten";
 // Statische imports: Next kent daardoor de afmetingen, zet ze in de HTML en
 // voorkomt dat de pagina verspringt terwijl het beeld laadt.
 import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
-// Uitgesneden uit de merkbanner, met een doorzichtige achtergrond. Niet met het
-// paars ingevuld: webp met verlies verschuift een egaal vlak met een punt of
-// twee, en dat zie je op een groot vlak nét als een blok. Met alpha kan er geen
-// naad ontstaan, want de sectie schijnt er zelf doorheen. De slogan uit de
-// banner nemen we niet mee: die staat links al als echte tekst, wisselt mee per
-// campagne, blijft leesbaar op een telefoon en is vindbaar voor Google.
+// Aangeleverd door de ontwerper: 1400×1900 met echte transparantie, zonder
+// tekst en zonder slagschaduw. Hier alleen bijgesneden op de figuur (er zat
+// 285 pixels leegte boven het hoofd) en opgeslagen als webp — 1160×1623, 147 kB.
+//
+// Twee dingen bewust zo:
+// — Doorzichtig en niet met het paars ingevuld. Webp met verlies verschuift een
+//   egaal vlak met een punt of twee, en dat zie je op een groot vlak nét als een
+//   blok. Met alpha kan er geen naad ontstaan, want de sectie schijnt er zelf
+//   doorheen. Dat blijft ook zo als het paars ooit wijzigt.
+// — Geen tekst in het beeld. De slogan staat links als echte tekst: die wisselt
+//   mee per campagne (variant.hero.kop), blijft leesbaar op een telefoon en is
+//   vindbaar voor Google. Tekst in een plaatje kan geen van drieën.
 import fotoMonteurHero from "@/public/beeld/monteur-hero.webp";
 import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
 import fotoVerdeelkast from "@/public/beeld/verdeelkast-1600.webp";
@@ -45,8 +52,12 @@ export function Hero({ variant }: { variant: Variant }) {
     // Geen <header> meer: dat is de witte kopbalk met het logo. Deze sectie zet
     // daar het paarse vlak tegenaan, zodat er een harde scheiding ontstaat
     // tussen afzender en aanbod.
-    <section className="bg-paars px-s3 pb-s6 pt-s5 text-n-000">
-      <div className="mx-auto grid max-w-inhoud items-center gap-s5 lg:grid-cols-[1.05fr_0.95fr]">
+    // Weinig lucht boven de kop (s3 in plaats van s5): de witte kopbalk erboven
+    // heeft zijn eigen ruimte al, en die twee bij elkaar duwden de kop en de
+    // knop onnodig ver naar beneden. Onderin is de ruimte juist kleiner geworden
+    // omdat de keurmerkenstrip die plek nu vult.
+    <section className="bg-paars px-s3 pb-s5 pt-s3 text-n-000">
+      <div className="mx-auto grid max-w-inhoud items-center gap-s4 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <h1 className="max-w-[18ch]">{variant.hero.kop}</h1>
           <p className="mt-s4 max-w-lees text-[1.05rem] leading-relaxed text-n-200">
@@ -64,23 +75,31 @@ export function Hero({ variant }: { variant: Variant }) {
 
         {/* Op mobiel staat het beeld onder de knop: de actie blijft boven de vouw. */}
         <figure className="order-last">
-          {/* Geen afgeronde hoeken en geen kader: het paars in het beeld is
-              hetzelfde paars als de sectie, dus elke rand zou juist zichtbaar
-              maken waar het beeld ophoudt. De maximale breedte is bewust
-              beperkt — het bronbestand is 680 pixels breed en verder oprekken
-              maakt hem zichtbaar zacht op een scherm met hoge resolutie. */}
+          {/* Geen afgeronde hoeken en geen kader: de achtergrond is doorzichtig,
+              dus elke rand zou juist zichtbaar maken waar het beeld ophoudt.
+              Het bronbestand is nu 1160 pixels breed, dus 460 tonen kan zonder
+              dat hij zacht wordt — ook op een scherm met dubbele puntdichtheid
+              blijft er marge over. */}
           <Image
             src={fotoMonteurHero}
             alt="Een installateur met helm en gereedschapsgordel steekt zijn duim op"
             priority
             placeholder="blur"
-            sizes="(min-width: 1024px) 420px, 320px"
-            className="mx-auto h-auto w-full max-w-[320px] lg:max-w-[420px]"
+            sizes="(min-width: 1024px) 460px, 300px"
+            className="mx-auto h-auto w-full max-w-[300px] lg:max-w-[460px]"
           />
           <figcaption className="mt-s2 text-center text-[0.78rem] text-n-200">
             {SFEERBEELD}
           </figcaption>
         </figure>
+      </div>
+
+      {/* Buiten het raster van twee kolommen, zodat de strip de volle breedte
+          van het paarse vlak pakt. Binnen de sectie en niet erna, want zodra hij
+          op een eigen witte balk staat is het weer een blok dat de hero omlaag
+          duwt — precies wat we hier weghalen. */}
+      <div className="mx-auto max-w-inhoud">
+        <Keurmerken />
       </div>
     </section>
   );

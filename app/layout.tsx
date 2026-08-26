@@ -14,7 +14,6 @@ import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
 import Bouwstatus from "@/components/Bouwstatus";
 import Kopbalk from "@/components/Kopbalk";
-import Keurmerken from "@/components/Keurmerken";
 import { kiesVariant } from "@/lib/varianten";
 
 export const metadata: Metadata = {
@@ -104,10 +103,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
         <Bouwstatus variant={variant} />
         <Kopbalk />
-        {/* Staat in de layout en niet in page.tsx, omdat de balk bij de afzender
-            hoort en niet bij het aanbod: hij moet op élke pagina onder het logo
-            staan, ook op de privacyverklaring. */}
-        <Keurmerken />
+        {/* De keurmerkenstrip stond hier, als witte balk tussen kopbalk en hero.
+            Hij staat nu onderin het paarse heroblok (zie Hero in Secties.tsx).
+            Reden: als losse balk duwde hij de kop en de knop een balkhoogte naar
+            beneden zonder zelf iets te verkopen. Gevolg van de verhuizing is wel
+            dat de strip niet meer op de losse pagina's staat — daar is dat geen
+            verlies, want op de privacyverklaring hoeft niemand overtuigd te
+            worden. */}
         {children}
         <ConsentBanner />
       </body>

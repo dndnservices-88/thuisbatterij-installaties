@@ -34,6 +34,18 @@ const config: Config = {
       spacing: { s1: "4px", s2: "8px", s3: "16px", s4: "24px", s5: "40px", s6: "64px" },
       borderRadius: { merk: "12px" },
       maxWidth: { inhoud: "1120px", lees: "68ch" },
+      // De lopende keurmerkenstrip. De rij staat twee keer achter elkaar in de
+      // HTML; door precies de helft op te schuiven sluit het einde naadloos aan
+      // op het begin en zie je geen sprong. Van links naar rechts, dus van -50%
+      // naar 0. Traag met opzet: 40 seconden, want het is een vertrouwensbalk
+      // en geen carrousel — hij mag het oog niet wegtrekken bij de knop.
+      keyframes: {
+        strip: {
+          from: { transform: "translateX(-50%)" },
+          to: { transform: "translateX(0)" },
+        },
+      },
+      animation: { strip: "strip 40s linear infinite" },
     },
   },
   plugins: [],
