@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { DOMEIN } from "@/lib/site";
 import logoKleur from "@/public/beeld/logo-kleur.webp";
 
 /**
@@ -17,6 +16,13 @@ import logoKleur from "@/public/beeld/logo-kleur.webp";
  * hero eronder; geel is de accentkleur uit het brandbook en houdt stand tegen
  * zowel wit als paars. Dit is de enige plek waar geel als vlak wordt gebruikt —
  * als tekstkleur mag het nooit (1,18:1 op wit).
+ *
+ * De regel "thuisbatterij-installaties.nl" onder het logo is eruit. Die stond er
+ * omdat de bezoeker uit een advertentie komt en het domein moet herkennen, maar
+ * het nieuwe woordmerk schrijft THUISBATTERIJ INSTALLATIES al voluit op twee
+ * regels. Een derde regel die vrijwel hetzelfde zegt maakte de balk alleen maar
+ * hoger, en elke pixel hier duwt de calculator verder onder de vouw. Netto is de
+ * balk nu 16 pixels korter ondanks het grotere logo.
  */
 export default function Kopbalk() {
   return (
@@ -27,19 +33,17 @@ export default function Kopbalk() {
           className="inline-block"
           aria-label="Thuisbatterij Installaties, naar de startpagina"
         >
+          {/* Groter dan de 38 van hiervoor. Het woordmerk staat sinds de nieuwe
+              bestanden op twee regels: de verhouding ging van 8:1 naar 4:1. Op
+              38 pixels hoog wordt elke tekstregel 15 pixels, en dat is te klein
+              om als afzender te werken. Op 48 is het 19. */}
           <Image
             src={logoKleur}
             alt="Thuisbatterij Installaties"
             priority
-            sizes="340px"
-            className="h-[30px] w-auto sm:h-[38px]"
+            sizes="200px"
+            className="h-[38px] w-auto sm:h-[48px]"
           />
-          {/* Het woordmerk zegt dit ook al. De URL staat er toch onder omdat de
-              bezoeker uit een advertentie komt en het domein moet herkennen —
-              vandaar klein en grijs, als onderschrift en niet als tweede logo. */}
-          <span className="mt-s1 block text-[0.72rem] tracking-[0.06em] text-n-500 sm:text-[0.8rem]">
-            {DOMEIN}
-          </span>
         </Link>
       </div>
     </header>

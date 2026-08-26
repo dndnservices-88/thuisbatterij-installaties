@@ -616,11 +616,14 @@ export function Footer() {
   return (
     <footer className="bg-paars-donker px-s3 py-s5 text-n-200">
       <div className="mx-auto max-w-inhoud text-[0.85rem] leading-relaxed">
+        {/* 34 en niet 22. Het woordmerk staat sinds de nieuwe bestanden op twee
+            regels in plaats van één; op 22 pixels hoog is elke regel 8 pixels
+            en dan is het geen woordmerk meer maar een vlekje. */}
         <Image
           src={logoWit}
           alt="Thuisbatterij Installaties"
-          sizes="220px"
-          className="mb-s4 h-[22px] w-auto"
+          sizes="140px"
+          className="mb-s4 h-[34px] w-auto"
         />
         {/* De uitvoerder staat er altijd bij, ook als de eigen entiteit nog niet
             gekozen is. Wat een bezoeker minimaal moet kunnen zien is wie de
