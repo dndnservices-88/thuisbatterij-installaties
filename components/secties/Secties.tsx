@@ -11,6 +11,13 @@ import type { Variant } from "@/lib/varianten";
 // Statische imports: Next kent daardoor de afmetingen, zet ze in de HTML en
 // voorkomt dat de pagina verspringt terwijl het beeld laadt.
 import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
+// Uitgesneden uit de merkbanner, met een doorzichtige achtergrond. Niet met het
+// paars ingevuld: webp met verlies verschuift een egaal vlak met een punt of
+// twee, en dat zie je op een groot vlak nét als een blok. Met alpha kan er geen
+// naad ontstaan, want de sectie schijnt er zelf doorheen. De slogan uit de
+// banner nemen we niet mee: die staat links al als echte tekst, wisselt mee per
+// campagne, blijft leesbaar op een telefoon en is vindbaar voor Google.
+import fotoMonteurHero from "@/public/beeld/monteur-hero.webp";
 import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
 import fotoVerdeelkast from "@/public/beeld/verdeelkast-1600.webp";
 import fotoMonteur from "@/public/beeld/monteur-portret-1600.webp";
@@ -57,16 +64,21 @@ export function Hero({ variant }: { variant: Variant }) {
 
         {/* Op mobiel staat het beeld onder de knop: de actie blijft boven de vouw. */}
         <figure className="order-last">
+          {/* Geen afgeronde hoeken en geen kader: het paars in het beeld is
+              hetzelfde paars als de sectie, dus elke rand zou juist zichtbaar
+              maken waar het beeld ophoudt. De maximale breedte is bewust
+              beperkt — het bronbestand is 680 pixels breed en verder oprekken
+              maakt hem zichtbaar zacht op een scherm met hoge resolutie. */}
           <Image
-            src={fotoBatterij}
-            alt="Een thuisbatterij tegen een buitenmuur, met de omvormer erboven"
+            src={fotoMonteurHero}
+            alt="Een installateur met helm en gereedschapsgordel steekt zijn duim op"
             priority
             placeholder="blur"
-            sizes="(min-width: 1024px) 46vw, 100vw"
-            className="h-auto w-full rounded-merk"
+            sizes="(min-width: 1024px) 420px, 320px"
+            className="mx-auto h-auto w-full max-w-[320px] lg:max-w-[420px]"
           />
-          <figcaption className="mt-s2 text-[0.78rem] text-n-200">
-            {SFEERBEELD} Welk systeem bij jou past, bepalen we in het adviesgesprek.
+          <figcaption className="mt-s2 text-center text-[0.78rem] text-n-200">
+            {SFEERBEELD}
           </figcaption>
         </figure>
       </div>
@@ -216,6 +228,22 @@ export function Aanbod() {
       >
         Wat het kost
       </Kop>
+
+      {/* De batterijfoto stond eerst in de hero. Hier doet hij meer werk: naast
+          de prijs zie je waar je die prijs voor betaalt. */}
+      <figure className="mb-s4">
+        <Image
+          src={fotoBatterij}
+          alt="Een thuisbatterij tegen een buitenmuur, met de omvormer erboven"
+          placeholder="blur"
+          sizes="(min-width: 1024px) 1100px, 100vw"
+          className="h-auto w-full rounded-merk"
+        />
+        <figcaption className="mt-s2 text-[0.78rem] text-n-500">
+          {SFEERBEELD} Welk systeem bij jou past, bepalen we in het adviesgesprek.
+        </figcaption>
+      </figure>
+
       <div className="grid gap-s3 lg:grid-cols-2">
         <div className="rounded-merk border border-paars bg-paars-tint p-s4">
           <h3 className="text-paars">Instapmodel</h3>
