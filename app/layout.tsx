@@ -61,11 +61,52 @@ gtag('consent', 'default', {
  * Tag Manager. Eén container, en verder laadt de site zelf niets meer in: de
  * Meta Pixel, de Google-tag, GA4 en Clarity hangen er allemaal ín.
  *
- * Staat NEXT_PUBLIC_GTM_ID niet ingevuld, dan komt er geen snippet en meet de
- * site niets. Dat is de bedoeling zolang de container niet bestaat — een halve
- * meetopstelling is erger dan geen, want dan denk je dat je cijfers hebt.
+ * Twee grendels, niet één.
+ *
+ *  1. Zonder NEXT_PUBLIC_GTM_ID komt er geen snippet. Dat is de bedoeling
+ *     zolang de container niet bestaat — een halve meetopstelling is erger dan
+ *     geen, want dan denk je dat je cijfers hebt.
+ *
+ *  2. Mét een container-ID laadt de snippet alleen in productie. Zonder deze
+ *     tweede grendel meet elke preview-deploy mee in dezelfde property: elke
+ *     keer dat je zelf een testlead invult telt dat als conversie, en het
+ *     biedalgoritme leert van verkeer dat niet bestaat. Dat is niet achteraf te
+ *     repareren, want GA4 en Google Ads kennen geen "verwijder deze bron".
+ *
+ * Wil je bewust op een preview-deploy testen — GTM Voorbeeld-modus of Meta Test
+ * Events — zet dan NEXT_PUBLIC_GTM_IN_PREVIEW=true op díe omgeving, en haal hem
+ * daarna weg. Niet op Production zetten; daar doet hij niets en hij verbergt
+ * alleen wat er werkelijk aan staat.
  */
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
+
+/**
+ * Vercel vult dit met "production", "preview" of "development" — maar alléén als
+ * "Automatically expose System Environment Variables" aanstaat in de
+ * projectinstellingen. Staat dat uit, dan is deze waarde undefined en laadt de
+ * container ook in productie niet. Daarom hieronder een expliciete waarschuwing
+ * in plaats van stilte: dit is precies het soort fout dat je pas ontdekt als je
+ * na drie weken adverteren nul conversies blijkt te hebben.
+ */
+const OMGEVING = process.env.NEXT_PUBLIC_VERCEL_ENV;
+const GTM_AAN =
+  Boolean(GTM_ID) &&
+  (OMGEVING === "production" || process.env.NEXT_PUBLIC_GTM_IN_PREVIEW === "true");
+
+/**
+ * De omgeving gaat óók de dataLayer in, vóór de container laadt. Zo kun je in
+ * GTM elke trigger nog een keer afvangen op `omgeving equals production`. Twee
+ * sloten op dezelfde deur, want deze fout is niet terug te draaien.
+ */
+const MEETCONTEXT = `
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({ omgeving: ${JSON.stringify(OMGEVING ?? "onbekend")} });
+${
+  GTM_ID && !GTM_AAN && OMGEVING === undefined
+    ? `console.warn('Tag Manager laadt niet: NEXT_PUBLIC_VERCEL_ENV is leeg. Zet in Vercel onder Settings de systeemvariabelen aan, anders meet de productiesite niets.');`
+    : ""
+}
+`;
 
 // Functie en geen constante: anders staat het containeradres met de tekst
 // "undefined" erin sowieso in de bundel, ook in een bouw zonder container.
@@ -83,14 +124,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="nl">
       <head>
         <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />
-        {GTM_ID && <script dangerouslySetInnerHTML={{ __html: gtmSnippet(GTM_ID) }} />}
+        <script dangerouslySetInnerHTML={{ __html: MEETCONTEXT }} />
+        {GTM_AAN && GTM_ID && <script dangerouslySetInnerHTML={{ __html: gtmSnippet(GTM_ID) }} />}
       </head>
       <body>
         {/* De noscript-variant hoort direct achter de body-opening. Hij vangt
             bezoekers zonder JavaScript op; die tellen niet mee in GA4 maar wel
             in de paginaweergaven, en zonder dit blok mist Google Ads ze
             helemaal. */}
-        {GTM_ID && (
+        {GTM_AAN && GTM_ID && (
           <noscript>
             <iframe
               src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

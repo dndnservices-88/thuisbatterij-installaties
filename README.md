@@ -184,8 +184,15 @@ niets — alle componenten zijn gedeeld.
       `bevestigd`. Tot die tijd staan de logo's wél in de preview en niet live.
 - [ ] Tarieven bevestigd mét peildatum → `CONSTANTEN` en `PEILDATUM_TARIEVEN` bij
 - [ ] Assortiment met werkelijke prijzen → `ASSORTIMENT` aanvullen
-- [ ] Consenttekst juridisch nagelezen
-- [ ] Entiteitskeuze rond → `ENTITEIT` in `lib/site.ts` invullen
+- [ ] Consenttekst juridisch nagelezen — staat sinds 1 sep 2026 op v1.1 en noemt
+      beide partijen mét hun rol; de juridische toets is nog niet gedaan
+- [x] Entiteitskeuze rond → `ENTITEIT` in `lib/site.ts` ingevuld: Tjapz Alphen
+      B.V., KvK 90408616, gevoerd onder de handelsnaam Thuisbatterij-installaties
+- [ ] `CONTACT` compleet → e-mailadres en correspondentieadres staan erin, maar
+      `telefoon` is een **fictief** nummer tot het Rinkel-nummer gekocht is.
+      Daarom staan `telefoon_fictief` op true en `ingevuld` op false, en weigert
+      `lib/berichten.ts` de bevestigingsmail. Dat is de rem, niet een bug.
+      Zodra het nummer er is: nummer vervangen, beide vlaggen omzetten
 - [ ] Privacyverklaring en algemene voorwaarden juridisch getoetst
 - [ ] `LEAD_WEBHOOK_URL` ingesteld en met een testlead doorgemeten
 - [ ] GTM-container aangemaakt onder jouw eigen Google-account, ID in

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Sectie } from "@/components/ui/Sectie";
 import { Footer } from "@/components/secties/Secties";
-import { CONSENT, ENTITEIT, LIMSOLAR } from "@/lib/site";
+import { CONSENT, CONTACT, CONTACT_ADRES, ENTITEIT, ENTITEIT_VOLUIT, LIMSOLAR } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacyverklaring — Thuisbatterij Installaties",
@@ -33,7 +33,7 @@ export default function Privacy() {
             <p>
               De berekening en het eerste contact worden verzorgd door{" "}
               {ENTITEIT.ingevuld ? (
-                ENTITEIT.naam
+                ENTITEIT_VOLUIT
               ) : (
                 <span className="placeholder">
                   [ENTITEIT]<span className="placeholder-label">nog invullen</span>
@@ -105,11 +105,11 @@ export default function Privacy() {
             <p>
               Je mag opvragen welke gegevens we van je hebben, ze laten corrigeren of laten
               verwijderen, en bezwaar maken tegen het gebruik ervan. Stuur daarvoor een bericht naar{" "}
-              <span className="placeholder">
-                [contactadres]<span className="placeholder-label">nog invullen</span>
-              </span>
-              . Kom je er met ons niet uit, dan kun je een klacht indienen bij de Autoriteit
-              Persoonsgegevens.
+              <a href={`mailto:${CONTACT.email}`} className="text-paars underline">
+                {CONTACT.email}
+              </a>
+              , of schrijf ons op {CONTACT_ADRES}. Kom je er met ons niet uit, dan kun je een klacht
+              indienen bij de Autoriteit Persoonsgegevens.
             </p>
           </Blok>
         </div>

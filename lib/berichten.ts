@@ -1,6 +1,6 @@
 import { centen, euro, getal, jaren, type Uitkomst } from "./calc";
 import { CLAIMS, mag } from "./claims";
-import { CONTACT, ENTITEIT, LIMSOLAR, REKEN_DISCLAIMER, DOMEIN } from "./site";
+import { CONTACT, ENTITEIT, ENTITEIT_VOLUIT, LIMSOLAR, REKEN_DISCLAIMER, DOMEIN } from "./site";
 import type { Lead } from "./opslag";
 import type { Leadcontrole } from "./leadcontrole";
 
@@ -49,7 +49,7 @@ function attributieregel(): string {
   if (!ENTITEIT.ingevuld) {
     return `Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
   }
-  return `Advies en berekening door ${ENTITEIT.naam} (KvK ${ENTITEIT.kvk}). Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
+  return `Advies en berekening door ${ENTITEIT_VOLUIT}. Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
 }
 
 /** De peildatumzin, maar alleen als claimregister R2 is afgetekend. */
@@ -66,10 +66,12 @@ function peildatumzin(): string {
  */
 export function magBevestigingVersturen(): { mag: boolean; reden?: string } {
   if (!CONTACT.ingevuld) {
+    const waarom = CONTACT.telefoon_fictief
+      ? "CONTACT.telefoon in lib/site.ts is een plaatshouder (het Rinkel-nummer is nog niet gekocht). Een verzonnen nummer in een klantmail is erger dan geen mail."
+      : "CONTACT in lib/site.ts is nog niet compleet.";
     return {
       mag: false,
-      reden:
-        "CONTACT in lib/site.ts is nog niet ingevuld. Zonder adres om de toestemming in te trekken gaat er geen bevestiging naar een klant.",
+      reden: `${waarom} Zonder werkend contactpunt om de toestemming in te trekken gaat er geen bevestiging naar een klant.`,
     };
   }
   if (!process.env.MAIL_VAN) {
