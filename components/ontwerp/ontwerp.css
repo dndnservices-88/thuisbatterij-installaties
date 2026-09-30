@@ -1,0 +1,247 @@
+/*
+ * Ontwerpvoorbeeld (/ontwerp). Alles hieronder hangt onder .ontwerp of onder
+ * een eigen klassenaam, zodat de homepage er niets van merkt.
+ *
+ * Twee kleuren erbij, allebei afgeleid van het merkpaars en allebei getoetst op
+ * contrast (WCAG AA vraagt 4,5:1 voor gewone tekst):
+ *   #7B4FAF op wit   → 5,82:1  (tweede regel van een kop op een lichte achtergrond)
+ *   #CBB6E8 op paars → 8,56:1  (tweede regel van een kop op paars)
+ * Geel blijft voorbehouden aan de doorgaan-knop, zoals de specificatie eist.
+ */
+
+.ontwerp h2 {
+  font-size: clamp(2rem, 1.1rem + 2.6vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.06;
+}
+
+.ontwerp .kop-licht {
+  color: #7b4faf;
+}
+.ontwerp .kop-lila {
+  color: #cbb6e8;
+}
+
+/* ── Onthullen tijdens het scrollen ─────────────────────────────────────────
+ * Alleen verborgen als JavaScript draait (klasse js-onthul op <html>, gezet
+ * door een inline script bovenaan de pagina). Zonder JavaScript staat alles er
+ * gewoon: een pagina die leeg blijft omdat een script niet laadt, is erger dan
+ * een pagina zonder animatie. */
+.js-onthul .onthul {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--vertraging, 0ms);
+}
+.js-onthul .onthul.zichtbaar {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+@keyframes ontwerp-binnen {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.intro {
+  animation: ontwerp-binnen 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--vertraging, 0ms);
+}
+
+@keyframes ontwerp-drijf-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, 6%, 0) scale(1.12);
+  }
+}
+@keyframes ontwerp-drijf-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-10%, -4%, 0) scale(0.95);
+  }
+}
+.gloed-a {
+  animation: ontwerp-drijf-a 18s ease-in-out infinite;
+}
+.gloed-b {
+  animation: ontwerp-drijf-b 22s ease-in-out infinite;
+}
+
+@keyframes ontwerp-puls {
+  0% {
+    box-shadow: 0 0 0 0 rgba(203, 182, 232, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(203, 182, 232, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(203, 182, 232, 0);
+  }
+}
+.puls {
+  animation: ontwerp-puls 2.2s ease-out infinite;
+}
+
+/* ── Energiestroom (zon → panelen → batterij → huis) ──────────────────────── */
+@keyframes ontwerp-stroom {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+.stroom-lijn {
+  stroke-dasharray: 3 9;
+  animation: ontwerp-stroom 1.1s linear infinite;
+}
+
+@keyframes ontwerp-reis {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(430px);
+    opacity: 0;
+  }
+}
+.stroom-bol {
+  animation: ontwerp-reis 4.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: var(--vertraging, 0ms);
+}
+
+@keyframes ontwerp-draai {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.zon-stralen {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ontwerp-draai 24s linear infinite;
+}
+
+@keyframes ontwerp-laad {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  55% {
+    transform: scaleY(0.95);
+  }
+}
+.batterij-vulling {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: ontwerp-laad 4.2s ease-in-out infinite;
+}
+
+@keyframes ontwerp-licht {
+  0%,
+  45% {
+    fill-opacity: 0.15;
+  }
+  70%,
+  100% {
+    fill-opacity: 0.95;
+  }
+}
+.huis-raam {
+  animation: ontwerp-licht 4.2s ease-in-out infinite alternate;
+}
+
+/* ── Stappen (meelopende sectie) ──────────────────────────────────────────── */
+.stap-beeld {
+  transition:
+    opacity 0.7s ease,
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes ontwerp-golf {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.golf span {
+  display: block;
+  transform-origin: center;
+  animation: ontwerp-golf 1.1s ease-in-out infinite;
+}
+
+@keyframes ontwerp-balk {
+  from {
+    width: 18%;
+  }
+  to {
+    width: 62%;
+  }
+}
+.nep-voortgang {
+  animation: ontwerp-balk 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) infinite alternate;
+}
+
+/* ── Kaarten die iets optillen onder de muis ──────────────────────────────── */
+.til {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+@media (hover: hover) {
+  .til:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px -14px rgba(55, 0, 96, 0.35);
+  }
+}
+
+/* ── Wie beweging heeft uitgezet, krijgt geen beweging ────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .js-onthul .onthul,
+  .intro {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .gloed-a,
+  .gloed-b,
+  .puls,
+  .stroom-lijn,
+  .stroom-bol,
+  .zon-stralen,
+  .batterij-vulling,
+  .huis-raam,
+  .golf span,
+  .nep-voortgang {
+    animation: none !important;
+  }
+  .stroom-bol {
+    opacity: 0;
+  }
+  .stap-beeld,
+  .til {
+    transition: none !important;
+  }
+}

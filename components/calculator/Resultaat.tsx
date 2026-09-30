@@ -4,6 +4,7 @@ import { euro, getal, jaren, type Berekening, type TerugleverAntwoord } from "@/
 import { REKEN_DISCLAIMER } from "@/lib/site";
 import { Knop } from "@/components/ui/Knop";
 import { Claim } from "@/components/ui/Claim";
+import { TelOpBereik } from "@/components/ui/TelOp";
 import Financiering from "@/components/Financiering";
 import Terugleverkosten from "./Terugleverkosten";
 
@@ -49,7 +50,15 @@ export default function Resultaat({
         />
         <Kaart
           label="Indicatieve besparing per jaar"
-          waarde={`${euro(uitkomst.besparing_eur.min)} – ${euro(uitkomst.besparing_eur.max)}`}
+          // Telt alleen op in het ontwerpvoorbeeld (/ontwerp). Op de homepage
+          // rendert dit exact dezelfde tekst als voorheen; zie components/ui/TelOp.tsx.
+          waarde={
+            <TelOpBereik
+              min={uitkomst.besparing_eur.min}
+              max={uitkomst.besparing_eur.max}
+              opmaak={euro}
+            />
+          }
           nadruk
         />
         <Kaart
@@ -121,7 +130,7 @@ function Kaart({
   nadruk = false,
 }: {
   label: string;
-  waarde: string;
+  waarde: React.ReactNode;
   onder?: React.ReactNode;
   nadruk?: boolean;
 }) {
