@@ -35,6 +35,21 @@ export type Lead = {
   /** ── Klik-ID's: de terugkoppelingsloop ── */
   attributie: Record<string, string | undefined>;
 
+  /**
+   * ── Cookiekeuze op het moment van de lead ──
+   *
+   * Niet te verwarren met consent_tekst hierboven: dat is de toestemming om te
+   * bellen. Dit is de keuze in de cookiebanner, server-side gelezen uit de
+   * cookie tbi_consent. Hij bepaalt of de Meta Conversions API mag vuren en
+   * welke toestemmingssignalen de importregel naar Google meekrijgt. Het CRM
+   * moet dit veld bewaren en bij een uitkomst terugsturen.
+   */
+  cookie_toestemming: {
+    statistieken: boolean;
+    marketing: boolean;
+    bron: "cookie" | "geen_keuze";
+  };
+
   /** ── De berekening zelf: invoer én getoonde uitkomst (claimregister R4) ── */
   calc_snapshot: unknown;
 
@@ -138,11 +153,24 @@ export async function bewaarLead(lead: Lead): Promise<void> {
 }
 
 /**
+ * Mag deze lead naar Meta? Alleen bij uitdrukkelijke marketingtoestemming in
+ * de cookiebanner. Tot 6 oktober 2026 stond deze controle er niet: de server
+ * stuurde gehashte e-mail en telefoon naar Meta voor iedere lead, ook van wie
+ * marketing had geweigerd. Zonder toestemming geen gebeurtenis, ook niet
+ * "gehasht" — hashen maakt het geen anonieme data.
+ */
+export function magNaarMeta(lead: Pick<Lead, "cookie_toestemming">): boolean {
+  return lead.cookie_toestemming?.marketing === true;
+}
+
+/**
  * Meta Conversions API. Stuurt dezelfde gebeurtenis nogmaals server-side met
  * hetzelfde event_id, zodat Meta ontdubbelt. Ontbreken de gegevens, dan slaan
  * we het stil over — de lead zelf mag hier nooit op stuklopen.
  */
 export async function stuurNaarMetaCapi(lead: Lead): Promise<void> {
+  if (!magNaarMeta(lead)) return;
+
   // Alleen de serverzijdige variabele. De NEXT_PUBLIC-variant is per 26 aug 2026
   // vervallen: de browserpixel hangt nu in Tag Manager en het dataset-ID hoeft
   // dus niet meer mee de bundel in.

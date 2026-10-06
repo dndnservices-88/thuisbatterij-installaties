@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { bewaarLead, stuurNaarMetaCapi, type Lead } from "@/lib/opslag";
 import { CONSENT } from "@/lib/site";
+import { toestemmingUitCookieHeader } from "@/lib/toestemming";
 import { kiesVariant } from "@/lib/varianten";
 import { controleer } from "@/lib/leadcontrole";
 import { stuurMail, stuurPush } from "@/lib/mail";
@@ -90,6 +91,9 @@ export async function POST(request: Request) {
     pagina_url: tekst(body.pagina_url, 1000),
 
     attributie: (body.attributie as Record<string, string | undefined>) ?? {},
+    // Cookiekeuze uit de cookie zelf, niet uit de request-body: dezelfde
+    // bron die de browser gebruikt om tags wel of niet te laten vuren.
+    cookie_toestemming: toestemmingUitCookieHeader(h.get("cookie")),
     calc_snapshot: body.calc_snapshot ?? null,
     calc_controle: {
       route: controle.uitkomst?.route ?? null,

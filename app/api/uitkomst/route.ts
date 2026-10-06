@@ -11,7 +11,7 @@ export const runtime = "nodejs";
  * Uitkomstregistratie.
  *
  * De setter hangt hier een resultaat aan een lead: niet bereikbaar, A/B/C,
- * afspraak geboekt, nagekomen, sale of geen sale. Dat resultaat gaat door naar
+ * afspraak geboekt, nagekomen, sale, telefonische verkoop of geen sale. Dat resultaat gaat door naar
  * het CRM, en van daaruit — via het klik-ID — terug naar Google Ads.
  *
  * ── Waarom dit endpoint een sleutel heeft en /api/lead niet ─────────────────
@@ -105,7 +105,14 @@ export async function POST(request: Request) {
     string,
     string | undefined
   >;
-  const conversie = conversieregel(melding.uitkomst, melding.tijdstip, attributie);
+  // De cookiekeuze van de bezoeker, zoals die met de lead is opgeslagen
+  // (Lead.cookie_toestemming). Het CRM geeft hem terug naast de attributie.
+  // Ontbreekt hij, dan gaat de regel met "Denied" naar Google: we geven geen
+  // toestemming door die we niet kunnen aantonen.
+  const toestemming = (body as Record<string, unknown>).cookie_toestemming as
+    | { marketing: boolean; statistieken?: boolean }
+    | undefined;
+  const conversie = conversieregel(melding.uitkomst, melding.tijdstip, attributie, toestemming);
 
   try {
     await bewaarUitkomst({ ...melding, conversie });

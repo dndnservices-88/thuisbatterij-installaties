@@ -66,6 +66,7 @@ function maakLead(overschrijf: Partial<Lead> = {}): Lead {
     user_agent: "Mozilla/5.0",
     pagina_url: "https://thuisbatterij-installaties.nl/",
     attributie: { utm_source: "google", gclid: "ABC123" },
+    cookie_toestemming: { statistieken: true, marketing: true, bron: "cookie" },
     calc_snapshot: SNAPSHOT_MET_TLK,
     calc_controle: {
       route: controle.uitkomst?.route ?? null,

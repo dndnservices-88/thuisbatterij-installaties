@@ -111,17 +111,34 @@ Meten wat er binnenkomt is de helft. De andere helft is terugkoppelen wat eruit
 kwam, want Google leert anders alleen welke zoekterm formulieren oplevert.
 
 `POST /api/uitkomst` hangt een resultaat aan een lead-id: niet bereikbaar, A/B/C,
-afspraak geboekt, nagekomen, sale of geen sale. Het endpoint is afgeschermd met
+afspraak geboekt, nagekomen, sale, telefonische verkoop of geen sale, plus de
+verkoper die het huisbezoek deed. Het endpoint is afgeschermd met
 `UITKOMST_TOKEN` in de header `x-uitkomst-token` — anders dan `/api/lead`, dat
 open moet staan. Hier schrijf je namelijk commerciële waarheid: wie ongevraagd
 een sale kan melden, stuurt het biedalgoritme én de facturatie.
 
-Twee van die uitkomsten worden een conversieactie in Google Ads: afspraak €140
-en sale €350. De rest wordt wél geregistreerd maar niet teruggekoppeld, en dat
-is een volumekwestie, geen meetkwestie. Google heeft ongeveer dertig conversies
-per maand per actie nodig voordat een biedstrategie erop kan leunen; elke extra
-actie verdeelt hetzelfde volume over meer signalen. Een derde actie aanzetten is
-één regel in `lib/uitkomst.ts` erbij zodra het volume er is.
+Drie van die uitkomsten worden een conversieactie in Google Ads (verdienmodel
+van 6 oktober 2026: wij betalen de advertenties, Limsolar betaalt €500 zodra hun
+verkoper sluit en er een installatieafspraak staat, en €750 extra als wij zelf
+telefonisch verkopen):
+
+| Uitkomst | Conversieactie | Waarde | Bij de start |
+|---|---|---|---|
+| `afspraak_geboekt` | TBI Afspraak geboekt | €200 = €500 × 40% **[AANNAME]** | primair, stuurt |
+| `sale` | TBI Sale | €500 | secundair, rapportage |
+| `verkoop_telefonisch` | TBI Telefonische verkoop | €1.250 | secundair, rapportage |
+
+Eén stuursignaal, omdat alles tegelijk primair dezelfde klant dubbel telt en
+Google ongeveer dertig conversies per maand per actie nodig heeft. Zodra de sales
+dat halen, wordt de sale het stuursignaal. De 40% vervang je in `lib/uitkomst.ts`
+zodra het werkelijke sluitpercentage bekend is. De rest van de uitkomsten wordt
+wél geregistreerd maar niet teruggekoppeld.
+
+**Toestemming.** De server leest bij elke lead de cookiekeuze (`tbi_consent`) en
+slaat hem op als `cookie_toestemming`. De Meta Conversions API vuurt alleen bij
+marketing = ja, en de importregel naar Google krijgt de kolommen Ad User Data en
+Ad Personalization (Granted/Denied) mee. Het CRM moet `cookie_toestemming` bewaren
+en terugsturen naar `/api/uitkomst`; ontbreekt hij, dan gaat de regel als Denied.
 
 Vaste waarden en geen orderwaarde, omdat onze vergoeding een vast bedrag per sale is —
 een sale van €12.000 levert ons evenveel op als een van €4.000, dus orderwaarde

@@ -10,6 +10,7 @@ import {
   WAARDEN,
   CONVERSIENAAM,
   UITKOMSTVERSIE,
+  toestemmingskolommen,
 } from "./uitkomst.ts";
 
 /**
@@ -177,11 +178,47 @@ test("uitkomsten zonder conversieactie leveren geen regel op", () => {
   }
 });
 
-test("precies twee uitkomsten hebben een conversieactie, en waarden lopen op", () => {
+test("precies drie uitkomsten hebben een conversieactie, en waarden lopen op", () => {
   const namen = Object.keys(CONVERSIENAAM).sort();
-  assert.deepEqual(namen, ["afspraak_geboekt", "sale"]);
+  assert.deepEqual(namen, ["afspraak_geboekt", "sale", "verkoop_telefonisch"]);
   assert.deepEqual(Object.keys(WAARDEN).sort(), namen);
   assert.ok(WAARDEN.afspraak_geboekt! < WAARDEN.sale!);
+  assert.ok(WAARDEN.sale! < WAARDEN.verkoop_telefonisch!);
+});
+
+test("de waarden volgen het verdienmodel van 6 oktober 2026", () => {
+  // €500 per sale via de verkoper; €750 erbij als wij zelf telefonisch
+  // verkopen; de afspraak is €500 × 40% sluitkans [AANNAME].
+  assert.equal(WAARDEN.sale, 500);
+  assert.equal(WAARDEN.verkoop_telefonisch, 1250);
+  assert.equal(WAARDEN.afspraak_geboekt, 200);
+});
+
+test("verkoper gaat mee in de melding, maar nooit in de conversieregel", () => {
+  const r = controleerMelding({ lead_id: "abc", uitkomst: "sale", verkoper: "Verkoper A" });
+  assert.equal(r.ok, true);
+  if (r.ok) {
+    assert.equal(r.melding.verkoper, "Verkoper A");
+    const c = conversieregel(r.melding.uitkomst, r.melding.tijdstip, { gclid: "Cj0KAQ" });
+    assert.ok(c.regel);
+    assert.equal(JSON.stringify(c.regel).includes("Verkoper A"), false);
+  }
+});
+
+test("toestemmingskolommen: alleen marketing=ja levert Granted op", () => {
+  assert.deepEqual(toestemmingskolommen({ marketing: true }), {
+    ad_user_data: "Granted",
+    ad_personalization: "Granted",
+  });
+  assert.deepEqual(toestemmingskolommen({ marketing: false, statistieken: true }), {
+    ad_user_data: "Denied",
+    ad_personalization: "Denied",
+  });
+  // Onbekend is geweigerd: geen toestemming doorgeven die we niet kunnen aantonen.
+  assert.deepEqual(toestemmingskolommen(undefined), {
+    ad_user_data: "Denied",
+    ad_personalization: "Denied",
+  });
 });
 
 test("elke conversienaam hoort bij een geldige uitkomst en heeft een waarde", () => {
@@ -214,6 +251,8 @@ test("de sheetrij heeft evenveel kolommen als de template, in dezelfde volgorde"
       "Conversion Time",
       "Conversion Value",
       "Conversion Currency",
+      "Ad User Data",
+      "Ad Personalization",
     ]);
     assert.equal(rij[0], "Cj0KAQ");
     assert.equal(rij[4], "EUR");
@@ -228,15 +267,22 @@ test("de hele keten: binnenkomende melding tot sheetrij", () => {
   );
   assert.equal(r.ok, true);
   if (!r.ok) return;
-  const c = conversieregel(r.melding.uitkomst, r.melding.tijdstip, { gclid: "Cj0KAQjw", utm_source: "google" });
+  const c = conversieregel(
+    r.melding.uitkomst,
+    r.melding.tijdstip,
+    { gclid: "Cj0KAQjw", utm_source: "google" },
+    { marketing: true, statistieken: true }
+  );
   assert.notEqual(c.regel, null);
   if (c.regel) {
     assert.deepEqual(alsSheetrij(c.regel), [
       "Cj0KAQjw",
       "TBI Sale",
       "2026-08-25 12:00:00",
-      "350",
+      "500",
       "EUR",
+      "Granted",
+      "Granted",
     ]);
   }
 });

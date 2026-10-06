@@ -31,7 +31,7 @@
  */
 
 /** Verhoog dit bij elke wijziging in WAARDEN of CONVERSIENAAM. */
-export const UITKOMSTVERSIE = "1.0";
+export const UITKOMSTVERSIE = "1.1";
 
 /**
  * De uitkomsten die we registreren, in volgorde van de keten.
@@ -51,48 +51,59 @@ export const UITKOMSTEN = [
   "afspraak_nagekomen",
   "geen_sale",
   "sale",
+  "verkoop_telefonisch",
 ] as const;
 
 export type Uitkomst = (typeof UITKOMSTEN)[number];
 
 /**
- * Twee conversieacties in Google Ads, met een vaste waarde elk. De waarden zijn
- * geen euro's die iemand ontvangt maar een rangorde: de sale is het einddoel,
- * de afspraak is de beste voorspeller die we eerder in de keten hebben.
+ * Drie conversieacties in Google Ads, met een vaste waarde elk.
  *
- * De bedragen zijn de ondergrens van de fee (€350) maal een geschatte kans dat
- * deze stap tot een sale leidt. Die kans is [AANNAME] zolang er geen historie
- * is; de markering blijft staan tot er echte data is. Met terugkoppeling per
- * afspraak weten we de werkelijke ratio binnen zes tot acht weken.
+ * ── Het verdienmodel (vastgelegd 6 oktober 2026) ───────────────────────────
  *
- *   afspraak_geboekt  €350 × 0,40 = €140
- *   sale              €350 × 1,00 = €350
+ * Wij betalen de advertenties zelf. Limsolar betaalt €500 zodra hun verkoper
+ * na ons adviesgesprek sluit en er een installatieafspraak staat. Een afspraak
+ * waarbij de klant niets wil, levert €0 op. Verkopen wij zelf telefonisch, dan
+ * komt daar €750 bij — samen €1.250.
  *
- * ── Waarom twee en niet vijf ────────────────────────────────────────────────
+ *   afspraak_geboekt     €500 × 0,40 = €200   [AANNAME: sluitpercentage 40%]
+ *   sale                 €500                 (verkoper sluit, installatieafspraak)
+ *   verkoop_telefonisch  €500 + €750 = €1.250 (wij sluiten zelf)
  *
- * We meten veel meer dan dit. Niet bereikbaar, A/B/C, nagekomen, geen sale —
- * dat gaat allemaal het CRM in, want zonder het aantal leads dat je nooit aan
- * de lijn kreeg zeggen je kosten per afspraak niets.
+ * De €200 is geen geld dat iemand ontvangt. Het is de verwachte waarde van een
+ * ingeplande afspraak, en tegelijk het maximum dat een afspraak aan advertenties
+ * mag kosten bij 40% sluitpercentage. De markering [AANNAME] blijft staan tot
+ * het werkelijke sluitpercentage bekend is — van Limsolar, of na zes tot acht
+ * weken uit onze eigen terugkoppeling. Dan vervang je hier alleen de 0,40.
  *
- * Maar meten en terugkoppelen zijn twee verschillende dingen. Google heeft als
- * richtlijn zo'n dertig conversies per maand per actie nodig voordat een
- * biedstrategie op dat signaal kan leunen. Bij startvolume betekent elke extra
- * actie dat je datzelfde volume over meer signalen verdeelt en er geen enkele
- * de drempel haalt. Beperkend is dus niet wat je kunt meten maar hoeveel er
- * binnenkomt.
+ * ── Welke actie stuurt, is een instelling in Google Ads, niet hier ─────────
  *
- * Een derde actie voor de A-score aanzetten is één regel hieronder erbij, plus
- * de conversieactie aanmaken in Google Ads. Doe dat pas als afspraak_geboekt de
- * dertig per maand ruim haalt.
+ * Bij de start stuurt alleen de afspraak (primair); sale en telefonische
+ * verkoop staan secundair, want Google heeft zo'n dertig conversies per maand
+ * per actie nodig en dat haalt de afspraak het eerst. Alle drie tegelijk
+ * primair zou dezelfde klant dubbel tellen: €200 voor de afspraak plus €500
+ * voor de sale, terwijl hij €500 oplevert.
+ *
+ * ── Wat bewust niet terug gaat ─────────────────────────────────────────────
+ *
+ * niet_bereikbaar, A/B/C, nagekomen en geen_sale gaan het CRM in en niet naar
+ * Google: Google kent geen negatieve conversie, en een conversie met waarde
+ * nul verstoort de biedingen.
  */
+export const SLUITKANS_AANNAME = 0.4;
+export const FEE_PER_SALE = 500;
+export const BONUS_TELEFONISCH = 750;
+
 export const CONVERSIENAAM: Partial<Record<Uitkomst, string>> = {
   afspraak_geboekt: "TBI Afspraak geboekt",
   sale: "TBI Sale",
+  verkoop_telefonisch: "TBI Telefonische verkoop",
 };
 
 export const WAARDEN: Partial<Record<Uitkomst, number>> = {
-  afspraak_geboekt: 140,
-  sale: 350,
+  afspraak_geboekt: Math.round(FEE_PER_SALE * SLUITKANS_AANNAME),
+  sale: FEE_PER_SALE,
+  verkoop_telefonisch: FEE_PER_SALE + BONUS_TELEFONISCH,
 };
 
 export const VALUTA = "EUR";
@@ -108,6 +119,13 @@ export type Uitkomstmelding = {
   orderwaarde?: number;
   /** Wie het invoerde. Nodig om een foute invoer terug te kunnen vinden. */
   door?: string;
+  /**
+   * Welke Limsolar-verkoper het huisbezoek deed. Het sluitpercentage hangt aan
+   * de verkoper; zonder dit veld is een slechte week van één verkoper niet te
+   * onderscheiden van een slechte campagne, en zet je zoekwoorden uit die
+   * prima werken.
+   */
+  verkoper?: string;
   versie: string;
   ontvangen: string;
 };
@@ -173,6 +191,7 @@ export function controleerMelding(body: unknown, nu = new Date()): Controle {
       ...(tekst(b.toelichting, 500) ? { toelichting: tekst(b.toelichting, 500) } : {}),
       ...(orderwaarde !== undefined ? { orderwaarde } : {}),
       ...(tekst(b.door, 60) ? { door: tekst(b.door, 60) } : {}),
+      ...(tekst(b.verkoper, 60) ? { verkoper: tekst(b.verkoper, 60) } : {}),
       versie: UITKOMSTVERSIE,
       ontvangen: nu.toISOString(),
     },
@@ -214,13 +233,43 @@ export function sheetTijd(datum: Date | string, tijdzone = "Europe/Amsterdam"): 
   return `${p("year")}-${p("month")}-${p("day")} ${uur}:${p("minute")}:${p("second")}`;
 }
 
+export type Toestemmingssignaal = "Granted" | "Denied";
+
 export type Sheetregel = {
   klik_id: string;
   conversienaam: string;
   conversietijd: string;
   waarde: number;
   valuta: string;
+  /** Kolom Ad User Data: mocht deze bezoeker voor advertenties gemeten worden. */
+  ad_user_data: Toestemmingssignaal;
+  /** Kolom Ad Personalization: idem voor gepersonaliseerde advertenties. */
+  ad_personalization: Toestemmingssignaal;
 };
+
+/**
+ * De cookiekeuze van de bezoeker op het moment van de lead, zoals die met de
+ * lead is opgeslagen (Lead.cookie_toestemming) en door het CRM wordt
+ * teruggegeven bij de uitkomst.
+ */
+export type CookieToestemming = { marketing: boolean; statistieken?: boolean } | null | undefined;
+
+/**
+ * Vertaalt de cookiekeuze naar de twee toestemmingskolommen van Google's
+ * importtemplate. Onbekend telt als geweigerd: we geven Google nooit een
+ * toestemming door die we niet kunnen aantonen. Dat kost signaal bij leads
+ * zonder vastgelegde keuze, en dat is de bedoeling.
+ */
+export function toestemmingskolommen(t: CookieToestemming): {
+  ad_user_data: Toestemmingssignaal;
+  ad_personalization: Toestemmingssignaal;
+} {
+  const ja = t?.marketing === true;
+  return {
+    ad_user_data: ja ? "Granted" : "Denied",
+    ad_personalization: ja ? "Granted" : "Denied",
+  };
+}
 
 export type Attributie = Record<string, string | undefined>;
 
@@ -248,7 +297,8 @@ export type RegelUitkomst =
 export function conversieregel(
   uitkomst: Uitkomst,
   tijdstip: Date | string,
-  attributie: Attributie
+  attributie: Attributie,
+  toestemming?: CookieToestemming
 ): RegelUitkomst {
   const naam = CONVERSIENAAM[uitkomst];
   const waarde = WAARDEN[uitkomst];
@@ -275,19 +325,35 @@ export function conversieregel(
       conversietijd: sheetTijd(tijdstip),
       waarde,
       valuta: VALUTA,
+      ...toestemmingskolommen(toestemming),
     },
   };
 }
 
-/** De vijf kolommen uit Google's officiële template, in de vaste volgorde. */
+/**
+ * De zeven kolommen uit Google's officiële template, in de vaste volgorde
+ * (bouwplan §6). De laatste twee zijn de toestemmingssignalen voor bezoekers
+ * uit de EER; tot 6 okt 2026 ontbraken ze hier terwijl het bouwplan ze wél
+ * noemde.
+ */
 export const SHEETKOPPEN = [
   "Google Click ID",
   "Conversion Name",
   "Conversion Time",
   "Conversion Value",
   "Conversion Currency",
+  "Ad User Data",
+  "Ad Personalization",
 ] as const;
 
 export function alsSheetrij(r: Sheetregel): string[] {
-  return [r.klik_id, r.conversienaam, r.conversietijd, String(r.waarde), r.valuta];
+  return [
+    r.klik_id,
+    r.conversienaam,
+    r.conversietijd,
+    String(r.waarde),
+    r.valuta,
+    r.ad_user_data,
+    r.ad_personalization,
+  ];
 }
