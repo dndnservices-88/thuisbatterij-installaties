@@ -2,6 +2,7 @@
 
 import Image, { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { KnopLink } from "@/components/ui/Knop";
 // advies-opname staat sinds 6 okt 2026 in de hero; hier de meterkastmeting,
 // die ook beter past bij "we kijken naar de meterkast".
 import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
@@ -9,7 +10,15 @@ import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
 
 const SFEERBEELD = "Sfeerbeeld, geen foto van een eigen project.";
 
-type Stap = { kort: string; titel: string; tekst: string; punten: string[]; beeld: ReactNode };
+type Stap = {
+  kort: string;
+  titel: string;
+  tekst: string;
+  punten: string[];
+  beeld: ReactNode;
+  /** Alleen bij stap 1: knop die naar de rekentool in de hero springt. */
+  knop?: string;
+};
 
 /**
  * Stap 4 zegt bewust níét meer "aanmelding bij de netbeheerder en de garantie
@@ -23,7 +32,8 @@ const STAPPEN: Stap[] = [
     kort: "Rekenen",
     titel: "Je maakt de berekening",
     tekst: "Zes vragen over je panelen, je verbruik en je contract. Je ziet meteen een bandbreedte — zonder gegevens achter te laten.",
-    punten: ["Twee minuten", "Uitkomst direct in beeld", "Zonder gegevens achter te laten"],
+    punten: ["Twee minuten", "Uitkomst direct in beeld"],
+    knop: "Bereken mijn situatie",
     beeld: <NepRekentool />,
   },
   {
@@ -197,6 +207,15 @@ export default function StappenScroll() {
                     </li>
                   ))}
                 </ul>
+                {s.knop && (
+                  // Het enige gele element in deze sectie: de doorgaan-knop uit het
+                  // brandbook. Springt naar de rekentool bovenaan (#calculator).
+                  <div className="mt-s4 max-w-[340px]">
+                    <KnopLink href="#calculator" volleBreedte>
+                      {s.knop} →
+                    </KnopLink>
+                  </div>
+                )}
               </article>
             ))}
           </div>
