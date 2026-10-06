@@ -5,7 +5,7 @@ import { KnopLink } from "@/components/ui/Knop";
 import { Claim, AlsClaim } from "@/components/ui/Claim";
 import Cookievoorkeuren from "@/components/ui/Cookievoorkeuren";
 import Keurmerken from "@/components/Keurmerken";
-import { isLive, mag } from "@/lib/claims";
+import { CLAIMS, isLive, mag, type ClaimId } from "@/lib/claims";
 import { ATTRIBUTIE, ENTITEIT, LIMSOLAR } from "@/lib/site";
 import type { Variant } from "@/lib/varianten";
 
@@ -128,28 +128,76 @@ export function Hero({ variant }: { variant: Variant }) {
 }
 
 /* 2 ── Vertrouwensbalk ────────────────────────────────────────────────────── */
+/**
+ * Vier witte kaartjes met een paars icoon. Tot 6 okt 2026 was dit grijze tekst
+ * op grijs en viel het weg.
+ *
+ * De nadruk (vet) verandert niets aan de woorden: de claimtekst blijft letterlijk
+ * die uit het register, alleen een deel ervan staat vet. Is de claim (nog) niet
+ * bevestigd, dan valt het kaartje terug op de gewone <Claim>, met de preview-
+ * markering.
+ */
+const ICOON = {
+  schild: "M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3zM9 12l2 2 4-4",
+  batterij: "M8 6h8a2 2 0 012 2v10a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2zM10 3h4M12.5 10l-2 3h3l-2 3",
+  garantie: "M12 15a5 5 0 100-10 5 5 0 000 10zM9 14l-1 7 4-2 4 2-1-7",
+  gebouw: "M4 21V8l8-5 8 5v13M9 21v-6h6v6M4 21h16",
+};
+
+function VertrouwensKaart({ icoon, children }: { icoon: keyof typeof ICOON; children: React.ReactNode }) {
+  return (
+    <div className="flex h-full items-start gap-s3 rounded-[12px] border border-[#E5DAF0] bg-n-000 p-s3">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-paars text-n-000">
+        <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
+          <path d={ICOON[icoon]} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+      <span className="text-[0.9rem] leading-snug text-paars-donker">{children}</span>
+    </div>
+  );
+}
+
+/** Claimtekst met een vet deel; peildatum tussen haakjes kleiner en grijs. */
+function ClaimMetNadruk({ id, nadruk }: { id: ClaimId; nadruk: string }) {
+  const regel = CLAIMS[id];
+  if (regel.status !== "bevestigd" || !regel.tekst.includes(nadruk)) return <Claim id={id} />;
+  const [voor, na] = regel.tekst.split(nadruk);
+  const haakje = na.indexOf(" (");
+  const rest = haakje >= 0 ? na.slice(0, haakje) : na;
+  const datum = haakje >= 0 ? na.slice(haakje) : "";
+  return (
+    <>
+      {voor}
+      <strong className="font-semibold">{nadruk}</strong>
+      {rest}
+      {datum && <span className="text-[0.8rem] text-n-500">{datum}</span>}
+    </>
+  );
+}
+
 export function Vertrouwensbalk() {
   return (
-    <div className="border-b border-n-200 bg-n-100 px-s3 py-s3">
-      <div className="mx-auto grid max-w-inhoud gap-s2 text-[0.88rem] text-n-500 sm:grid-cols-2 lg:grid-cols-4">
-        <AlsClaim id="V1">
-          <span>
-            <Claim id="V1" />
-          </span>
-        </AlsClaim>
-        <AlsClaim id="V2">
-          <span>
-            <Claim id="V2" />
-          </span>
-        </AlsClaim>
-        <AlsClaim id="U4">
-          <span>
-            <Claim id="U4" />
-          </span>
-        </AlsClaim>
-        <span>
-          Installatie door {LIMSOLAR.naam}, KvK {LIMSOLAR.kvk}
-        </span>
+    <div className="border-b border-[#E5DAF0] bg-paars-tint px-s3 py-s4">
+      <div className="mx-auto grid max-w-inhoud gap-s3 sm:grid-cols-2 lg:grid-cols-4">
+        {mag("V1") && (
+          <VertrouwensKaart icoon="schild">
+            <ClaimMetNadruk id="V1" nadruk="Aangesloten bij" />
+          </VertrouwensKaart>
+        )}
+        {mag("V2") && (
+          <VertrouwensKaart icoon="batterij">
+            <ClaimMetNadruk id="V2" nadruk="meer dan 300 thuisbatterijen" />
+          </VertrouwensKaart>
+        )}
+        {mag("U4") && (
+          <VertrouwensKaart icoon="garantie">
+            <ClaimMetNadruk id="U4" nadruk="5 jaar garantie" />
+          </VertrouwensKaart>
+        )}
+        <VertrouwensKaart icoon="gebouw">
+          <strong className="font-semibold">Installatie door {LIMSOLAR.naam}</strong>
+          <span className="text-[0.8rem] text-n-500"> · KvK {LIMSOLAR.kvk}</span>
+        </VertrouwensKaart>
       </div>
     </div>
   );

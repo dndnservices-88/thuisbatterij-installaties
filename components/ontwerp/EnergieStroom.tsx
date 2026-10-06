@@ -9,7 +9,11 @@ import type { CSSProperties } from "react";
  * Geen getallen in het beeld: een bedrag of percentage hier zou een claim zijn.
  */
 export default function EnergieStroom({ className = "" }: { className?: string }) {
-  const lijn = "rgba(203,182,232,0.75)";
+  // Variant C (gekozen 6 okt 2026): zacht geel volgt de energie — zon, stroom,
+  // batterijvulling en het licht in huis. Bewust gedempt (#F2E27A), zodat het
+  // niet concurreert met het felle merkgeel (#F5F415) van de doorgaan-knop.
+  const zacht = "#F2E27A";
+  const lijn = "rgba(242,226,122,0.8)";
   const wit = "#FEFEFE";
   const knoop = { fill: "rgba(255,255,255,0.06)", stroke: "rgba(255,255,255,0.18)" };
 
@@ -32,14 +36,14 @@ export default function EnergieStroom({ className = "" }: { className?: string }
           cx="40"
           cy="52"
           r="4"
-          fill={wit}
+          fill="#F6EBA0"
           style={{ "--vertraging": `${d}ms`, filter: "drop-shadow(0 0 6px rgba(255,255,255,0.9))" } as CSSProperties}
         />
       ))}
 
       {/* zon */}
       <circle cx="40" cy="52" r="30" {...knoop} />
-      <g className="zon-stralen" stroke={wit} strokeWidth="2" strokeLinecap="round">
+      <g className="zon-stralen" stroke={zacht} strokeWidth="2" strokeLinecap="round">
         {Array.from({ length: 8 }).map((_, i) => {
           const a = (i * Math.PI) / 4;
           return (
@@ -53,7 +57,7 @@ export default function EnergieStroom({ className = "" }: { className?: string }
           );
         })}
       </g>
-      <circle cx="40" cy="52" r="9" fill="none" stroke={wit} strokeWidth="2" />
+      <circle cx="40" cy="52" r="9" fill="none" stroke={zacht} strokeWidth="2" />
 
       {/* panelen */}
       <circle cx="180" cy="52" r="30" {...knoop} />
@@ -69,7 +73,7 @@ export default function EnergieStroom({ className = "" }: { className?: string }
       <circle cx="320" cy="52" r="30" {...knoop} />
       <rect x="315" y="31" width="10" height="4" rx="1.5" fill={wit} />
       <rect x="306" y="35" width="28" height="36" rx="5" fill="none" stroke={wit} strokeWidth="2" />
-      <rect className="batterij-vulling" x="310" y="39" width="20" height="28" rx="2.5" fill="#CBB6E8" />
+      <rect className="batterij-vulling" x="310" y="39" width="20" height="28" rx="2.5" fill={zacht} />
 
       {/* huis */}
       <circle cx="470" cy="52" r="30" {...knoop} />
@@ -77,7 +81,7 @@ export default function EnergieStroom({ className = "" }: { className?: string }
         <polyline points="452,54 470,38 488,54" />
         <polyline points="457,50 457,68 483,68 483,50" />
       </g>
-      <rect className="huis-raam" x="464" y="54" width="12" height="9" rx="1.5" fill="#FEFEFE" fillOpacity="0.9" />
+      <rect className="huis-raam" x="464" y="54" width="12" height="9" rx="1.5" fill={zacht} fillOpacity="0.9" />
 
       {/* labels */}
       <g fill="#CBB6E8" fontSize="11.5" fontFamily="var(--font-tekst), system-ui, sans-serif" textAnchor="middle">
