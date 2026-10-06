@@ -79,11 +79,21 @@ export function NietRendabel({
 }) {
   return (
     <Uitleg titel="Bij jouw verbruik komt een thuisbatterij krap uit">
-      <p>
-        Met de gegevens die je hebt ingevuld komen we op een terugverdientijd van ongeveer{" "}
-        <strong>{jaren(uitkomst.terugverdientijd_jaar.midden)} jaar</strong>. Dat is lang, en wij
-        adviseren dan liever niet.
-      </p>
+      {/* Sinds 6 okt 2026 is er geen grens van 12 jaar meer: dit scherm verschijnt
+          alleen nog als er niets op te slaan valt, en dan is de terugverdientijd
+          oneindig. Zonder deze tak stond er "ongeveer ∞ jaar" op het scherm. */}
+      {isFinite(uitkomst.terugverdientijd_jaar.midden) ? (
+        <p>
+          Met de gegevens die je hebt ingevuld komen we op een terugverdientijd van ongeveer{" "}
+          <strong>{jaren(uitkomst.terugverdientijd_jaar.midden)} jaar</strong>. Dat is lang, en wij
+          adviseren dan liever niet.
+        </p>
+      ) : (
+        <p>
+          Met de gegevens die je hebt ingevuld blijft er geen zonnestroom over om op te slaan. Een
+          thuisbatterij levert dan niets op, en dat zeggen we je liever nu dan na de aankoop.
+        </p>
+      )}
       <p>
         Dat komt meestal door een relatief laag verbruik of weinig panelen: er blijft simpelweg
         weinig over om op te slaan. Wordt je verbruik hoger — een warmtepomp, een elektrische auto,

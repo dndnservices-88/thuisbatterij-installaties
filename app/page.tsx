@@ -31,7 +31,7 @@ export default function Pagina() {
       <Sectie id="calculator" fond="grijs" smal>
         <Kop
           boven="De rekensom"
-          onder="Vijf vragen over je situatie. Je ziet de uitkomst meteen, zonder gegevens achter te laten."
+          onder="Zes vragen over je situatie. Je ziet de uitkomst meteen, zonder gegevens achter te laten."
         >
           Wat levert een thuisbatterij bij jou op?
         </Kop>

@@ -29,14 +29,14 @@ export const CLAIMS = {
   P1: {
     id: "P1",
     tekst: "Laagsteprijsgarantie op een aantoonbaar vergelijkbare complete installatie",
-    status: "open",
-    nodig: "Schriftelijke garantieprocedure + gedateerde prijsvergelijking",
+    status: "verboden",
+    nodig: "Bestaat niet (Dieudonné, 6 okt 2026). Een garantie noemen die er niet is, is misleidend.",
   },
   P2: {
     id: "P2",
-    tekst: "Instapmodel inclusief installatie vanaf € 3.999",
+    tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.808",
     status: "toegezegd",
-    nodig: "Actuele prijslijst met datum",
+    nodig: "Aftekening Limsolar. Bewijsstuk (prijslijst 9 sep 2026) staat in Bewijs/.",
   },
   P6: {
     id: "P6",
@@ -46,8 +46,8 @@ export const CLAIMS = {
     // merknaam op het resultaatscherm zou een toezegging zijn die de verkoper
     // daarna niet meer kan bijstellen.
     tekst: "Rekenvoorbeeld met een standaard thuisbatterij van deze capaciteit",
-    status: "open",
-    nodig: "Prijslijst per capaciteit van Limsolar (toegezegd 26 aug 2026)",
+    status: "toegezegd",
+    nodig: "Aftekening Limsolar. Prijslijst per capaciteit (9 sep 2026) staat in Bewijs/.",
   },
 
   // ── Reken- en besparingsclaims ───────────────────────────────────────────
@@ -82,72 +82,71 @@ export const CLAIMS = {
   // ── Uitvoerings- en servicebeloften (altijd op naam van Limsolar) ─────────
   U1: {
     id: "U1",
-    tekst: "Limsolar installeert binnen circa 7 dagen, waar technisch mogelijk",
-    status: "open",
+    tekst: "Limsolar installeert doorgaans binnen 14 dagen, waar technisch mogelijk",
+    status: "toegezegd",
     nodig: "Doorlooptijden uit de planning over minimaal 3 maanden",
   },
   U3: {
     id: "U3",
     tekst: "10 jaar productgarantie op de batterij",
-    status: "open",
-    nodig: "Garantievoorwaarden van de fabrikant",
+    status: "toegezegd",
+    nodig: "Garantievoorwaarden van de fabrikant, per merk",
   },
   U4: {
     id: "U4",
     tekst: "5 jaar garantie op de installatie door Limsolar",
-    status: "open",
+    status: "toegezegd",
     nodig: "Garantievoorwaarden Limsolar",
   },
   U8: {
     id: "U8",
-    tekst: "Limsolar meldt elke installatie aan bij de netbeheerder",
-    status: "open",
-    nodig: "Bevestiging + voorbeeldaanmelding",
+    tekst: "Limsolar helpt je bij de aanmelding bij de netbeheerder",
+    status: "toegezegd",
+    nodig: "Beschrijving van de hulp die Limsolar biedt. De klant meldt zelf aan (Dieudonné, 6 okt 2026).",
   },
   U9: {
     id: "U9",
     tekst: "Limsolar installeert in heel Nederland",
-    status: "open",
-    nodig: "Bevestiging werkgebied, eventueel postcodelijst",
+    status: "toegezegd",
+    nodig: "Schriftelijke bevestiging werkgebied. Let op: sgze.nl noemt (6 okt 2026) alleen Noord-Holland, Utrecht en Zuid-Holland.",
   },
   U10: {
     id: "U10",
-    tekst: "Wij begeleiden je bij de btw-teruggave, onder voorwaarden",
+    tekst: "Limsolar begeleidt je bij de btw-teruggave, onder voorwaarden",
     status: "toegezegd",
     nodig: "Beschrijving van de begeleiding en de voorwaarden",
   },
   U12: {
     id: "U12",
     tekst: "Vrijblijvend adviesgesprek bij je thuis",
-    status: "open",
+    status: "toegezegd",
     nodig: "Salesscript + het formulier dat aan tafel wordt getekend",
   },
 
   // ── Vertrouwens- en cijferclaims ─────────────────────────────────────────
   V1: {
     id: "V1",
-    tekst: "Aangesloten bij Stichting Garantiefonds ZonneEnergie (SGZE)",
-    status: "open",
-    nodig: "Deelnamebewijs SGZE met geldigheidsdatum",
+    tekst: "Aangesloten bij Stichting Garantiefonds Zon & Energie (SGZE)",
+    status: "toegezegd",
+    nodig: "Beeldmerkvoorwaarden SGZE. Deelname aangetoond: schermafbeelding sgze.nl in Bewijs/ (6 okt 2026).",
   },
   V2: {
     id: "V2",
-    tekst: "PM woningen voorzien van een thuisbatterij",
-    status: "open",
-    nodig: "Export met peildatum",
+    tekst: "Limsolar installeerde meer dan 300 thuisbatterijen (peildatum 6 oktober 2026)",
+    status: "toegezegd",
+    nodig: "Export uit het systeem van Limsolar met peildatum",
   },
   V3: {
     id: "V3",
-    tekst: "PM gemiddeld op basis van PM beoordelingen",
-    status: "open",
-    nodig: "Export uit het reviewplatform",
+    tekst: "Gemiddeld 4,8 op Google, op basis van 74 beoordelingen (peildatum 21 september 2026)",
+    status: "toegezegd",
+    nodig: "Gedateerde schermafbeelding van het Google-bedrijfsprofiel; maandelijks opnieuw meten",
   },
   V4: {
     id: "V4",
-    tekst:
-      "Deze beoordelingen komen uit het openbare Google-bedrijfsprofiel van Limsolar B.V. Wij plaatsen ze niet zelf en kunnen ze niet wijzigen of verwijderen.",
-    status: "open",
-    nodig: "URL van het Google-bedrijfsprofiel + je controleprocedure op schrift",
+    tekst: "Deze beoordelingen komen uit het openbare Google-bedrijfsprofiel van Limsolar B.V. Wij plaatsen ze niet zelf en kunnen ze niet wijzigen of verwijderen. Google controleert niet of een beoordeling afkomstig is van iemand die een installatie heeft afgenomen, en wij doen dat ook niet.",
+    status: "toegezegd",
+    nodig: "URL van het Google-bedrijfsprofiel. Controlemethode: geen eigen controle — dat staat zo in de tekst (verplicht sinds 2022).",
   },
   // Sinds 2022 verplicht: vermelden óf en hóé je controleert dat een review van
   // een echte klant komt. Doe je dat niet, dan is de review zelf al misleidend,
@@ -177,8 +176,8 @@ export const CLAIMS = {
   // (b) dat de houder het beeldmerk mag laten voeren door déze partij.
   V7: {
     id: "V7",
-    tekst: "Installatiewerk door een InstallQ-erkend installateur",
-    status: "open",
+    tekst: "Installatiewerk door een InstallQ-erkend installatiebedrijf",
+    status: "toegezegd",
     nodig:
       "Certificaat of registratienummer InstallQ op naam van Limsolar B.V., met geldigheidsdatum, PLUS de beeldmerkvoorwaarden van InstallQ",
   },
@@ -190,7 +189,7 @@ export const CLAIMS = {
     // en met de voorwaarden. Zet hem dus nooit in een rij die "keurmerken"
     // heet zonder dit onderscheid erbij te schrijven.
     tekst: "Financiering via het Nationaal Warmtefonds is mogelijk",
-    status: "open",
+    status: "toegezegd",
     nodig:
       "Bevestiging dat een thuisbatterij onder de regeling valt en dat Limsolar als uitvoerder wordt geaccepteerd, PLUS toestemming voor het beeldmerk. Zonder rentepercentage, looptijd en voorwaarden erbij is dit bovendien een financiële claim die je niet los mag tonen.",
   },

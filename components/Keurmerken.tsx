@@ -61,7 +61,8 @@ const KEURMERKEN: Merk[] = [
   {
     claim: "V1",
     bron: sgze,
-    naam: "Stichting Garantiefonds ZonneEnergie",
+    // Naam per 6 okt 2026 volgens sgze.nl: Zon & Energie, niet meer ZonneEnergie.
+    naam: "Stichting Garantiefonds Zon & Energie",
     kort: "SGZE",
     zegt: "Aanbetaling en garantie gedekt",
   },

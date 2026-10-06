@@ -14,7 +14,14 @@
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-export const REKENVERSIE = "1.2.0";
+/**
+ * 1.3.0 (6 okt 2026): prijs instapmodel € 3.999 → € 5.808 (de € 3.999 was fout;
+ * prijslijst Limsolar 9 sep 2026), en geen grens van 12 jaar meer voor het
+ * niet-rendabel-scherm (besluit Dieudonné, 6 okt 2026). Tarieven ongewijzigd —
+ * de nieuwe waarden uit de aantekeningen van Fabian komen mee met de uitbreiding
+ * van het assortiment.
+ */
+export const REKENVERSIE = "1.3.0";
 export const PEILDATUM_TARIEVEN = "24 augustus 2026";
 
 /**
@@ -125,8 +132,10 @@ export const CONSTANTEN = {
   /** Vaste spreiding rond elke uitkomst. Resultaat wordt NOOIT als één getal getoond. */
   BANDBREEDTE_ONDER: 0.8,
   BANDBREEDTE_BOVEN: 1.2,
-  /** Terugverdientijd (jaren) waarboven we eerlijk adviseren om het niet te doen. */
-  GRENS_NIET_RENDABEL: 12,
+  // GRENS_NIET_RENDABEL (12 jaar) is op 6 okt 2026 vervallen, op besluit van
+  // Dieudonné. Een lange terugverdientijd stuurt de bezoeker niet meer naar het
+  // niet-rendabel-scherm; dat scherm verschijnt alleen nog als er niets op te
+  // slaan valt (besparing nul, terugverdientijd oneindig).
   /** Schatting jaarverbruik per huishoudgrootte, voor "weet ik niet". */
   VERBRUIK_PER_HUISHOUDEN: { "1": 1800, "2-3": 3000, "4-5": 4300, "6+": 5500 },
   /** Schatting aantal panelen op basis van dakoppervlak in m². */
@@ -168,7 +177,10 @@ export const ASSORTIMENT: Product[] = [
     /** Intern label. Wordt niet getoond; herkomst van de prijs is Marstek Venus E 3.0. */
     naam: "Instapmodel 10 kWh",
     capaciteit_kwh: 10.24,
-    prijs_eur: 3999,
+    // € 4.800 excl. btw × 1,21 = € 5.808, inclusief installatie. Bron: interne
+    // verkoopprijslijst Limsolar, 9 sep 2026 (staat in 06 - Legal & Compliance/
+    // Bewijs/). De eerdere € 3.999 was fout (bevestigd door Dieudonné, 6 okt 2026).
+    prijs_eur: 5808,
     prijs_status: "toegezegd", // claimregister P2
   },
 ];
@@ -243,7 +255,7 @@ export type Antwoorden = {
    *
    * Stond tot 26 augustus 2026 niet in de vragenreeks maar als schakelaar ónder
    * het resultaat. Dat was verkeerd om: bij de standaard van nul valt een
-   * doorsnee tweepersoonshuishouden over de grens GRENS_NIET_RENDABEL heen en
+   * doorsnee tweepersoonshuishouden over de grens van 12 jaar (vervallen op 6 okt 2026) heen en
    * krijgt het afwijzingsscherm te zien. Zet dezelfde bezoeker het tarief aan,
    * dan halveert de terugverdientijd en is het een gewone lead. De aanname
    * bepaalde dus niet alleen het getal maar ook wélk scherm iemand kreeg, en
@@ -444,7 +456,7 @@ export function bereken(a: Antwoorden): Uitkomst {
     constanten: CONSTANTEN,
   };
 
-  if (!isFinite(tvt.midden) || tvt.midden > CONSTANTEN.GRENS_NIET_RENDABEL) {
+  if (!isFinite(tvt.midden)) {
     return { route: "niet_rendabel", ...berekening };
   }
   return { route: "lead", ...berekening };

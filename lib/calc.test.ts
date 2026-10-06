@@ -29,6 +29,12 @@ import type { Antwoorden } from "./calc.ts";
  * antwoord geeft in plaats van het juiste. De test is bijgesteld, de tarieven
  * niet — en de norm die overeind blijft is de norm die er werkelijk toe doet:
  * ruim onder de grens van 12 jaar, en niet de 13,0 jaar van de geleverde site.
+ *
+ * BIJGESTELD OP 6 OKTOBER 2026, rekenversie 1.3.0. De prijs van € 3.999 bleek
+ * fout; het instapmodel kost € 5.808 incl. btw en installatie. Case A komt
+ * daarmee op ongeveer 14,7 jaar. De grens van 12 jaar is op dezelfde dag
+ * vervallen, dus case A blijft een lead. Ook hier: de test volgt de werkelijke
+ * prijs, niet andersom.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -40,7 +46,7 @@ const basis: Antwoorden = {
   eigenaar: true,
 };
 
-test("case A — de persona uit het brandbook blijft een lead en komt niet op 13 jaar", () => {
+test("case A — de persona uit het brandbook blijft een lead en rekent met het eigen aanbod", () => {
   const u = bereken(basis);
   assert.equal(u.route, "lead");
   if (u.route !== "lead") return;
@@ -48,32 +54,29 @@ test("case A — de persona uit het brandbook blijft een lead en komt niet op 13
   // rekenen in plaats van met het eigen aanbod. Dat is de kerncorrectie, en die
   // moet blijven werken ook nu de tarieven ongunstiger zijn geworden.
   assert.ok(u.terugverdientijd_jaar.midden > 9, `middenwaarde ${u.terugverdientijd_jaar.midden}`);
-  assert.ok(
-    u.terugverdientijd_jaar.midden < CONSTANTEN.GRENS_NIET_RENDABEL,
-    `middenwaarde ${u.terugverdientijd_jaar.midden} moet onder de grens blijven`
-  );
   assert.equal(u.product.id, "instap-10-kwh");
 });
 
-test("case A blijft een lead met een marge van minstens een jaar tot de grens", () => {
-  // Aparte test, omdat dit de gevoeligste plek in de hele rekenkern is: een
-  // kwart cent op het leveringstarief schuift case A over de grens van 12 jaar
-  // en dan verdwijnt de belangrijkste persona uit het brandbook in het
-  // niet-rendabel-scherm. Zakt deze test, dan is dat geen testprobleem maar een
-  // signaal dat het aanbod of de prijs opnieuw langs Limsolar moet.
-  const u = bereken(basis);
-  if (u.route !== "lead") return assert.fail("case A is geen lead meer");
-  assert.ok(
-    CONSTANTEN.GRENS_NIET_RENDABEL - u.terugverdientijd_jaar.midden >= 1,
-    `nog maar ${CONSTANTEN.GRENS_NIET_RENDABEL - u.terugverdientijd_jaar.midden} jaar marge`
-  );
-});
-
-test("case B — te klein huishouden eindigt in het niet-rendabel-scherm", () => {
+test("een lange terugverdientijd is geen afwijzing meer (besluit 6 okt 2026)", () => {
+  // Tot rekenversie 1.3.0 ging alles boven de 12 jaar naar het niet-rendabel-
+  // scherm. Die grens is vervallen: een klein huishouden met weinig panelen
+  // krijgt nu gewoon zijn uitkomst, hoe lang de terugverdientijd ook is.
   const u = bereken({
     ...basis,
     panelen: { soort: "aantal", aantal: 6 },
     verbruik: { soort: "kwh", kwh: 1800 },
+  });
+  assert.equal(u.route, "lead");
+  if (u.route !== "lead") return;
+  assert.ok(u.terugverdientijd_jaar.midden > 12, `middenwaarde ${u.terugverdientijd_jaar.midden}`);
+});
+
+test("case B — zonder iets om op te slaan eindigt het in het niet-rendabel-scherm", () => {
+  // Het enige wat het niet-rendabel-scherm nog activeert: een besparing van nul.
+  const u = bereken({
+    ...basis,
+    contract: "vast",
+    panelen: { soort: "aantal", aantal: 0 },
   });
   assert.equal(u.route, "niet_rendabel");
 });
@@ -268,11 +271,6 @@ test("het profiel dat ten onrechte werd afgewezen, is nu een lead", () => {
     eigenaar: true,
   });
   assert.equal(u.route, "lead");
-  if (u.route !== "lead") return;
-  assert.ok(
-    u.terugverdientijd_jaar.midden < CONSTANTEN.GRENS_NIET_RENDABEL,
-    `middenwaarde ${u.terugverdientijd_jaar.midden}`
-  );
 });
 
 test("restcycli leveren alleen iets op bij een dynamisch contract", () => {

@@ -82,7 +82,7 @@ export function Hero({ variant }: { variant: Variant }) {
               {variant.hero.knop}
             </KnopLink>
             <p className="mt-s2 text-[0.85rem] text-n-200">
-              Vijf vragen, geen gegevens nodig voor de uitkomst.
+              Zes vragen, geen gegevens nodig voor de uitkomst.
             </p>
           </div>
         </div>
@@ -195,7 +195,7 @@ export function WaaromNu() {
 /* 5 ── Hoe het werkt ──────────────────────────────────────────────────────── */
 export function HoeHetWerkt() {
   const stappen: [string, string][] = [
-    ["Je maakt de berekening", "Vijf vragen. Je ziet meteen een bandbreedte, zonder gegevens."],
+    ["Je maakt de berekening", "Zes vragen. Je ziet meteen een bandbreedte, zonder gegevens."],
     [
       "Wij bellen je op het gekozen dagdeel",
       "Een gesprek van een minuut of tien. We lopen je situatie na en zeggen het eerlijk als het niet uitkomt.",
@@ -206,7 +206,11 @@ export function HoeHetWerkt() {
     ],
     [
       "Installatie door Limsolar",
-      "Vaste prijs vooraf. Aanmelding bij de netbeheerder en de garantie worden geregeld.",
+      // Stond tot 6 okt 2026: "Aanmelding bij de netbeheerder en de garantie worden
+      // geregeld." Onjuist: de klant meldt zelf aan (claimregister U8), en de
+      // garantie (U4) staat nog niet op bevestigd. Deze tekst staat buiten de
+      // claimpoort, dus hier geen belofte die de poort zou tegenhouden.
+      "Vaste prijs vooraf, en Limsolar voert de installatie uit.",
     ],
   ];
 
@@ -236,7 +240,7 @@ export function HoeHetWerkt() {
         <Beeld
           src={fotoVerdeelkast}
           alt="Monteur werkt in een elektrische verdeelkast"
-          bij="Aanmelding bij de netbeheerder wordt geregeld"
+          bij="Aansluiting in de meterkast"
         />
       </div>
       <p className="mt-s2 text-[0.78rem] text-n-500">{SFEERBEELD}</p>
@@ -521,7 +525,7 @@ export function Faq() {
     ],
     [
       "Waarom niet gewoon zelf een batterij online kopen?",
-      "Dat kan. Je regelt dan zelf de aansluiting op de groepenkast, de aanmelding bij de netbeheerder en de garantieafhandeling als er iets stukgaat. Bij ons zit dat in de prijs en heb je één partij die verantwoordelijk is.",
+      "Dat kan. Je regelt dan zelf de aansluiting op de groepenkast, de aanmelding bij de netbeheerder en de garantieafhandeling als er iets stukgaat. Via ons voert Limsolar de installatie uit en heb je één partij voor het werk.",
     ],
     [
       "Hoe weet ik dat jullie betrouwbaar zijn?",
