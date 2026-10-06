@@ -203,10 +203,20 @@ function HeelNederland() {
           ))}
           <circle cx={zwaag[0]} cy={zwaag[1]} r={14} fill="#FEFEFE" className="kaart-golf" />
           <circle cx={zwaag[0]} cy={zwaag[1]} r={5.5} fill="#FEFEFE" stroke="#370060" strokeWidth={2} />
+          {/* Donker pilletje achter het label, anders leest "Zwaag" niet over de stippen. */}
+          <rect
+            x={zwaag[0] - 60}
+            y={zwaag[1] - 10}
+            width={46}
+            height={20}
+            rx={10}
+            fill="#240040"
+            fillOpacity={0.85}
+          />
           <text
-            x={zwaag[0] - 12}
+            x={zwaag[0] - 37}
             y={zwaag[1] + 4}
-            textAnchor="end"
+            textAnchor="middle"
             fontSize="12"
             fontWeight="600"
             fill="#FEFEFE"

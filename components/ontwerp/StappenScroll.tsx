@@ -2,7 +2,9 @@
 
 import Image, { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import fotoAdvies from "@/public/beeld/advies-opname-1600.webp";
+// advies-opname staat sinds 6 okt 2026 in de hero; hier de meterkastmeting,
+// die ook beter past bij "we kijken naar de meterkast".
+import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
 import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
 
 const SFEERBEELD = "Sfeerbeeld, geen foto van een eigen project.";
@@ -36,7 +38,7 @@ const STAPPEN: Stap[] = [
     titel: "Adviesgesprek bij je thuis",
     tekst: "Alleen als het zinvol is. We kijken naar de meterkast, het verbruikspatroon en de plek voor de batterij.",
     punten: ["Meterkast en aansluiting", "Plek voor de batterij", "Capaciteit die past"],
-    beeld: <Foto src={fotoAdvies} alt="Adviseur met tablet naast een thuisbatterij aan de muur" />,
+    beeld: <Foto src={fotoMeterkast} alt="Monteur meet met een multimeter aan een groepenkast" />,
   },
   {
     kort: "Installatie",

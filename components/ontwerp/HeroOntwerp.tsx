@@ -1,4 +1,6 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
+import fotoHero from "@/public/beeld/advies-opname-1600.webp";
 import Calculator from "@/components/calculator/Calculator";
 import Keurmerken from "@/components/Keurmerken";
 import type { Variant } from "@/lib/varianten";
@@ -86,6 +88,33 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
           <p className="mt-s2 text-[0.82rem] text-n-200">
             Je ziet de uitkomst zonder gegevens achter te laten.
           </p>
+
+          {/* Foto onder de rekentool, alleen vanaf desktop. Daar is de linkerkolom
+              langer dan de rekentool en stond er een leeg paars vlak. Op een
+              telefoon zou de foto tussen rekentool en pagina komen en alleen
+              scrollen kosten, dus daar niet.
+
+              FOTO VERVANGEN: zet een nieuw bestand in public/beeld/ en pas de
+              import bovenaan aan. Liggend formaat, minimaal 1600 × 1000 px
+              (verhouding 16:10), webp of jpg. Het beeld wordt bijgesneden tot
+              16:10, dus houd het onderwerp in het midden. Is het een eigen foto
+              van Limsolar, haal dan het bijschrift "Sfeerbeeld" weg. */}
+          <figure className="intro mt-s4 hidden lg:block" style={v(520)}>
+            <div className="relative aspect-[16/10] overflow-hidden rounded-merk shadow-[0_30px_80px_-24px_rgba(0,0,0,0.55)]">
+              <Image
+                src={fotoHero}
+                alt="Adviseur met tablet naast een thuisbatterij aan de muur"
+                fill
+                placeholder="blur"
+                sizes="(min-width: 1024px) 520px, 0px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#240040]/50 via-transparent to-transparent" />
+            </div>
+            <figcaption className="mt-s2 text-[0.78rem] text-n-200">
+              Sfeerbeeld, geen foto van een eigen project.
+            </figcaption>
+          </figure>
         </div>
       </div>
 

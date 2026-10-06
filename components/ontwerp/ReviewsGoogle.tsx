@@ -38,9 +38,9 @@ export default function ReviewsGoogle() {
             <span className="kop-licht">Rechtstreeks van Google.</span>
           </h2>
           <p className="mt-s3 max-w-lees text-n-500">
-            De installatie wordt uitgevoerd door {LIMSOLAR.naam}. Deze beoordelingen gaan dus over{" "}
-            {LIMSOLAR.naam} en niet over de berekening op deze pagina — je hoort te weten wie er
-            straks bij je thuis staat.
+            Deze beoordelingen gaan over {LIMSOLAR.naam}, de partij die de installatie uitvoert —
+            niet over de berekening op deze pagina. Je hoort te weten wie er straks bij je thuis
+            staat.
           </p>
         </Onthul>
 
@@ -108,8 +108,8 @@ export default function ReviewsGoogle() {
                     {aantal} beoordelingen, de goede én de mindere.
                   </p>
                   <p className="mt-s2 text-[0.95rem] leading-relaxed text-n-500">
-                    Je leest hun beoordelingen op het openbare Google-profiel van {LIMSOLAR.naam} —
-                    de goede én de mindere. Peildatum van de score: {peildatum}.
+                    Op het openbare Google-profiel van {LIMSOLAR.naam} lees je ze allemaal.
+                    Peildatum van de score: {peildatum}.
                   </p>
                 </>
               )}

@@ -15,7 +15,7 @@ export default function EnergieStroom({ className = "" }: { className?: string }
 
   return (
     <svg
-      viewBox="0 0 520 132"
+      viewBox="-12 0 556 132"
       className={className}
       role="img"
       aria-label="Schema: de zon schijnt op je panelen, de thuisbatterij slaat het overschot op en 's avonds gebruik je die stroom in huis."
