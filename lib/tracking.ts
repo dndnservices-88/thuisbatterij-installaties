@@ -140,7 +140,22 @@ export function bewaarConsent(t: Toestemming) {
  * Zet die vereiste per tag ook echt in — een tag zonder toestemmingsinstelling
  * vuurt gewoon, ook voor wie geweigerd heeft.
  */
-export function pasConsentToe(t: Toestemming) {
+/**
+ * Waar de toestemming vandaan komt.
+ *
+ *  - "banner": de bezoeker klikt nu, op deze pagina, in de banner.
+ *  - "opgeslagen": een eerder bewaarde keuze die bij het laden opnieuw wordt
+ *    toegepast. Dat gebeurt bij élke paginalading van een terugkerende bezoeker.
+ *
+ * Het onderscheid bestaat voor één tag in Tag Manager: die stuurt bij een
+ * banner-akkoord alsnog de paginaweergave die vóór de klik cookieloos ging en
+ * daardoor niet in de GA4-rapporten telt (gemeten 6 okt 2026). Zou die tag ook
+ * op "opgeslagen" vuren, dan telt elke paginalading van een terugkerende
+ * bezoeker dubbel.
+ */
+export type ConsentBron = "banner" | "opgeslagen";
+
+export function pasConsentToe(t: Toestemming, bron: ConsentBron = "opgeslagen") {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.gtag =
@@ -157,6 +172,7 @@ export function pasConsentToe(t: Toestemming) {
     event: "consent_update",
     consent_statistieken: t.statistieken,
     consent_marketing: t.marketing,
+    consent_bron: bron,
   });
 }
 

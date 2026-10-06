@@ -5,6 +5,7 @@ import {
   schrijfConsent,
   consentSignalen,
   nieuweToestemming,
+  pasConsentToe,
   CONSENT_VERSIE,
   type Toestemming,
 } from "./tracking.ts";
@@ -134,4 +135,29 @@ test("een oude 'alles'-cookie geeft na vertaling volledige toestemming", () => {
   const s = consentSignalen(t);
   assert.equal(s.ad_storage, "granted");
   assert.equal(s.analytics_storage, "granted");
+});
+
+
+// ─── consent_bron: banner of opgeslagen ──────────────────────────────────────
+
+test("consent_update draagt consent_bron mee: standaard opgeslagen, bij klik banner", () => {
+  // Zonder dit onderscheid vuurt de inhaal-paginaweergave in Tag Manager bij
+  // elke paginalading van een terugkerende bezoeker, en telt GA4 dubbel.
+  const w = globalThis as unknown as { window?: unknown; dataLayer?: unknown[] };
+  const oud = w.window;
+  const nep: { dataLayer: unknown[]; gtag?: unknown } = { dataLayer: [] };
+  w.window = nep;
+  try {
+    pasConsentToe(nieuweToestemming({ statistieken: true, marketing: false }));
+    pasConsentToe(nieuweToestemming({ statistieken: true, marketing: true }), "banner");
+    const events = nep.dataLayer.filter(
+      (x): x is Record<string, unknown> => typeof x === "object" && x !== null && "event" in (x as object)
+    );
+    assert.equal(events.length, 2);
+    assert.equal(events[0].consent_bron, "opgeslagen");
+    assert.equal(events[1].consent_bron, "banner");
+    assert.equal(events[1].consent_statistieken, true);
+  } finally {
+    w.window = oud;
+  }
 });

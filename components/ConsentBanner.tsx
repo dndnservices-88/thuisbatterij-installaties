@@ -78,7 +78,7 @@ export default function ConsentBanner() {
   const leg = useCallback((keuze: { statistieken: boolean; marketing: boolean }) => {
     const t: Toestemming = nieuweToestemming(keuze);
     bewaarConsent(t);
-    pasConsentToe(t);
+    pasConsentToe(t, "banner");
     setStatistieken(keuze.statistieken);
     setMarketing(keuze.marketing);
     setZichtbaar(false);
