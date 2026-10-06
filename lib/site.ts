@@ -50,6 +50,23 @@ export const LIMSOLAR = {
 };
 
 /**
+ * Het openbare Google-bedrijfsprofiel van Limsolar. Eén plek voor score, aantal
+ * en peildatum: de claimtekst V3 en de scorekaart bij de reviews lezen allebei
+ * hieruit, zodat ze nooit uit elkaar lopen.
+ *
+ * Gemeten op 6 oktober 2026 in de browser van Dieudonné (schermafbeelding in
+ * 06 - Legal & Compliance/Bewijs/). Maandelijks opnieuw meten en dan alle drie
+ * de velden bijwerken — een oude score met een oude datum is eerlijk, een oude
+ * score met een nieuwe datum niet.
+ */
+export const GOOGLE_PROFIEL = {
+  score: 4.8,
+  aantal: 75,
+  peildatum: "6 oktober 2026",
+  url: "https://www.google.com/maps?cid=1677789105305039487",
+};
+
+/**
  * Contactpunt van de afzender.
  *
  * Dit is geen nette-om-te-hebben maar een verplichting op twee gronden tegelijk:

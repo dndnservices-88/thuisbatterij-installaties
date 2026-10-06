@@ -1,51 +1,57 @@
 import { headers } from "next/headers";
 import { kiesVariant } from "@/lib/varianten";
-import { Sectie, Kop } from "@/components/ui/Sectie";
-import Calculator from "@/components/calculator/Calculator";
-import {
-  Aanbod,
-  Faq,
-  Footer,
-  Hero,
-  HoeHetWerkt,
-  Reviews,
-  SlotCta,
-  Usps,
-  Vertrouwensbalk,
-  WaaromNu,
-} from "@/components/secties/Secties";
+import { Aanbod, Faq, Footer, SlotCta, Vertrouwensbalk } from "@/components/secties/Secties";
+import { OntwerpModusAan } from "@/components/ui/TelOp";
+import { Leesvoortgang, Onthul } from "@/components/ontwerp/Onthul";
+import HeroOntwerp from "@/components/ontwerp/HeroOntwerp";
+import WaaromNuOntwerp from "@/components/ontwerp/WaaromNuOntwerp";
+import StappenScroll from "@/components/ontwerp/StappenScroll";
+import VerwachtingenOntwerp from "@/components/ontwerp/VerwachtingenOntwerp";
+import ReviewsGoogle from "@/components/ontwerp/ReviewsGoogle";
+import "@/components/ontwerp/ontwerp.css";
 
 /**
- * De landingspagina. Sectievolgorde uit het playbook, fase 2.
- * De calculator staat bewust hoog — direct onder de vertrouwensbalk — omdat
- * daar het overgrote deel van de leads vandaan komt.
+ * De landingspagina, sinds 6 okt 2026 in de vormgeving van het ontwerpvoorbeeld
+ * (eerst op /ontwerp, dat nu hierheen doorverwijst).
+ *
+ * De rekentool staat in de hero zelf: de eerste vraag is boven de vouw te zien.
+ * De oude secties (Hero, HoeHetWerkt, WaaromNu, Usps, Reviews in Secties.tsx)
+ * staan nog in de code om terug te kunnen, maar worden niet meer getoond.
+ *
+ * Claimpoort, rekenlogica en formulier zijn ongewijzigd: alleen de vormgeving
+ * is anders.
  */
+
+// Zet js-onthul op <html> zodra dit script draait. Pas dan worden blokken
+// verborgen om ze bij het scrollen te laten binnenkomen; zonder JavaScript
+// staat alles er gewoon.
+const ONTHUL_AAN = `document.documentElement.classList.add('js-onthul');`;
+
 export default function Pagina() {
   const variant = kiesVariant(headers().get("host"));
 
   return (
-    <main>
-      <Hero variant={variant} />
-      <Vertrouwensbalk />
-
-      <Sectie id="calculator" fond="grijs" smal>
-        <Kop
-          boven="De rekensom"
-          onder="Zes vragen over je situatie. Je ziet de uitkomst meteen, zonder gegevens achter te laten."
-        >
-          Wat levert een thuisbatterij bij jou op?
-        </Kop>
-        <Calculator />
-      </Sectie>
-
-      <WaaromNu />
-      <HoeHetWerkt />
-      <Aanbod />
-      <Usps />
-      <Reviews />
-      <Faq />
-      <SlotCta variant={variant} />
-      <Footer />
-    </main>
+    <OntwerpModusAan>
+      <script dangerouslySetInnerHTML={{ __html: ONTHUL_AAN }} />
+      <Leesvoortgang />
+      <main className="ontwerp">
+        <HeroOntwerp variant={variant} />
+        <Vertrouwensbalk />
+        <WaaromNuOntwerp />
+        <StappenScroll />
+        <Onthul>
+          <Aanbod />
+        </Onthul>
+        <VerwachtingenOntwerp />
+        <ReviewsGoogle />
+        <Onthul>
+          <Faq />
+        </Onthul>
+        <Onthul>
+          <SlotCta variant={variant} />
+        </Onthul>
+        <Footer />
+      </main>
+    </OntwerpModusAan>
   );
 }

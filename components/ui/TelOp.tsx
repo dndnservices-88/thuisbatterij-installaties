@@ -3,10 +3,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 /**
- * Ontwerpmodus: staat alleen aan op /ontwerp. Op de homepage is de waarde
- * false en rendert TelOpBereik exact dezelfde tekst als voorheen — geen
- * animatie, geen extra element. Zo kan het ontwerpvoorbeeld de rekentool
- * gebruiken zonder dat de live pagina verandert.
+ * Ontwerpmodus: staat aan op de homepage sinds die op 6 okt 2026 de nieuwe
+ * vormgeving kreeg (eerst alleen op /ontwerp). Waar de provider ontbreekt, is
+ * de waarde false en rendert TelOpBereik gewoon de vaste tekst, zonder animatie.
  */
 const OntwerpModus = createContext(false);
 

@@ -1,6 +1,8 @@
 /*
- * Ontwerpvoorbeeld (/ontwerp). Alles hieronder hangt onder .ontwerp of onder
- * een eigen klassenaam, zodat de homepage er niets van merkt.
+ * Vormgeving van de homepage. Begon op 30 sep 2026 als ontwerpvoorbeeld op
+ * /ontwerp en is op 6 okt 2026 de homepage geworden. Alles hangt onder .ontwerp
+ * of onder een eigen klassenaam, zodat losse pagina's (privacyverklaring) er
+ * niets van merken.
  *
  * Twee kleuren erbij, allebei afgeleid van het merkpaars en allebei getoetst op
  * contrast (WCAG AA vraagt 4,5:1 voor gewone tekst):
@@ -203,6 +205,39 @@
   animation: ontwerp-balk 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) infinite alternate;
 }
 
+/* ── Stippenkaart Nederland ───────────────────────────────────────────────── */
+@keyframes ontwerp-stip {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.zichtbaar .kaart-stip {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ontwerp-stip 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--vertraging, 0ms);
+}
+@keyframes ontwerp-golf-kaart {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.kaart-golf {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ontwerp-golf-kaart 2.4s ease-out infinite;
+}
+
 /* ── Kaarten die iets optillen onder de muis ──────────────────────────────── */
 .til {
   transition:
@@ -234,7 +269,9 @@
   .batterij-vulling,
   .huis-raam,
   .golf span,
-  .nep-voortgang {
+  .nep-voortgang,
+  .zichtbaar .kaart-stip,
+  .kaart-golf {
     animation: none !important;
   }
   .stroom-bol {

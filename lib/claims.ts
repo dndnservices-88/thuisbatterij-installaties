@@ -12,6 +12,8 @@
  * bewijsstuk in 06 - Legal & Compliance/Bewijs/ staat.
  */
 
+import { GOOGLE_PROFIEL } from "./site";
+
 export type ClaimStatus = "bevestigd" | "toegezegd" | "open" | "verboden";
 
 export type ClaimRegel = {
@@ -81,9 +83,11 @@ export const CLAIMS = {
 
   // ── Uitvoerings- en servicebeloften (altijd op naam van Limsolar) ─────────
   U1: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 ("dit stuk mag
+    // ook live"). Aftekening en bewijsstuk ontbreken nog — zie het register.
     id: "U1",
     tekst: "Limsolar installeert doorgaans binnen 14 dagen, waar technisch mogelijk",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Doorlooptijden uit de planning over minimaal 3 maanden",
   },
   U3: {
@@ -93,10 +97,12 @@ export const CLAIMS = {
     nodig: "Garantievoorwaarden van de fabrikant, per merk",
   },
   U4: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026. Aftekening door
+    // Limsolar ontbreekt nog, en de schriftelijke garantievoorwaarden ook.
     id: "U4",
     tekst: "5 jaar garantie op de installatie door Limsolar",
-    status: "toegezegd",
-    nodig: "Garantievoorwaarden Limsolar",
+    status: "bevestigd",
+    nodig: "Schriftelijke garantievoorwaarden Limsolar die de klant kan inzien — nog aanleveren",
   },
   U8: {
     id: "U8",
@@ -105,47 +111,62 @@ export const CLAIMS = {
     nodig: "Beschrijving van de hulp die Limsolar biedt. De klant meldt zelf aan (Dieudonné, 6 okt 2026).",
   },
   U9: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 ("dit stuk mag
+    // ook live"). Aftekening en bewijsstuk ontbreken nog — zie het register.
     id: "U9",
     tekst: "Limsolar installeert in heel Nederland",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Schriftelijke bevestiging werkgebied. Let op: sgze.nl noemt (6 okt 2026) alleen Noord-Holland, Utrecht en Zuid-Holland.",
   },
   U10: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 ("dit stuk mag
+    // ook live"). Aftekening en bewijsstuk ontbreken nog — zie het register.
     id: "U10",
     tekst: "Limsolar begeleidt je bij de btw-teruggave, onder voorwaarden",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Beschrijving van de begeleiding en de voorwaarden",
   },
   U12: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 ("dit stuk mag
+    // ook live"). Aftekening en bewijsstuk ontbreken nog — zie het register.
     id: "U12",
     tekst: "Vrijblijvend adviesgesprek bij je thuis",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Salesscript + het formulier dat aan tafel wordt getekend",
   },
 
   // ── Vertrouwens- en cijferclaims ─────────────────────────────────────────
   V1: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026. Aftekening door
+    // Limsolar ontbreekt nog; deelname aan SGZE is wél aangetoond (sgze.nl).
+    // Dit is alleen de TEKST. Het logo heeft zijn eigen regel, V1B.
     id: "V1",
     tekst: "Aangesloten bij Stichting Garantiefonds Zon & Energie (SGZE)",
-    status: "toegezegd",
-    nodig: "Beeldmerkvoorwaarden SGZE. Deelname aangetoond: schermafbeelding sgze.nl in Bewijs/ (6 okt 2026).",
+    status: "bevestigd",
+    nodig: "Aftekening Limsolar. Deelname aangetoond (sgze.nl, Bewijs/). Het LOGO staat apart onder V1B.",
   },
   V2: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026. Aftekening door
+    // Limsolar ontbreekt nog, en het bewijsstuk (export met peildatum) ook.
     id: "V2",
     tekst: "Limsolar installeerde meer dan 300 thuisbatterijen (peildatum 6 oktober 2026)",
-    status: "toegezegd",
-    nodig: "Export uit het systeem van Limsolar met peildatum",
+    status: "bevestigd",
+    nodig: "Export uit het systeem van Limsolar met peildatum — nog aanleveren",
   },
   V3: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026: openbare,
+    // originele Google-reviews. Gemeten op 6 okt 2026, schermafbeelding in Bewijs/.
     id: "V3",
-    tekst: "Gemiddeld 4,8 op Google, op basis van 74 beoordelingen (peildatum 21 september 2026)",
-    status: "toegezegd",
-    nodig: "Gedateerde schermafbeelding van het Google-bedrijfsprofiel; maandelijks opnieuw meten",
+    tekst: `Gemiddeld ${new Intl.NumberFormat("nl-NL").format(GOOGLE_PROFIEL.score)} op Google, op basis van ${GOOGLE_PROFIEL.aantal} beoordelingen (peildatum ${GOOGLE_PROFIEL.peildatum})`,
+    status: "bevestigd",
+    nodig: "Maandelijks opnieuw meten en GOOGLE_PROFIEL in lib/site.ts bijwerken. Schermafbeelding 6 okt 2026 in Bewijs/.",
   },
   V4: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026. De tekst zegt
+    // eerlijk dat er geen eigen controle is — dat is wat de wet sinds 2022 vraagt.
     id: "V4",
     tekst: "Deze beoordelingen komen uit het openbare Google-bedrijfsprofiel van Limsolar B.V. Wij plaatsen ze niet zelf en kunnen ze niet wijzigen of verwijderen. Google controleert niet of een beoordeling afkomstig is van iemand die een installatie heeft afgenomen, en wij doen dat ook niet.",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "URL van het Google-bedrijfsprofiel. Controlemethode: geen eigen controle — dat staat zo in de tekst (verplicht sinds 2022).",
   },
   // Sinds 2022 verplicht: vermelden óf en hóé je controleert dat een review van
@@ -174,6 +195,16 @@ export const CLAIMS = {
   // Daarom heeft elk merk hier TWEE bewijsstukken nodig en niet één:
   // (a) dat de aansluiting/certificering bestaat en geldig is, en
   // (b) dat de houder het beeldmerk mag laten voeren door déze partij.
+  V1B: {
+    // Het SGZE-LOGO, los van de tekst V1. Een keurmerklogo voeren zonder
+    // toestemming van de houder staat op de zwarte lijst (bijlage I richtlijn
+    // oneerlijke handelspraktijken). Deelname is aangetoond, de toestemming
+    // voor het beeldmerk niet — daarom staat de tekst live en het logo niet.
+    id: "V1B",
+    tekst: "Logo Stichting Garantiefonds Zon & Energie (SGZE)",
+    status: "open",
+    nodig: "Beeldmerkvoorwaarden / toestemming van SGZE voor het logo",
+  },
   V7: {
     id: "V7",
     tekst: "Installatiewerk door een InstallQ-erkend installatiebedrijf",

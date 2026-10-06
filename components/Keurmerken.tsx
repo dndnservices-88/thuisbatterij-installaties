@@ -59,7 +59,9 @@ type Merk = {
 
 const KEURMERKEN: Merk[] = [
   {
-    claim: "V1",
+    // V1B en niet V1: de tekst "aangesloten bij SGZE" mag live, het logo pas
+    // als SGZE toestemming voor het beeldmerk heeft gegeven.
+    claim: "V1B",
     bron: sgze,
     // Naam per 6 okt 2026 volgens sgze.nl: Zon & Energie, niet meer ZonneEnergie.
     naam: "Stichting Garantiefonds Zon & Energie",
