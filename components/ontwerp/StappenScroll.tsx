@@ -23,7 +23,7 @@ const STAPPEN: Stap[] = [
     kort: "Rekenen",
     titel: "Je maakt de berekening",
     tekst: "Zes vragen over je panelen, je verbruik en je contract. Je ziet meteen een bandbreedte — zonder gegevens achter te laten.",
-    punten: ["Twee minuten", "Uitkomst direct in beeld", "Ook als hij níét uitkomt"],
+    punten: ["Twee minuten", "Uitkomst direct in beeld", "Zonder gegevens achter te laten"],
     beeld: <NepRekentool />,
   },
   {

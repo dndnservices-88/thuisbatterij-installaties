@@ -137,9 +137,6 @@ export default function VerwachtingenOntwerp() {
           </div>
         </div>
 
-        <p className="mt-s4 max-w-lees text-[0.85rem] text-n-500">
-          Wat hier staat, staat er in de formulering die we kunnen aantonen — inclusief de nuance.
-        </p>
       </div>
     </section>
   );

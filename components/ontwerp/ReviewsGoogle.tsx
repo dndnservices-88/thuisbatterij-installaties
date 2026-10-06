@@ -105,7 +105,9 @@ export default function ReviewsGoogle() {
               ) : (
                 <>
                   <p className="font-kop text-[1.35rem] font-semibold leading-snug">
-                    {aantal} beoordelingen, de goede én de mindere.
+                    {/* "over Limsolar" en niet "over ons": de reviews gaan over de
+                        installateur, niet over Thuisbatterij-installaties. */}
+                    Lees zelf wat klanten over Limsolar zeggen.
                   </p>
                   <p className="mt-s2 text-[0.95rem] leading-relaxed text-n-500">
                     Op het openbare Google-profiel van {LIMSOLAR.naam} lees je ze allemaal.

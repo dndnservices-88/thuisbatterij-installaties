@@ -609,7 +609,8 @@ export function SlotCta({ variant }: { variant: Variant }) {
             sizes="(min-width: 1024px) 40vw, 100vw"
             className="h-auto w-full rounded-merk"
           />
-          <figcaption className="mt-s2 text-[0.78rem] text-n-200">{SFEERBEELD}</figcaption>
+          {/* Bijschrift "Sfeerbeeld" weggehaald op verzoek van Dieudonné, 6 okt
+              2026. De alt-tekst blijft neutraal: niets suggereert een eigen project. */}
         </figure>
       </div>
     </Sectie>
