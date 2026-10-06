@@ -141,6 +141,7 @@ const ICOON = {
   schild: "M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3zM9 12l2 2 4-4",
   batterij: "M8 6h8a2 2 0 012 2v10a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2zM10 3h4M12.5 10l-2 3h3l-2 3",
   garantie: "M12 15a5 5 0 100-10 5 5 0 000 10zM9 14l-1 7 4-2 4 2-1-7",
+  product: "M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5M12 13v8",
   gebouw: "M4 21V8l8-5 8 5v13M9 21v-6h6v6M4 21h16",
 };
 
@@ -178,7 +179,7 @@ function ClaimMetNadruk({ id, nadruk }: { id: ClaimId; nadruk: string }) {
 export function Vertrouwensbalk() {
   return (
     <div className="border-b border-[#E5DAF0] bg-paars-tint px-s3 py-s4">
-      <div className="mx-auto grid max-w-inhoud gap-s3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-inhoud gap-s3 sm:grid-cols-2 lg:grid-cols-5">
         {mag("V1") && (
           <VertrouwensKaart icoon="schild">
             <ClaimMetNadruk id="V1" nadruk="Aangesloten bij" />
@@ -187,6 +188,11 @@ export function Vertrouwensbalk() {
         {mag("V2") && (
           <VertrouwensKaart icoon="batterij">
             <ClaimMetNadruk id="V2" nadruk="meer dan 300 thuisbatterijen" />
+          </VertrouwensKaart>
+        )}
+        {mag("U3") && (
+          <VertrouwensKaart icoon="product">
+            <ClaimMetNadruk id="U3" nadruk="10 jaar productgarantie" />
           </VertrouwensKaart>
         )}
         {mag("U4") && (

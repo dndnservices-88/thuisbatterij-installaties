@@ -91,9 +91,11 @@ export const CLAIMS = {
     nodig: "Doorlooptijden uit de planning over minimaal 3 maanden",
   },
   U3: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 (in de
+    // vertrouwensbalk). Garantievoorwaarden van de fabrikant per merk ontbreken nog.
     id: "U3",
     tekst: "10 jaar productgarantie op de batterij",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Garantievoorwaarden van de fabrikant, per merk",
   },
   U4: {
