@@ -117,49 +117,18 @@ export default function Keurmerken() {
   // Niets aangetoond, niets te tonen. Geen lege balk, geen restrand.
   if (keurmerken.length === 0) return null;
 
-  // Welke er in de preview geel omrand staan. Alleen de merken uit de strip:
-  // het Warmtefonds staat eronder als zin en heeft dus geen rand, en die er
-  // toch bij noemen maakt de uitleg zelf onwaar.
-  //
-  // Zodra het bewijs binnen is en de status op 'bevestigd' gaat, valt een merk
-  // hier vanzelf uit; is de lijst leeg, dan verdwijnt de waarschuwingsregel.
-  // Niets handmatig weg te halen, dus ook niets om te vergeten.
-  const open = keurmerken.filter((m) => CLAIMS[m.claim].status !== "bevestigd");
-
-  // Met twee merken is één rij smaller dan het scherm, en dan zie je een gat
-  // voorbijkomen. Daarom de rij een aantal keer herhalen tot hij zeker breder
-  // is dan de breedste telefoon of monitor.
-  const rij = Array.from({ length: 6 }, () => keurmerken).flat();
-
+  // Stilstaand sinds 6 okt 2026, op verzoek van Dieudonné: met het bewegende
+  // energieschema erboven was een tweede bewegend element te druk. Elk merk één
+  // keer, naast elkaar. De uitlegregel "Geel omrand = nog niet aangetoond" is
+  // op dezelfde dag weggehaald; de gele rand per merk blijft in de preview wel
+  // zichtbaar, en live verschijnt een merk pas als het bewezen is.
   return (
     <section aria-label="Aansluitingen en erkenningen" className="mt-s4">
-      {/* Bewust kort gehouden, op één regel. Deze regel bestaat alleen in de
-          preview, en elke regel die hij extra wordt maakt het paarse blok in
-          de preview hoger dan het live wordt — dan beoordeel je een indeling
-          die niemand ooit te zien krijgt. */}
-      {!isLive && open.length > 0 && (
-        <p className="mb-s2 text-[0.8rem] text-n-200">
-          <span className="placeholder-label">Voorbeeld</span> Geel omrand = nog
-          niet aangetoond ({open.map((m) => `${m.claim} ${m.kort}`).join(", ")});
-          live verdwijnt de strip tot het bewijs binnen is.
-        </p>
-      )}
-
-      {keurmerken.length > 0 && (
-        // De vervaging links en rechts is er zodat de blokjes niet halverwege
-        // tegen de schermrand aan kapotgesneden worden; ze verdwijnen nu.
-        <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
-          <div className="flex w-max animate-strip gap-s2 hover:[animation-play-state:paused] motion-reduce:animate-none">
-            {[0, 1].map((kopie) => (
-              <div key={kopie} className="flex shrink-0 gap-s2" aria-hidden={kopie === 1}>
-                {rij.map((m, i) => (
-                  <Merkje key={`${kopie}-${m.claim}-${i}`} merk={m} />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="flex flex-wrap gap-s2">
+        {keurmerken.map((m) => (
+          <Merkje key={m.claim} merk={m} />
+        ))}
+      </div>
     </section>
   );
 }
