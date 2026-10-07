@@ -6,7 +6,7 @@ import { Onthul } from "./Onthul";
 /**
  * Reviews op basis van het openbare Google-profiel van Limsolar.
  *
- * Score, aantal en peildatum komen uit GOOGLE_PROFIEL (lib/site.ts) en staan
+ * Score en aantal komen uit GOOGLE_PROFIEL (lib/site.ts) en staan
  * alleen live als claim V3 op "bevestigd" staat. De bezoeker kan met één klik
  * alle originele beoordelingen op Google lezen — dat is sterker dan een paar
  * uitgekozen citaten, want hij ziet ook de mindere.
@@ -23,7 +23,7 @@ const nl = (n: number) => new Intl.NumberFormat("nl-NL").format(n);
 
 export default function ReviewsGoogle() {
   if (!mag("V3")) return null;
-  const { score, aantal, peildatum, url } = GOOGLE_PROFIEL;
+  const { score, aantal, url } = GOOGLE_PROFIEL;
   const vulling = `${Math.max(0, Math.min(100, (score / 5) * 100))}%`;
 
   return (
@@ -38,9 +38,7 @@ export default function ReviewsGoogle() {
             <span className="kop-licht">Rechtstreeks van Google.</span>
           </h2>
           <p className="mt-s3 max-w-lees text-n-500">
-            Deze beoordelingen gaan over {LIMSOLAR.naam}, de partij die de installatie uitvoert —
-            niet over de berekening op deze pagina. Je hoort te weten wie er straks bij je thuis
-            staat.
+            De installatie wordt uitgevoerd door {LIMSOLAR.naam}. Zo ervaren klanten hun werk.
           </p>
         </Onthul>
 
@@ -111,8 +109,8 @@ export default function ReviewsGoogle() {
                     Lees zelf wat klanten over Limsolar zeggen.
                   </p>
                   <p className="mt-s2 text-[0.95rem] leading-relaxed text-n-500">
-                    Op het openbare Google-profiel van {LIMSOLAR.naam} lees je ze allemaal.
-                    Peildatum van de score: {peildatum}.
+                    Alle beoordelingen staan op het openbare Google-profiel van {LIMSOLAR.naam},
+                    ook de mindere.
                   </p>
                 </>
               )}

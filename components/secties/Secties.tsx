@@ -354,17 +354,19 @@ export function Aanbod() {
             <Claim id="P6" alsWeg="Het instapsysteem uit ons assortiment" />. Inclusief installatie
             door {LIMSOLAR.naam}.
           </p>
-          <ul className="mt-s3 space-y-s1 text-[0.9rem] text-n-500">
-            {mag("U3") && (
-              <li>
-                <Claim id="U3" />
+          {/* Garanties als blikvanger (verzoek Dieudonné 7 okt 2026): het is een
+              van de sterkste verkoopargumenten, dus groter en met vinkje. */}
+          <ul className="mt-s3 space-y-s2">
+            {(["U3", "U4"] as const).filter((id) => mag(id)).map((id) => (
+              <li key={id} className="flex items-center gap-s2 rounded-merk bg-n-000 px-s3 py-s2 text-[1rem] text-paars-donker">
+                <span aria-hidden="true" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-paars text-[0.85rem] font-bold text-n-000">✓</span>
+                <span>
+                  <ClaimMetNadruk id={id} nadruk={id === "U3" ? "10 jaar productgarantie" : "5 jaar garantie"} />
+                </span>
               </li>
-            )}
-            {mag("U4") && (
-              <li>
-                <Claim id="U4" />
-              </li>
-            )}
+            ))}
+          </ul>
+          <ul className="mt-s2 space-y-s1 text-[0.9rem] text-n-500">
             {mag("U8") && (
               <li>
                 <Claim id="U8" />
@@ -530,9 +532,7 @@ export function Reviews() {
         boven="Ervaringen"
         onder={
           <>
-            De installatie wordt uitgevoerd door {LIMSOLAR.naam}. Deze beoordelingen gaan dus over{" "}
-            {LIMSOLAR.naam} en niet over de berekening op deze pagina — dat is een bewuste keuze,
-            want je hoort te weten wie er straks bij je thuis staat.
+            De installatie wordt uitgevoerd door {LIMSOLAR.naam}. Zo ervaren klanten hun werk.
           </>
         }
       >

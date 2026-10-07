@@ -163,7 +163,7 @@ export const CLAIMS = {
     // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026: openbare,
     // originele Google-reviews. Gemeten op 6 okt 2026, schermafbeelding in Bewijs/.
     id: "V3",
-    tekst: `Gemiddeld ${new Intl.NumberFormat("nl-NL").format(GOOGLE_PROFIEL.score)} op Google, op basis van ${GOOGLE_PROFIEL.aantal} beoordelingen (peildatum ${GOOGLE_PROFIEL.peildatum})`,
+    tekst: `Gemiddeld ${new Intl.NumberFormat("nl-NL").format(GOOGLE_PROFIEL.score)} op Google, op basis van ${GOOGLE_PROFIEL.aantal} beoordelingen`,
     status: "bevestigd",
     nodig: "Maandelijks opnieuw meten en GOOGLE_PROFIEL in lib/site.ts bijwerken. Schermafbeelding 6 okt 2026 in Bewijs/.",
   },
@@ -171,7 +171,9 @@ export const CLAIMS = {
     // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026. De tekst zegt
     // eerlijk dat er geen eigen controle is — dat is wat de wet sinds 2022 vraagt.
     id: "V4",
-    tekst: "Deze beoordelingen komen uit het openbare Google-bedrijfsprofiel van Limsolar B.V. Wij plaatsen ze niet zelf en kunnen ze niet wijzigen of verwijderen. Google controleert niet of een beoordeling afkomstig is van iemand die een installatie heeft afgenomen, en wij doen dat ook niet.",
+    // Ingekort 7 okt 2026 (Dieudonné: minder nadruk op "apart van Limsolar").
+    // De verplichte kern blijft: óf en hóé er gecontroleerd wordt.
+    tekst: "Beoordelingen van het openbare Google-profiel. Er vindt geen aanvullende controle plaats of een beoordeling van een klant afkomstig is.",
     status: "bevestigd",
     nodig: "URL van het Google-bedrijfsprofiel. Controlemethode: geen eigen controle — dat staat zo in de tekst (verplicht sinds 2022).",
   },
