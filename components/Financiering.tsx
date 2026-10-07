@@ -33,7 +33,7 @@ import warmtefonds from "@/public/beeld/keurmerk-warmtefonds.webp";
  * via het fonds in dit geval daadwerkelijk kan, als de toestemming om het
  * beeldmerk te voeren, moet op papier staan.
  */
-export default function Financiering() {
+export default function Financiering({ compact = false }: { compact?: boolean }) {
   if (!mag("V8")) return null;
 
   // Expliciet als ClaimRegel getypeerd, niet als CLAIMS.V8 rechtstreeks.
@@ -43,6 +43,19 @@ export default function Financiering() {
   // type blijft de code kloppen na die wijziging.
   const regel: ClaimRegel = CLAIMS.V8;
   const markeer = !isLive && regel.status !== "bevestigd";
+
+  if (compact) {
+    // Eén regel onder de knop op het resultaatscherm (sinds 7 okt 2026).
+    return (
+      <aside className={["mt-s2 flex items-center gap-s2 rounded-merk bg-n-100 px-s2 py-s2", markeer ? "ring-2 ring-[#A08A00]" : ""].join(" ")}>
+        <Image src={warmtefonds} alt="Nationaal Warmtefonds" sizes="96px" className="h-[24px] w-auto shrink-0" />
+        <p className="text-[0.78rem] leading-snug text-n-500">
+          Niet in één keer betalen? Financiering via het Nationaal Warmtefonds is mogelijk; de
+          voorwaarden bespreken we in het gesprek.
+        </p>
+      </aside>
+    );
+  }
 
   return (
     <aside

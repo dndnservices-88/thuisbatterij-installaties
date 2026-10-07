@@ -1,6 +1,7 @@
 "use client";
 
-import { euro, getal, jaren, type Berekening, type TerugleverAntwoord } from "@/lib/calc";
+import { euro, getal, jaren, TERUGLEVERKOSTEN_OPTIES, type Berekening, type TerugleverAntwoord } from "@/lib/calc";
+import { mag } from "@/lib/claims";
 import { REKEN_DISCLAIMER } from "@/lib/site";
 import { Knop } from "@/components/ui/Knop";
 import { Claim } from "@/components/ui/Claim";
@@ -34,91 +35,117 @@ export default function Resultaat({
   // getal dat op een onbekende staat en hoort te weten welke kant dat op valt.
   const onbekend = antwoord === "weet_niet" || antwoord === undefined;
 
+  // Prijs en terugverdientijd horen bij elkaar: wie de terugverdientijd ziet,
+  // kan de prijs terugrekenen. Daarom hangen ze allebei aan claim P6 (prijs per
+  // capaciteit). Zolang die live niet bevestigd is, toont de site alleen de
+  // besparing en de maat; in de preview staat alles.
+  const prijsZichtbaar = mag("P6");
+  const cap = new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(uitkomst.product.capaciteit_kwh);
+  const gekozen = TERUGLEVERKOSTEN_OPTIES.find((o) => o.id === antwoord);
+
+  // Opbouw sinds 7 okt 2026 (op verzoek van Dieudonné: minder scrollen, knop
+  // direct in beeld): eerst de besparing, dan maat/prijs en terugverdientijd,
+  // dan meteen de knop. Alles wat uitleg is, staat in twee uitklapregels.
   return (
     <div>
-      <p className="mb-s2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-paars">
+      <p className="mb-s1 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-paars">
         Jouw indicatie
       </p>
-      <h3 className="mb-s4 text-[1.5rem]">Dit levert een thuisbatterij bij jou naar verwachting op</h3>
+      <h3 className="mb-s3 text-[1.1rem] font-semibold text-n-500">
+        Met een thuisbatterij bespaar je naar verwachting
+      </h3>
 
-      <dl className="grid gap-s2 sm:grid-cols-2">
+      <div className="rounded-merk border border-paars bg-paars-tint p-s3">
+        <p className="font-kop text-[1.9rem] font-extrabold leading-tight text-paars">
+          <TelOpBereik min={uitkomst.besparing_eur.min} max={uitkomst.besparing_eur.max} opmaak={euro} />
+        </p>
+        <p className="text-[0.85rem] text-n-500">per jaar</p>
+      </div>
+
+      <dl className="mt-s2 grid grid-cols-2 gap-s2">
         <Kaart
-          label="Extra zelfverbruik per jaar"
-          waarde={`${getal(uitkomst.extra_zelfverbruik_kwh.min)} – ${getal(
-            uitkomst.extra_zelfverbruik_kwh.max
-          )} kWh`}
+          label="Thuisbatterij van"
+          waarde={`${cap} kWh`}
+          onder={prijsZichtbaar ? `vanaf ${euro(uitkomst.product.prijs_eur)} incl. installatie` : "prijs in het adviesgesprek"}
         />
-        <Kaart
-          label="Indicatieve besparing per jaar"
-          // Telt alleen op in het ontwerpvoorbeeld (/ontwerp). Op de homepage
-          // rendert dit exact dezelfde tekst als voorheen; zie components/ui/TelOp.tsx.
-          waarde={
-            <TelOpBereik
-              min={uitkomst.besparing_eur.min}
-              max={uitkomst.besparing_eur.max}
-              opmaak={euro}
-            />
-          }
-          nadruk
-        />
-        <Kaart
-          label="Passende capaciteit"
-          waarde={`${new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(
-            uitkomst.product.capaciteit_kwh
-          )} kWh`}
-          onder={<Claim id="P6" />}
-        />
-        <Kaart
-          label="Indicatieve terugverdientijd"
-          waarde={`${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(
-            uitkomst.terugverdientijd_jaar.max
-          )} jaar`}
-          onder={
-            onbekend ? (
-              <>
-                Gerekend zonder terugleverkosten, want die wist je niet. Betaal je ze wel, dan valt
-                dit korter uit — pas het hieronder aan.
-              </>
-            ) : undefined
-          }
-        />
+        {prijsZichtbaar ? (
+          <Kaart
+            label="Terugverdientijd"
+            waarde={`${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(uitkomst.terugverdientijd_jaar.max)} jaar`}
+            onder="prijs ÷ besparing"
+          />
+        ) : (
+          <Kaart
+            label="Extra eigen stroom"
+            waarde={`${getal(uitkomst.extra_zelfverbruik_kwh.min)} – ${getal(uitkomst.extra_zelfverbruik_kwh.max)} kWh`}
+            onder="per jaar"
+          />
+        )}
       </dl>
 
       {uitkomst.product_is_begrensd && (
-        <p className="mt-s3 rounded-merk bg-paars-tint p-s3 text-[0.9rem] text-paars">
-          Je overschot is groter dan wat dit systeem per jaar kan verwerken. Een grotere opstelling
-          kan meer opleveren; wat dat kost, rekenen we in het gesprek voor je uit.
+        <p className="mt-s2 text-[0.8rem] text-paars">
+          Je overschot is groter dan de grootste batterij aankan; wat meer opslag kost, rekenen we in
+          het gesprek uit.
         </p>
       )}
 
-      <Terugleverkosten antwoord={antwoord} onKies={onTerugleverkosten} />
-
-      {/* De peildatum loopt via het claimregister en niet via een losse
-          if-vergelijking. Zolang R2 niet is afgetekend valt de hele zin weg —
-          zonder punt, zonder gat, zonder dat iemand er iets voor hoeft te doen.
-          De rekendisclaimer zelf staat er wél altijd: die valt onder R1 en is
-          verplicht, ook als er verder niets is bevestigd. */}
-      <p className="mt-s4 text-[0.85rem] leading-relaxed text-n-500">
-        {REKEN_DISCLAIMER} <Claim id="R2" />
-      </p>
-
-      {/* Hier en niet in de hero: het geldbezwaar ontstaat op het moment dat er
-          een bedrag op het scherm staat, en dat is precies nu. Vóór de knop,
-          zodat het weggenomen is voordat er om gegevens wordt gevraagd. */}
-      <Financiering />
-
-      <div className="mt-s4 rounded-merk bg-n-100 p-s3">
-        <h4 className="mb-s2 font-kop text-[1.05rem] font-semibold">Wat je hierboven níét ziet</h4>
-        <ul className="mb-s3 space-y-s1 text-[0.9rem] text-n-500">
-          <li>Welk systeem precies bij jouw meterkast past, en of er meerwerk nodig is.</li>
-          <li>Wat de installatie bij jouw woning kost, met alles erbij.</li>
-          <li>Wat je eigen kwartierdata laten zien — dat is nauwkeuriger dan elke schatting.</li>
-        </ul>
-        <Knop onClick={onDoorgaan}>Vraag een advies op maat aan</Knop>
-        <p className="mt-s2 text-center text-[0.8rem] text-n-500">
+      <div className="mt-s3">
+        <Knop onClick={onDoorgaan}>Vraag een advies op maat aan →</Knop>
+        <p className="mt-s1 text-center text-[0.8rem] text-n-500">
           Vrijblijvend. Wij bellen je op het dagdeel dat jij kiest.
         </p>
       </div>
+
+      <Financiering compact />
+
+      <div className="mt-s3 border-t border-n-200">
+        <details className="group border-b border-n-200">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-s2 py-s2 text-[0.88rem] marker:content-none">
+            <span>
+              Gerekend met:{" "}
+              <span className="font-semibold text-paars">
+                {gekozen ? gekozen.label.toLowerCase() : "geen terugleverkosten"}
+              </span>
+            </span>
+            <span className="shrink-0 text-paars">
+              aanpassen <span className="inline-block transition group-open:rotate-180">▾</span>
+            </span>
+          </summary>
+          <div className="pb-s3">
+            {onbekend && (
+              <p className="mb-s2 text-[0.8rem] text-n-500">
+                Je wist niet of je terugleverkosten betaalt, dus we rekenden zonder. Betaal je ze wel,
+                dan valt de uitkomst gunstiger uit.
+              </p>
+            )}
+            <Terugleverkosten antwoord={antwoord} onKies={onTerugleverkosten} />
+          </div>
+        </details>
+        <details className="group border-b border-n-200">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-s2 py-s2 text-[0.88rem] marker:content-none">
+            <span>Hoe we dit berekenden</span>
+            <span className="shrink-0 text-paars">
+              <span className="inline-block transition group-open:rotate-180">▾</span>
+            </span>
+          </summary>
+          <div className="space-y-s2 pb-s3 text-[0.82rem] leading-relaxed text-n-500">
+            <p>
+              Extra eigen gebruik van je zonnestroom: {getal(uitkomst.extra_zelfverbruik_kwh.min)} –{" "}
+              {getal(uitkomst.extra_zelfverbruik_kwh.max)} kWh per jaar.{" "}
+              <Claim id="P6" />.
+            </p>
+            <p>
+              {REKEN_DISCLAIMER} <Claim id="R2" />
+            </p>
+          </div>
+        </details>
+      </div>
+
+      {/* R1: de mededeling dát het een indicatie is, staat altijd zichtbaar. */}
+      <p className="mt-s2 text-[0.75rem] leading-relaxed text-n-500">
+        Indicatie op basis van jouw antwoorden en landelijke gemiddelden.
+      </p>
     </div>
   );
 }
@@ -136,13 +163,13 @@ function Kaart({
 }) {
   return (
     <div
-      className={`rounded-merk border p-s3 ${
+      className={`rounded-merk border p-s2 ${
         nadruk ? "border-paars bg-paars-tint" : "border-n-200 bg-n-000"
       }`}
     >
-      <dt className="text-[0.8rem] font-semibold uppercase tracking-wide text-n-500">{label}</dt>
-      <dd className="mt-s1 font-kop text-[1.4rem] font-extrabold text-paars">{waarde}</dd>
-      {onder && <p className="mt-s1 text-[0.8rem] text-n-500">{onder}</p>}
+      <dt className="text-[0.75rem] text-n-500">{label}</dt>
+      <dd className="mt-[2px] font-kop text-[1.1rem] font-extrabold leading-tight text-paars">{waarde}</dd>
+      {onder && <p className="mt-[2px] text-[0.75rem] leading-snug text-n-500">{onder}</p>}
     </div>
   );
 }

@@ -215,6 +215,8 @@ export const CLAIMS = {
       "Certificaat of registratienummer InstallQ op naam van Limsolar B.V., met geldigheidsdatum, PLUS de beeldmerkvoorwaarden van InstallQ",
   },
   V8: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 7 okt 2026 ("Warmtefonds is
+    // bevestigd"). Bewijsstuk en beeldmerktoestemming nog in Bewijs/ zetten.
     id: "V8",
     // Let op de formulering. Het Nationaal Warmtefonds is geen keurmerk maar
     // een financier: het logo tonen zegt niet "wij zijn gekeurd" maar "je kunt
@@ -222,7 +224,7 @@ export const CLAIMS = {
     // en met de voorwaarden. Zet hem dus nooit in een rij die "keurmerken"
     // heet zonder dit onderscheid erbij te schrijven.
     tekst: "Financiering via het Nationaal Warmtefonds is mogelijk",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig:
       "Bevestiging dat een thuisbatterij onder de regeling valt en dat Limsolar als uitvoerder wordt geaccepteerd, PLUS toestemming voor het beeldmerk. Zonder rentepercentage, looptijd en voorwaarden erbij is dit bovendien een financiële claim die je niet los mag tonen.",
   },
