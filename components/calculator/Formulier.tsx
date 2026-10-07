@@ -127,11 +127,6 @@ export default function Formulier({
           dagdeel dat je hebt gekozen. Wij bellen je op dat moment voor een adviesgesprek van een
           minuut of tien.
         </p>
-        <p className="mt-s3 text-[0.95rem] leading-relaxed text-n-500">
-          Blijkt uit dat gesprek dat een thuisbatterij bij jou niet uitkomt, dan zeggen we dat. Dat
-          is geen beleefdheidsfrase: wij hebben er niets aan om iemand iets te verkopen dat zich niet
-          terugverdient.
-        </p>
       </div>
     );
   }

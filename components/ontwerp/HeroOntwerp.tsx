@@ -60,7 +60,7 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
               className="intro mt-s2 block font-accent text-[0.52em] font-normal italic leading-[1.25] tracking-normal text-[#CBB6E8]"
               style={v(340)}
             >
-              En eerlijk als het bij jou niet uitkomt.
+              Zo weet je vooraf waar je aan toe bent.
             </span>
           </h1>
 

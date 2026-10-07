@@ -116,7 +116,7 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
     );
   } else if (krap) {
     alinea.push(
-      "Eerlijk gezegd komt een thuisbatterij bij jouw verbruik krap uit. Wij adviseren dan liever niet. Je hebt aangegeven dat je toch even wilt overleggen, en dat doen we graag — maar reken erop dat het antwoord nee blijft."
+      "Met de gegevens die je invulde bleef er geen zonnestroom over om op te slaan. Je hebt aangegeven dat je toch even wilt overleggen, en dat doen we graag: in het gesprek kijken we samen of er iets in je situatie verandert, bijvoorbeeld meer panelen of een hoger verbruik."
     );
   }
 

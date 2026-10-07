@@ -252,7 +252,7 @@ export function HoeHetWerkt() {
     ["Je maakt de berekening", "Zes vragen. Je ziet meteen een bandbreedte, zonder gegevens."],
     [
       "Wij bellen je op het gekozen dagdeel",
-      "Een gesprek van een minuut of tien. We lopen je situatie na en zeggen het eerlijk als het niet uitkomt.",
+      "Een gesprek van een minuut of tien. We lopen je berekening samen na en beantwoorden je vragen.",
     ],
     [
       "Adviesgesprek bij je thuis",
@@ -575,7 +575,7 @@ export function Faq() {
   const vragen: [string, React.ReactNode][] = [
     [
       "Heb ik een thuisbatterij eigenlijk wel nodig?",
-      "Niet iedereen. Bij een laag verbruik of weinig panelen komt hij er niet uit, en dan zeggen wij dat ook — de berekening hierboven geeft in dat geval geen formulier maar een advies om het niet te doen.",
+      "Dat hangt af van je verbruik, je panelen en je contract. De berekening laat zien wat het bij jou oplevert; in het gesprek lopen we die samen na.",
     ],
     [
       "Waarom niet gewoon zelf een batterij online kopen?",
@@ -613,10 +613,6 @@ export function Faq() {
         .
       </>,
     ],
-    [
-      "Wat als de batterij bij mij niet uitkomt?",
-      "Dan hoor je dat van ons, aan de telefoon of aan de keukentafel. Wij worden betaald wanneer een installatie doorgaat, en juist daarom heeft het voor ons geen zin om iemand iets te verkopen dat zich niet terugverdient.",
-    ],
   ];
 
   return (
@@ -646,8 +642,7 @@ export function SlotCta({ variant }: { variant: Variant }) {
         <div className="max-w-lees">
           <h2>Reken het eerst uit</h2>
           <p className="mt-s3 text-[1.02rem] leading-relaxed text-n-200">
-            Zes vragen, twee minuten. Je krijgt een eerlijke bandbreedte te zien — en als een
-            thuisbatterij bij jou niet uitkomt, staat dat er gewoon.
+            Zes vragen, twee minuten. Je krijgt een eerlijke bandbreedte te zien.
           </p>
           <div className="mt-s4 max-w-[420px]">
             <KnopLink href="#calculator" volleBreedte>

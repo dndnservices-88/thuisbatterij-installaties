@@ -44,7 +44,7 @@ import { kiesVariant } from "@/lib/varianten";
 export const metadata: Metadata = {
   title: "Thuisbatterij Installaties — eerst rekenen, dan installeren",
   description:
-    "Reken in twee minuten uit wat een thuisbatterij in jouw situatie oplevert. Eerlijke bandbreedte, ook als hij er bij jou niet uitkomt.",
+    "Reken in twee minuten uit wat een thuisbatterij in jouw situatie oplevert. Eerlijke bandbreedte, zonder gegevens achter te laten.",
   robots: {
     // Blijft op noindex tot het claimregister is afgetekend. Eén regel wijzigen
     // bij livegang; zie README.

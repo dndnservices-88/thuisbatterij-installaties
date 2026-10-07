@@ -39,7 +39,7 @@ const STAPPEN: Stap[] = [
   {
     kort: "Gesprek",
     titel: "Wij bellen je op het gekozen dagdeel",
-    tekst: "Een gesprek van een minuut of tien. We lopen je situatie na en zeggen het eerlijk als het niet uitkomt.",
+    tekst: "Een gesprek van een minuut of tien. We lopen je berekening samen na en beantwoorden je vragen.",
     punten: ["Jij kiest het dagdeel", "Je berekening samen nalopen", "Alleen met jouw toestemming"],
     beeld: <NepGesprek />,
   },
