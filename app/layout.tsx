@@ -40,11 +40,32 @@ import { toestemmingUitCookieHeader } from "@/lib/toestemming";
 import Bouwstatus from "@/components/Bouwstatus";
 import Kopbalk from "@/components/Kopbalk";
 import { kiesVariant } from "@/lib/varianten";
+import { DOMEIN, ENTITEIT } from "@/lib/site";
 
+const TITEL = "Thuisbatterij Installaties — eerst rekenen, dan installeren";
+const OMSCHRIJVING =
+  "Reken in twee minuten uit wat een thuisbatterij in jouw situatie oplevert. Eerlijke bandbreedte, zonder gegevens achter te laten.";
+
+/**
+ * SEO-basis (7 okt 2026) — het deel dat Yoast in WordPress regelt: canonical,
+ * deelvoorbeeld (Open Graph / X) en gestructureerde data. robots.txt en
+ * sitemap.xml staan in app/robots.ts en app/sitemap.ts.
+ */
 export const metadata: Metadata = {
-  title: "Thuisbatterij Installaties — eerst rekenen, dan installeren",
-  description:
-    "Reken in twee minuten uit wat een thuisbatterij in jouw situatie oplevert. Eerlijke bandbreedte, zonder gegevens achter te laten.",
+  metadataBase: new URL(`https://${DOMEIN}`),
+  title: TITEL,
+  description: OMSCHRIJVING,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "nl_NL",
+    url: "/",
+    siteName: ENTITEIT.handelsnaam,
+    title: TITEL,
+    description: OMSCHRIJVING,
+    images: [{ url: "/beeld/og-deelbeeld.jpg", width: 1200, height: 630, alt: "Thuisbatterij aan een buitenmuur" }],
+  },
+  twitter: { card: "summary_large_image", title: TITEL, description: OMSCHRIJVING },
   robots: {
     // Blijft op noindex tot het claimregister is afgetekend. Eén regel wijzigen
     // bij livegang; zie README.
@@ -67,6 +88,22 @@ export const metadata: Metadata = {
  * De vier die ertoe doen staan op denied en worden bijgewerkt door
  * pasConsentToe() in lib/tracking.ts.
  */
+/**
+ * Gestructureerde data: alleen de organisatie. Bewust géén FAQPage (Google toont
+ * die sinds aug 2023 alleen nog bij overheids- en zorgsites) en géén
+ * aggregateRating: de Google-score is van Limsolar, niet van deze site, en
+ * reviews van een andere partij als eigen markup opnemen mag niet.
+ */
+const ORGANISATIE_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: ENTITEIT.handelsnaam,
+  legalName: ENTITEIT.naam,
+  url: `https://${DOMEIN}`,
+  logo: `https://${DOMEIN}/beeld/logo-kleur.webp`,
+  areaServed: "NL",
+});
+
 const CONSENT_DEFAULTS = `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
@@ -153,6 +190,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="nl" className={`${fontKop.variable} ${fontTekst.variable} ${fontAccent.variable}`}>
       <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ORGANISATIE_LD }} />
         <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />
         <script dangerouslySetInnerHTML={{ __html: MEETCONTEXT }} />
         {GTM_AAN && GTM_ID && <script dangerouslySetInnerHTML={{ __html: gtmSnippet(GTM_ID) }} />}
