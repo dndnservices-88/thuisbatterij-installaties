@@ -35,12 +35,16 @@ export const CLAIMS = {
     nodig: "Bestaat niet (Dieudonné, 6 okt 2026). Een garantie noemen die er niet is, is misleidend.",
   },
   P2: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 7 okt 2026 ("prijzen kunnen
+    // live"). Bewijsstuk: prijslijst 9 sep 2026 in Bewijs/. Aftekening Limsolar ontbreekt nog.
     id: "P2",
     tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.808",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Aftekening Limsolar. Bewijsstuk (prijslijst 9 sep 2026) staat in Bewijs/.",
   },
   P6: {
+    // Op "bevestigd" gezet op besluit van Dieudonné, 7 okt 2026 ("prijzen kunnen
+    // live"). Bewijsstuk: prijslijst 9 sep 2026 in Bewijs/. Aftekening Limsolar ontbreekt nog.
     id: "P6",
     // Bewust geen merk en type meer sinds 26 aug 2026. De calculator schat de
     // besparing met een standaard thuisbatterij die bij het profiel past;
@@ -48,7 +52,7 @@ export const CLAIMS = {
     // merknaam op het resultaatscherm zou een toezegging zijn die de verkoper
     // daarna niet meer kan bijstellen.
     tekst: "Rekenvoorbeeld met een standaard thuisbatterij van deze capaciteit",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Aftekening Limsolar. Prijslijst per capaciteit (9 sep 2026) staat in Bewijs/.",
   },
 
