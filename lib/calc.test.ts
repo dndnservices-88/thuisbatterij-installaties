@@ -4,6 +4,9 @@ import {
   bereken,
   CONSTANTEN,
   doorzet,
+  indicatieveCapaciteit,
+  kiesProduct,
+  nettoInvestering,
   ASSORTIMENT,
   tariefVoorAntwoord,
   TERUGLEVERKOSTEN_OPTIES,
@@ -54,7 +57,12 @@ test("case A — de persona uit het brandbook blijft een lead en rekent met het 
   // rekenen in plaats van met het eigen aanbod. Dat is de kerncorrectie, en die
   // moet blijven werken ook nu de tarieven ongunstiger zijn geworden.
   assert.ok(u.terugverdientijd_jaar.midden > 9, `middenwaarde ${u.terugverdientijd_jaar.midden}`);
-  assert.equal(u.product.id, "instap-10-kwh");
+  // Sinds 1.4.0 kiest de tool uit het hele assortiment: de goedkoopste
+  // uitvoering die minstens de indicatieve capaciteit (opslag ÷ 200) haalt.
+  const nodig = indicatieveCapaciteit(u.opslagpotentieel_kwh);
+  assert.ok(u.product.capaciteit_kwh >= nodig, `${u.product.capaciteit_kwh} kWh < nodig ${nodig}`);
+  const goedkoper = ASSORTIMENT.filter((p) => p.capaciteit_kwh >= nodig && p.prijs_eur < u.product.prijs_eur);
+  assert.equal(goedkoper.length, 0, "er is een goedkopere passende batterij");
 });
 
 test("een lange terugverdientijd is geen afwijzing meer (besluit 6 okt 2026)", () => {
@@ -96,7 +104,8 @@ test("case C — dynamisch contract levert meer op en de capaciteit schiet niet 
   // Capaciteit mag nooit groter zijn dan een product dat werkelijk bestaat.
   const grootste = Math.max(...ASSORTIMENT.map((p) => p.capaciteit_kwh));
   assert.ok(dyn.product.capaciteit_kwh <= grootste);
-  assert.equal(dyn.product_is_begrensd, true);
+  // Met het volledige assortiment (tot 51,2 kWh) past dit profiel ruim.
+  assert.equal(dyn.product_is_begrensd, false);
 });
 
 test("huurder wordt gediskwalificeerd vóór er iets berekend wordt", () => {
@@ -310,4 +319,49 @@ test("de contractkeuze reist mee in de snapshot", () => {
     if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
     assert.equal(u.contract, contract);
   }
+});
+
+// ── Rekenversie 1.4.0: assortiment, maatkeuze en tarieven Fabian ─────────────
+
+test("prijzen in het assortiment zijn de prijslijst plus 21% btw, afgerond", () => {
+  assert.equal(ASSORTIMENT.length, 24);
+  for (const p of ASSORTIMENT) {
+    assert.equal(p.prijs_eur, Math.round(p.prijs_excl_eur * 1.21), p.naam);
+  }
+  const marstek10 = ASSORTIMENT.find((p) => p.merk.startsWith("Marstek") && p.capaciteit_kwh === 10);
+  assert.equal(marstek10?.prijs_eur, 5808);
+});
+
+test("Fabians voorbeeld: 2.450 kWh opslag wordt een batterij van 15 kWh", () => {
+  // 2.450 ÷ 200 = 12,25 kWh → de eerstvolgende maat die bestaat is 15 kWh.
+  const { product, begrensd } = kiesProduct(2450);
+  assert.equal(begrensd, false);
+  assert.equal(product.capaciteit_kwh, 15);
+});
+
+test("de maat volgt de avondbehoefte, niet het kale overschot", () => {
+  // 2-3 personen met 24 panelen: enorm overschot, maar 's avonds maar ~2.000 kWh.
+  // Op het overschot zou dit een batterij van 40+ kWh worden; op de avondbehoefte
+  // blijft het bij een gewone maat.
+  const u = bereken({ ...basis, verbruik: { soort: "huishouden", grootte: "2-3" }, panelen: { soort: "aantal", aantal: 24 } });
+  if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+  assert.ok(u.overschot_kwh / 200 > 30, "overschot zou een heel grote batterij geven");
+  assert.ok(u.product.capaciteit_kwh <= 15, `${u.product.capaciteit_kwh} kWh is te groot voor dit huishouden`);
+});
+
+test("jaarlijkse kosten, btw-teruggave en subsidie staan standaard op nul", () => {
+  assert.equal(CONSTANTEN.JAARLIJKSE_KOSTEN, 0);
+  assert.equal(CONSTANTEN.BTW_TERUGGAVE, 0);
+  assert.equal(CONSTANTEN.SUBSIDIE, 0);
+  const u = bereken(basis);
+  if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
+  assert.equal(nettoInvestering(u.product), u.product.prijs_eur);
+});
+
+test("de tarieven komen uit de aantekeningen van Fabian", () => {
+  assert.equal(CONSTANTEN.LEVERINGSTARIEF, 0.3);
+  assert.equal(CONSTANTEN.TERUGLEVERVERGOEDING, 0.05);
+  assert.equal(CONSTANTEN.DYN_MARGE, 0.15);
+  assert.equal(CONSTANTEN.BRUIKBARE_FRACTIE, 0.95);
+  assert.equal(CONSTANTEN.CAPACITEIT_FACTOR, 200);
 });

@@ -21,8 +21,15 @@
  * de nieuwe waarden uit de aantekeningen van Fabian komen mee met de uitbreiding
  * van het assortiment.
  */
-export const REKENVERSIE = "1.3.0";
-export const PEILDATUM_TARIEVEN = "24 augustus 2026";
+/**
+ * 1.4.0 (7 okt 2026): volledig assortiment (24 configuraties, prijslijst 9 sep
+ * 2026), maatkeuze opslag ÷ 200 begrensd op de avondbehoefte, tarieven uit de
+ * aantekeningen van Fabian (Limsolar): inkoop € 0,30, terugleververgoeding € 0,05,
+ * dynamisch voordeel € 0,15, bruikbaar 95%. Jaarlijkse kosten, btw-teruggave en
+ * subsidie als aparte posten, standaard € 0.
+ */
+export const REKENVERSIE = "1.4.0";
+export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
  * "voorstel" = door ons opgezocht, nog niet door Limsolar afgetekend.
@@ -38,6 +45,7 @@ export const TARIEVEN_STATUS: "voorstel" | "bevestigd" = "voorstel";
  * kan navertellen — en dat is precies wanneer de ACM het vraagt.
  */
 export const TARIEFBRONNEN = [
+  "BRON VANAF 1.4.0 (7 okt 2026): leveringstarief € 0,30, terugleververgoeding € 0,05, dynamisch voordeel € 0,15 per kWh en 95% bruikbare capaciteit komen uit de aantekeningen van Fabian (Limsolar), meeting begin oktober 2026, overgenomen op besluit van Dieudonné (6 okt 2026). Nog niet afgetekend (claim R2). De regels hieronder zijn de onderbouwing van de waarden tot en met 1.3.0 en blijven staan als herkomst.",
   "Leveringstarief: gemiddelde all-in kWh-prijs vaste en variabele contracten, juni 2026 € 0,263, bandbreedte 21 aug 2026 € 0,238–0,316 (energievergelijk.nl). Wij rekenen met € 0,26, dus onder het midden van de bandbreedte.",
   "Terugleververgoeding: € 0,01–0,165 per leverancier, gemiddeld € 0,04–0,09 (energievergelijk.nl, overstappen.nl, aug 2026). Wij rekenen met € 0,07, dus aan de hoge kant van het gemiddelde.",
   "Terugleverkosten: € 0,109 (laagste, Budget Energie) tot € 0,182 (hoogste, Eneco) bij vaste contracten in 2026; veel leveranciers rekenen niets. Standaard € 0,00 omdat wij niet vragen wie de leverancier is.",
@@ -84,8 +92,16 @@ export const CONSTANTEN = {
    * hoeven op te rekken.
    */
   CYCLI_PER_JAAR: 250,
-  /** Bruikbare fractie van de nominale capaciteit (ontlaaddiepte). */
-  BRUIKBARE_FRACTIE: 0.9,
+  /** Bruikbare fractie van de nominale capaciteit (ontlaaddiepte). Fabian: 95%. Was 90% t/m 1.3.0. */
+  BRUIKBARE_FRACTIE: 0.95,
+  /**
+   * Vuistregel Limsolar (Fabian): jaarlijkse opslag ÷ 200 = indicatieve
+   * capaciteit in kWh. Hier toegepast op het opslagpotentieel — het laagste van
+   * overschot en avondbehoefte — en niet op het kale overschot, zodat een
+   * huishouden dat 's avonds weinig verbruikt geen te grote batterij krijgt.
+   * Instelbaar, want het is een trainingsvuistregel en geen natuurwet.
+   */
+  CAPACITEIT_FACTOR: 200,
   /** Retourrendement laden/ontladen. */
   RENDEMENT: 0.9,
   /**
@@ -96,10 +112,10 @@ export const CONSTANTEN = {
    * Wie het omgekeerd doet, verkoopt een rekensom in plaats van een advies.
    */
 
-  /** €/kWh all-in leveringstarief. Onder het midden van de marktbandbreedte. */
-  LEVERINGSTARIEF: 0.26,
-  /** €/kWh terugleververgoeding. Aan de hoge kant van het gemiddelde. */
-  TERUGLEVERVERGOEDING: 0.07,
+  /** €/kWh all-in leveringstarief. Aantekeningen Fabian (okt 2026). Was € 0,26 t/m 1.3.0. */
+  LEVERINGSTARIEF: 0.3,
+  /** €/kWh terugleververgoeding. Aantekeningen Fabian (okt 2026). Was € 0,07 t/m 1.3.0. */
+  TERUGLEVERVERGOEDING: 0.05,
   /**
    * €/kWh vermeden terugleverkosten. Standaard 0,00 en dat blijft zo.
    *
@@ -117,7 +133,7 @@ export const CONSTANTEN = {
    * day-ahead- of onbalansmarkt. Dat is een aparte dienst met eigen software,
    * en zolang Limsolar die niet levert, mag hij niet in deze som zitten.
    */
-  DYN_MARGE: 0.05,
+  DYN_MARGE: 0.15, // Fabian: gemiddeld netto prijsvoordeel € 0,15/kWh. Was € 0,05 t/m 1.3.0.
   /**
    * €/kWh op de cycli die ná de zon-opslag overblijven: laden van het net bij een
    * lage prijs, ontladen bij een hoge. Alleen bij een dynamisch contract, want
@@ -128,7 +144,22 @@ export const CONSTANTEN = {
    * naarmate meer batterijen meedoen, en hij vereist actieve sturing. Zolang
    * Limsolar die sturing niet levert, hoort hij klein te blijven.
    */
-  HANDELSMARGE_RESTCYCLI: 0.05,
+  HANDELSMARGE_RESTCYCLI: 0.15, // Zelfde prijsvoordeel als DYN_MARGE. Was € 0,05 t/m 1.3.0.
+  /** Btw op thuisbatterij en installatie. 21%, ook in 2027 (geen nultarief in Belastingplan 2027). */
+  BTW: 0.21,
+  /**
+   * Terugkerende kosten per jaar (EMS-abonnement, platformkosten handel).
+   * Standaard € 0 tot Limsolar opgeeft wat het werkelijk kost (vraag 13 aan Fabian).
+   */
+  JAARLIJKSE_KOSTEN: 0,
+  /**
+   * Btw-teruggave en subsidie, in mindering op de investering. Standaard € 0:
+   * de teruggave is voorwaardelijk (claim U10) en er is geen landelijke subsidie.
+   * Nooit standaard aanzetten — dan rekent de tool met een voordeel dat de klant
+   * mogelijk niet krijgt.
+   */
+  BTW_TERUGGAVE: 0,
+  SUBSIDIE: 0,
   /** Vaste spreiding rond elke uitkomst. Resultaat wordt NOOIT als één getal getoond. */
   BANDBREEDTE_ONDER: 0.8,
   BANDBREEDTE_BOVEN: 1.2,
@@ -145,45 +176,76 @@ export const CONSTANTEN = {
 /**
  * Assortiment. De calculator mag NOOIT een capaciteit adviseren die niet als
  * product met bekende prijs bestaat — dat is exact de fout waardoor de geleverde
- * site op 13,0 jaar uitkwam (specificatie 4.3).
- *
- * Middenklasse en premium ontbreken bewust: hun prijzen zijn nog niet bekend
- * (claimregister P3). Zodra ze er zijn, hier toevoegen — verder hoeft er niets
- * te veranderen.
- *
- * Merk en type staan hier alleen als interne herkomst van de prijs. Ze worden
- * NERGENS aan de bezoeker getoond: het resultaatscherm en beide mails noemen
- * uitsluitend een passende capaciteit. De calculator geeft een schatting van de
- * besparing met een standaard thuisbatterij die bij het profiel past, niet een
- * offerte voor één toestel. Limsolar voert alle gangbare maten; welke het wordt,
- * bepaalt de verkoper aan tafel.
- *
- * OPEN: prijslijst per capaciteit is toegezegd (26 aug 2026, nog niet ontvangen).
- * Zodra die er is, komen de overige maten hier bij en schaalt kiesProduct mee.
- * Tot die tijd rekent de calculator met de instapmaat, wat de voorzichtige kant is.
+ * site op 13,0 jaar uitkwam (specificatie 4.3). Merk en type staan hier alleen
+ * intern; het resultaatscherm en de mails noemen uitsluitend de capaciteit.
  */
 export type Product = {
   id: string;
+  /** Intern label met merk. Wordt NIET aan de bezoeker getoond (besluit P6, 26 aug 2026). */
   naam: string;
+  merk: string;
   capaciteit_kwh: number;
+  /** Prijs excl. btw uit de prijslijst, inclusief installatie. */
+  prijs_excl_eur: number;
+  /** Consumentenprijs incl. 21% btw, afgerond op hele euro's. Hiermee rekent de tool. */
   prijs_eur: number;
+  backup: "noodstroom" | "volledig" | "geen";
   /** Claimregister-status van de prijs. Alleen 'bevestigd' hoort live te staan. */
   prijs_status: "bevestigd" | "toegezegd" | "open";
 };
 
-export const ASSORTIMENT: Product[] = [
-  {
-    id: "instap-10-kwh",
-    /** Intern label. Wordt niet getoond; herkomst van de prijs is Marstek Venus E 3.0. */
-    naam: "Instapmodel 10 kWh",
-    capaciteit_kwh: 10.24,
-    // € 4.800 excl. btw × 1,21 = € 5.808, inclusief installatie. Bron: interne
-    // verkoopprijslijst Limsolar, 9 sep 2026 (staat in 06 - Legal & Compliance/
-    // Bewijs/). De eerdere € 3.999 was fout (bevestigd door Dieudonné, 6 okt 2026).
-    prijs_eur: 5808,
-    prijs_status: "toegezegd", // claimregister P2
-  },
+/**
+ * Interne verkoopprijslijst Limsolar, 9 september 2026 (staat in
+ * 06 - Legal & Compliance/Bewijs/). Prijzen excl. btw, inclusief installatie
+ * (bevestigd door Dieudonné, 6 okt 2026); "kW" in de lijst betekent kWh.
+ *
+ * Nog niet bekend en dus niet gebruikt: welke merken bij een eenfase- of
+ * driefase-aansluiting passen (vraag 5 aan Fabian). Daarom kiest de tool per
+ * maat de goedkoopste uitvoering en toont hij die als "vanaf"-prijs; welk
+ * toestel het wordt, bepaalt de adviseur aan tafel.
+ *
+ * Let op: AlphaESS 18,6 kWh staat met én zonder backup op € 9.499 — bij Fabian
+ * nagevraagd (vraag 4), nog geen antwoord.
+ */
+const PRIJSLIJST: [merk: string, kwh: number, excl: number, backup: Product["backup"]][] = [
+  ["Marstek Venus E 3.0", 10, 4800, "noodstroom"],
+  ["Marstek Venus E 3.0", 15, 5950, "noodstroom"],
+  ["Marstek Venus E 3.0", 20, 6950, "noodstroom"],
+  ["Deye 1-fase", 5, 5150, "volledig"],
+  ["Deye 1-fase", 10, 5900, "volledig"],
+  ["Deye 1-fase", 15, 6705, "volledig"],
+  ["Deye 1-fase", 20, 7250, "volledig"],
+  ["Pylontech Force H3X", 10, 6995, "volledig"],
+  ["Pylontech Force H3X", 15, 7899, "volledig"],
+  ["Pylontech Force H3X", 20, 8699, "volledig"],
+  ["Pylontech Force H3X", 25, 9649, "volledig"],
+  ["Dyness Stack 100 Pro", 10, 5950, "volledig"],
+  ["Dyness Stack 100 Pro", 15, 6789, "volledig"],
+  ["Dyness Stack 100 Pro", 20.48, 7980, "volledig"],
+  ["Dyness Stack 100 Pro", 25.6, 9205, "volledig"],
+  ["Dyness Stack 100 Pro", 30, 10450, "volledig"],
+  ["Dyness Stack 100 Pro", 40, 12150, "volledig"],
+  ["Dyness Stack 100 Pro", 51.2, 13405, "volledig"],
+  ["AlphaESS", 9.3, 6995, "geen"],
+  ["AlphaESS", 18.6, 9499, "geen"],
+  ["AlphaESS", 27.9, 10675, "geen"],
+  ["AlphaESS", 18.6, 9499, "volledig"],
+  ["AlphaESS", 27.9, 11400, "volledig"],
+  ["AlphaESS", 37.2, 13545, "volledig"],
 ];
+
+const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+export const ASSORTIMENT: Product[] = PRIJSLIJST.map(([merk, kwh, excl, backup]) => ({
+  id: `${slug(merk)}-${String(kwh).replace(".", "-")}-${backup}`,
+  naam: `${merk} ${kwh} kWh`,
+  merk,
+  capaciteit_kwh: kwh,
+  prijs_excl_eur: excl,
+  prijs_eur: Math.round(excl * (1 + CONSTANTEN.BTW)),
+  backup,
+  prijs_status: "toegezegd", // claimregister P2/P3
+}));
 
 export type Panelen = { soort: "aantal"; aantal: number } | { soort: "dak_m2"; m2: number };
 export type Contract = "vast" | "dynamisch" | "onbekend";
@@ -369,17 +431,34 @@ export function doorzet(p: Product): number {
   return p.capaciteit_kwh * CONSTANTEN.BRUIKBARE_FRACTIE * CONSTANTEN.CYCLI_PER_JAAR;
 }
 
+/** Indicatieve capaciteit volgens de vuistregel van Limsolar: opslag ÷ CAPACITEIT_FACTOR. */
+export function indicatieveCapaciteit(opslagpotentieel: number): number {
+  return opslagpotentieel / CONSTANTEN.CAPACITEIT_FACTOR;
+}
+
 /**
- * Kleinste product waarvan de doorzet het opslagpotentieel dekt.
- * Bestaat dat niet, dan adviseren we het grootste product met een bekende prijs
- * en markeren we dat als begrensd — liever te klein adviseren dan een prijs
- * verzinnen. Het brandbook zegt dat ook: vaker naar beneden dan naar boven.
+ * Stap 1 van twee (Fabian: "welke batterij past" staat los van "is hij
+ * financieel interessant"). Kiest uit alle producten met minstens de
+ * indicatieve capaciteit de goedkoopste — dat is de "vanaf"-prijs voor die
+ * maat. Bestaat er geen product dat groot genoeg is, dan het grootste, en dan
+ * gemarkeerd als begrensd: liever te klein adviseren dan een prijs verzinnen.
  */
 export function kiesProduct(opslagpotentieel: number): { product: Product; begrensd: boolean } {
-  const gesorteerd = [...ASSORTIMENT].sort((a, b) => a.capaciteit_kwh - b.capaciteit_kwh);
-  const passend = gesorteerd.find((p) => doorzet(p) >= opslagpotentieel);
-  if (passend) return { product: passend, begrensd: false };
-  return { product: gesorteerd[gesorteerd.length - 1], begrensd: true };
+  const nodig = indicatieveCapaciteit(opslagpotentieel);
+  const passend = ASSORTIMENT.filter((p) => p.capaciteit_kwh >= nodig);
+  if (passend.length > 0) {
+    const goedkoopste = passend.reduce((a, b) =>
+      b.prijs_eur < a.prijs_eur || (b.prijs_eur === a.prijs_eur && b.capaciteit_kwh < a.capaciteit_kwh) ? b : a
+    );
+    return { product: goedkoopste, begrensd: false };
+  }
+  const grootste = ASSORTIMENT.reduce((a, b) => (b.capaciteit_kwh > a.capaciteit_kwh ? b : a));
+  return { product: grootste, begrensd: true };
+}
+
+/** Wat de klant netto investeert: prijs incl. btw min teruggave en subsidie (standaard € 0). */
+export function nettoInvestering(p: Product): number {
+  return Math.max(0, p.prijs_eur - CONSTANTEN.BTW_TERUGGAVE - CONSTANTEN.SUBSIDIE);
 }
 
 export function bereken(a: Antwoorden): Uitkomst {
@@ -420,14 +499,17 @@ export function bereken(a: Antwoorden): Uitkomst {
 
   const waarde = waardePerKwh(a.contract, a.terugleverkosten);
   const handelsopbrengst = restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI;
-  const besparing = opslagWerkelijk * waarde + handelsopbrengst;
+  // Stap 2 van twee: is hij financieel interessant. Jaarlijkse kosten (EMS,
+  // platform) gaan eraf; standaard € 0.
+  const besparing = Math.max(0, opslagWerkelijk * waarde + handelsopbrengst - CONSTANTEN.JAARLIJKSE_KOSTEN);
+  const investering = nettoInvestering(product);
 
   const besparingBand = band(besparing);
   // Terugverdientijd draait om: hoge besparing = korte tijd.
   const tvt: Band = {
-    min: besparingBand.max > 0 ? rond(product.prijs_eur / besparingBand.max, 1) : Infinity,
-    midden: besparingBand.midden > 0 ? rond(product.prijs_eur / besparingBand.midden, 1) : Infinity,
-    max: besparingBand.min > 0 ? rond(product.prijs_eur / besparingBand.min, 1) : Infinity,
+    min: besparingBand.max > 0 ? rond(investering / besparingBand.max, 1) : Infinity,
+    midden: besparingBand.midden > 0 ? rond(investering / besparingBand.midden, 1) : Infinity,
+    max: besparingBand.min > 0 ? rond(investering / besparingBand.min, 1) : Infinity,
   };
 
   const berekening: Berekening = {
