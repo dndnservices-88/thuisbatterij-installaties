@@ -23,8 +23,22 @@ export const ENTITEIT = {
   naam: "Tjapz Alphen B.V.",
   handelsnaam: "Thuisbatterij-installaties",
   kvk: "90408616",
+  /** Btw-identificatienummer. Aangeleverd door Dieudonné, 7 okt 2026. */
+  btw: "NL865304567B01",
+  /** Statutaire zetel (gemeente uit de akte). Aangeleverd 7 okt 2026. */
+  zetel: "Alphen aan den Rijn",
+  /** Alle handelsnamen van de BV, zoals Dieudonné ze opgaf (7 okt 2026). */
+  handelsnamen: ["Thuisbatterij-installaties", "DNDN Services"],
   ingevuld: true,
 };
+
+/**
+ * Korte vermelding voor footer en voorpagina (besluit Dieudonné 7 okt 2026: de
+ * statutaire naam niet meer vooraan). De volledige gegevens staan op
+ * /bedrijfsgegevens, gelinkt vanuit de footer op elke pagina — de ACM noemt
+ * "via een link naar uw contactpagina" als geldige plek.
+ */
+export const ENTITEIT_KORT = `${ENTITEIT.handelsnaam} · KvK ${ENTITEIT.kvk}`;
 
 /**
  * De volledige identificatie van de afzender, in één zin.
@@ -111,7 +125,7 @@ export const CONTACT_ADRES = `${CONTACT.adres}, ${CONTACT.postcode} ${CONTACT.pl
  * De attributieregel. Verplicht in de footer en bij het formulier.
  * Dit is wat de uitvoeringsclaims bij de partij legt die ze waarmaakt.
  */
-export const ATTRIBUTIE = `Advies en berekening door ${ENTITEIT_VOLUIT}. Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
+export const ATTRIBUTIE = `Advies en berekening door ${ENTITEIT_KORT}. Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
 
 /**
  * Consenttekst. Het hele belmodel rust op deze zin en op het bewijs dat hij is

@@ -698,6 +698,9 @@ export function Footer() {
           )}
         </p>
         <nav className="mt-s3 flex flex-wrap gap-x-s4 gap-y-s1">
+          <Link href="/bedrijfsgegevens" className="underline">
+            Bedrijfsgegevens
+          </Link>
           <Link href="/privacyverklaring" className="underline">
             Privacyverklaring
           </Link>
