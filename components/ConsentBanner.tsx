@@ -34,8 +34,10 @@ import { vangKlikIds } from "@/lib/klikids";
  *  4. De banner is te heropenen vanuit de voettekst. Een toestemming die je niet
  *     kunt intrekken, is geen geldige toestemming.
  */
-export default function ConsentBanner() {
-  const [zichtbaar, setZichtbaar] = useState(false);
+export default function ConsentBanner({ direct = false }: { direct?: boolean }) {
+  // direct = de server zag geen keuze in de cookie, dus de banner staat al in de
+  // eerste HTML in plaats van pas na het laden van JavaScript te verschijnen.
+  const [zichtbaar, setZichtbaar] = useState(direct);
   const [instellen, setInstellen] = useState(false);
   const [statistieken, setStatistieken] = useState(false);
   const [marketing, setMarketing] = useState(false);

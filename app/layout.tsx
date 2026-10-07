@@ -1,17 +1,42 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 
-// Lettertypen via npm in plaats van de Google Fonts CDN: geen externe aanroep bij
-// elk bezoek, geen extra verbinding, en het werkt ook achter een proxy.
-import "@fontsource/work-sans/400.css";
-import "@fontsource/work-sans/600.css";
-import "@fontsource/work-sans/800.css";
-import "@fontsource/open-sans/400.css";
-import "@fontsource/open-sans/600.css";
-import "@fontsource/libre-baskerville/400-italic.css";
+// Lettertypen lokaal via next/font (sinds 7 okt 2026). Tot dan zes losse
+// @fontsource-CSS-bestanden; PageSpeed (mobiel, 7 okt) telde die mee in 1.210 ms
+// renderblokkering. next/font zet de @font-face in de pagina-CSS en laadt de
+// bestanden met voorrang. Alleen de latin-subset: die dekt Nederlands inclusief
+// ë, é en het euroteken (U+0000-00FF, U+20AC). Bestanden zijn gekopieerd uit
+// @fontsource (OFL-licentie) naar app/fonts/.
+import localFont from "next/font/local";
+
+const fontKop = localFont({
+  src: [
+    { path: "./fonts/work-sans-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/work-sans-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/work-sans-latin-800-normal.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-kop",
+  display: "swap",
+});
+const fontTekst = localFont({
+  src: [
+    { path: "./fonts/open-sans-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/open-sans-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-tekst",
+  display: "swap",
+});
+const fontAccent = localFont({
+  src: [{ path: "./fonts/libre-baskerville-latin-400-italic.woff2", weight: "400", style: "italic" }],
+  variable: "--font-accent",
+  display: "swap",
+  // Alleen voor de italic accentregel in de hero; geen voorrang nodig.
+  preload: false,
+});
 
 import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
+import { toestemmingUitCookieHeader } from "@/lib/toestemming";
 import Bouwstatus from "@/components/Bouwstatus";
 import Kopbalk from "@/components/Kopbalk";
 import { kiesVariant } from "@/lib/varianten";
@@ -119,9 +144,14 @@ f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const variant = kiesVariant(headers().get("host"));
+  // Heeft de bezoeker nog geen keuze gemaakt, dan staat de cookiebanner al in de
+  // server-HTML. Tot 7 okt 2026 verscheen hij pas na het laden van JavaScript; op
+  // mobiel was hij daardoor het traagste grote element (LCP, 1.630 ms
+  // vertraging volgens PageSpeed).
+  const vraagCookiekeuze = toestemmingUitCookieHeader(headers().get("cookie")).bron === "geen_keuze";
 
   return (
-    <html lang="nl">
+    <html lang="nl" className={`${fontKop.variable} ${fontTekst.variable} ${fontAccent.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />
         <script dangerouslySetInnerHTML={{ __html: MEETCONTEXT }} />
@@ -153,7 +183,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             verlies, want op de privacyverklaring hoeft niemand overtuigd te
             worden. */}
         {children}
-        <ConsentBanner />
+        <ConsentBanner direct={vraagCookiekeuze} />
       </body>
     </html>
   );

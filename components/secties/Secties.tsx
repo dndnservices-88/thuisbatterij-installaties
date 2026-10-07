@@ -486,7 +486,7 @@ function Sterren({ score }: { score: number }) {
   // staat ook als tekst in de aria-label, want kleurverschil alleen is geen
   // toegankelijke manier om een waarde over te brengen.
   return (
-    <p className="text-[1.05rem] leading-none text-paars" aria-label={`${score} van de 5 sterren`}>
+    <p className="text-[1.05rem] leading-none text-paars" role="img" aria-label={`${score} van de 5 sterren`}>
       <span aria-hidden="true">
         {"\u2605".repeat(score)}
         <span className="text-n-200">{"\u2605".repeat(5 - score)}</span>

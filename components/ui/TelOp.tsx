@@ -49,7 +49,7 @@ export function TelOpBereik({
 
   if (!aan || f >= 1) return <>{eind}</>;
   return (
-    <span aria-label={eind}>
+    <span role="img" aria-label={eind}>
       <span aria-hidden="true">
         {opmaak(Math.round(min * f))} – {opmaak(Math.round(max * f))}
       </span>

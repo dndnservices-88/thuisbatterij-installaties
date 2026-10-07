@@ -61,6 +61,7 @@ export default function ReviewsGoogle() {
                     geel — geel is op deze site voorbehouden aan de doorgaan-knop. */}
                 <div
                   className="relative mt-s2 inline-block text-[1.6rem] leading-none tracking-[2px]"
+                  role="img"
                   aria-label={`${nl(score)} van de 5 sterren`}
                 >
                   <span aria-hidden="true" className="text-n-200">

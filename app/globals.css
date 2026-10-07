@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-kop: "Work Sans";
-  --font-tekst: "Open Sans";
-  --font-accent: "Libre Baskerville";
+  /* --font-kop, --font-tekst en --font-accent worden gezet door next/font in
+     app/layout.tsx (class op <html>). */
 }
 
 @layer base {
