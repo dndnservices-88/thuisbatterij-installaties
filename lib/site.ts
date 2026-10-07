@@ -77,7 +77,7 @@ export const GOOGLE_PROFIEL = {
  * jij bent de partij die de gegevens verzamelt en de toestemming vastlegt.
  *
  * Stand 1 september 2026: e-mailadres en postadres zijn echt. Het telefoonnummer
- * is een plaatshouder tot het Rinkel-nummer er is — zie `telefoon_fictief`.
+ * is een plaatshouder tot het CloudTalk-nummer er is (besluit 7 okt 2026; eerder Rinkel) — zie `telefoon_fictief`.
  */
 export const CONTACT = {
   email: "info@thuisbatterij-installaties.nl",
@@ -85,7 +85,7 @@ export const CONTACT = {
   /**
    * ⚠️ PLAATSHOUDER. 0612345678 is niet van ons. Zolang `telefoon_fictief` op
    * true staat mag dit nummer nergens naar buiten: niet in een mail, niet in een
-   * advertentie, niet in het belscript. Vervang het door het Rinkel-nummer en
+   * advertentie, niet in het belscript. Vervang het door het CloudTalk-nummer en
    * zet dan beide vlaggen om.
    */
   telefoon: "06 12 34 56 78",

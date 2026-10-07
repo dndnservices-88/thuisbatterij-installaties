@@ -206,7 +206,7 @@ niets — alle componenten zijn gedeeld.
 - [x] Entiteitskeuze rond → `ENTITEIT` in `lib/site.ts` ingevuld: Tjapz Alphen
       B.V., KvK 90408616, gevoerd onder de handelsnaam Thuisbatterij-installaties
 - [ ] `CONTACT` compleet → e-mailadres en correspondentieadres staan erin, maar
-      `telefoon` is een **fictief** nummer tot het Rinkel-nummer gekocht is.
+      `telefoon` is een **fictief** nummer tot het CloudTalk-nummer er is (eerder gepland: Rinkel).
       Daarom staan `telefoon_fictief` op true en `ingevuld` op false, en weigert
       `lib/berichten.ts` de bevestigingsmail. Dat is de rem, niet een bug.
       Zodra het nummer er is: nummer vervangen, beide vlaggen omzetten

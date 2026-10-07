@@ -67,7 +67,7 @@ function peildatumzin(): string {
 export function magBevestigingVersturen(): { mag: boolean; reden?: string } {
   if (!CONTACT.ingevuld) {
     const waarom = CONTACT.telefoon_fictief
-      ? "CONTACT.telefoon in lib/site.ts is een plaatshouder (het Rinkel-nummer is nog niet gekocht). Een verzonnen nummer in een klantmail is erger dan geen mail."
+      ? "CONTACT.telefoon in lib/site.ts is een plaatshouder (het CloudTalk-nummer is er nog niet). Een verzonnen nummer in een klantmail is erger dan geen mail."
       : "CONTACT in lib/site.ts is nog niet compleet.";
     return {
       mag: false,
