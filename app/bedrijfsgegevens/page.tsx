@@ -28,6 +28,10 @@ export default function Bedrijfsgegevens() {
           ← Terug naar de berekening
         </Link>
         <h1 className="mt-s3">Bedrijfsgegevens</h1>
+        <p className="mt-s2 text-[0.95rem] text-n-500">
+          {ENTITEIT.handelsnaam} is een handelsnaam van {ENTITEIT.naam}. Wij adviseren en doen een
+          offerte namens {LIMSOLAR.naam}.
+        </p>
 
         <dl className="mt-s5 grid gap-x-s4 gap-y-s2 text-[0.95rem] sm:grid-cols-[auto_1fr]">
           <Regel label="Handelsnamen">{ENTITEIT.handelsnamen.join(", ")}</Regel>
@@ -59,9 +63,9 @@ export default function Bedrijfsgegevens() {
           </Regel>
         </dl>
 
-        <h2 className="mt-s6 text-[1.25rem]">Installatie en uitvoering</h2>
+        <h2 className="mt-s6 text-[1.25rem]">Installatie, levering, garantie en service</h2>
         <p className="mt-s2 text-[0.95rem] leading-relaxed text-n-500">
-          {LIMSOLAR.naam}, KvK {LIMSOLAR.kvk}, {LIMSOLAR.adres}, {LIMSOLAR.postcode} {LIMSOLAR.plaats}.
+          Door {LIMSOLAR.naam}, KvK {LIMSOLAR.kvk}, {LIMSOLAR.adres}, {LIMSOLAR.postcode} {LIMSOLAR.plaats}.
         </p>
       </Sectie>
       <Footer />

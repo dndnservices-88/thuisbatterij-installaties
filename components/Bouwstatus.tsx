@@ -1,5 +1,6 @@
 import { claimStand, isLive } from "@/lib/claims";
 import { CONTACT, ENTITEIT } from "@/lib/site";
+import { PRIVACY_OPEN } from "@/lib/privacy";
 import { PEILDATUM_TARIEVEN } from "@/lib/calc";
 import type { Variant } from "@/lib/varianten";
 
@@ -37,6 +38,7 @@ export default function Bouwstatus({ variant }: { variant: Variant }) {
       ? "⚠ Telefoonnummer is fictief — bevestigingsmail staat uit"
       : `Telefoon: ${CONTACT.telefoon}`,
     meetstatus(),
+    `⚠ Privacyverklaring: ${PRIVACY_OPEN.length} punten na te kijken`,
   ];
 
   return (

@@ -49,7 +49,7 @@ function attributieregel(): string {
   if (!ENTITEIT.ingevuld) {
     return `Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
   }
-  return `Advies en berekening door ${ENTITEIT_VOLUIT}. Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
+  return `Advies en offerte namens ${LIMSOLAR.naam} door ${ENTITEIT_VOLUIT}. Installatie, levering, garantie en service door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
 }
 
 /** De peildatumzin, maar alleen als claimregister R2 is afgetekend. */

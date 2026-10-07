@@ -374,8 +374,8 @@ export function Aanbod() {
           <p className="mt-s2 text-[0.9rem] leading-relaxed text-n-500">
             Heb je een hoger verbruik, een warmtepomp, een elektrische auto of een dynamisch
             contract, dan is het instapsysteem niet automatisch de beste keuze. In het adviesgesprek
-            lezen we je kwartierdata in en rekenen we door welke capaciteit bij jou past — ook als
-            dat betekent dat we je een kleiner systeem adviseren.
+            lopen we je situatie door; welke capaciteit technisch past, staat in de offerte van
+            Limsolar — ook als dat een kleiner systeem is.
           </p>
           <p className="mt-s3 text-[0.9rem] text-n-500">
             <Claim id="U10" alsWeg="Vraag ons naar de mogelijkheden rond de btw-teruggave." />
@@ -705,12 +705,6 @@ export function Footer() {
             Privacyverklaring
           </Link>
           <Cookievoorkeuren />
-          {!isLive && (
-            <span className="placeholder">
-              Algemene voorwaarden
-              <span className="placeholder-label">nog aanleveren</span>
-            </span>
-          )}
         </nav>
         <p className="mt-s3 text-n-500">
           Bedragen op deze pagina zijn indicatief en gebaseerd op landelijke gemiddelden. Aan de

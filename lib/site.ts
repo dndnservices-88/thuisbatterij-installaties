@@ -125,7 +125,9 @@ export const CONTACT_ADRES = `${CONTACT.adres}, ${CONTACT.postcode} ${CONTACT.pl
  * De attributieregel. Verplicht in de footer en bij het formulier.
  * Dit is wat de uitvoeringsclaims bij de partij legt die ze waarmaakt.
  */
-export const ATTRIBUTIE = `Advies en berekening door ${ENTITEIT_KORT}. Installatie en uitvoering door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
+// Rolverdeling (juridische chat, 7 okt 2026): wij adviseren en offreren namens
+// Limsolar; Limsolar levert, installeert en geeft garantie. Tweede zin = blok B.
+export const ATTRIBUTIE = `Advies en offerte namens ${LIMSOLAR.naam} door ${ENTITEIT_KORT}. Installatie, levering, garantie en service door ${LIMSOLAR.naam}, KvK ${LIMSOLAR.kvk}, ${LIMSOLAR.adres}, ${LIMSOLAR.postcode} ${LIMSOLAR.plaats}.`;
 
 /**
  * Consenttekst. Het hele belmodel rust op deze zin en op het bewijs dat hij is
@@ -145,11 +147,18 @@ export const ATTRIBUTIE = `Advies en berekening door ${ENTITEIT_KORT}. Installat
  * op wit dat de installatie bij Limsolar ligt en niet bij ons.
  */
 export const CONSENT = {
-  versie: "1.1",
+  // v1.2 (7 okt 2026, juridische chat dossier 6, tekst D): "mij adviseren en mij
+  // namens Limsolar B.V. een offerte doen" toegevoegd — v1.1 dekte alleen contact
+  // over de berekening en een vrijblijvend advies. Bestaande leads houden v1.1:
+  // de versie wordt per lead opgeslagen. De gespreksopname staat er bewust niet
+  // in; die rust niet op toestemming maar wordt gemeld.
+  versie: "1.2",
   tekst:
-    "Ja, Thuisbatterij-installaties — handelsnaam van Tjapz Alphen B.V. — mag contact met mij opnemen, telefonisch en per e-mail, over mijn berekening en een vrijblijvend advies over een thuisbatterij, en mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de installatie uitvoert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de privacyverklaring.",
+    "Ja, Thuisbatterij-installaties — handelsnaam van Tjapz Alphen B.V. — mag mij telefonisch en per e-mail benaderen over mijn berekening, mij adviseren en mij namens Limsolar B.V. een offerte doen. Thuisbatterij-installaties mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de thuisbatterij levert en installeert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de privacyverklaring.",
 };
 
 /** Disclaimer onder het rekenresultaat. Staat er direct onder, niet in de voettekst. */
 export const REKEN_DISCLAIMER =
-  "Deze indicatie is gebaseerd op landelijke gemiddelden en op de gegevens die je hebt ingevuld. Je werkelijke besparing hangt af van je verbruikspatroon over de dag, je contract en de gekozen systeemgrootte. Wij verbinden ons pas aan een uitkomst nadat we je eigen kwartierdata hebben ingelezen.";
+  // Tekst C uit de juridische chat (7 okt 2026). De oude slotzin "Wij verbinden
+  // ons pas aan een uitkomst…" is eruit: die legde een toezegging bij de BV.
+  "Deze berekening is een indicatie op basis van landelijke gemiddelden en de gegevens die je invult. Het is geen aanbod en er kunnen geen rechten aan worden ontleend. Of een thuisbatterij technisch past in jouw situatie en wat die kost, hoor je van Limsolar B.V., in de offerte.";
