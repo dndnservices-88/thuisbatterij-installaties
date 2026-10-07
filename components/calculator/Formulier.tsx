@@ -250,9 +250,14 @@ export default function Formulier({
           className="mt-[3px] h-[20px] w-[20px] flex-none accent-[#370060]"
         />
         <span className="text-n-500">
-          {CONSENT.tekst.replace(" Zie de privacyverklaring.", " ")}
+          {CONSENT.tekst.replace(" Zie de bedrijfsgegevens en de privacyverklaring.", " ")}
+          Zie de{" "}
+          <Link href="/bedrijfsgegevens" className="font-semibold text-paars underline">
+            bedrijfsgegevens
+          </Link>{" "}
+          en de{" "}
           <Link href="/privacyverklaring" className="font-semibold text-paars underline">
-            Zie de privacyverklaring
+            privacyverklaring
           </Link>
           .
         </span>

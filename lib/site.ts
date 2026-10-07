@@ -152,9 +152,15 @@ export const CONSENT = {
   // over de berekening en een vrijblijvend advies. Bestaande leads houden v1.1:
   // de versie wordt per lead opgeslagen. De gespreksopname staat er bewust niet
   // in; die rust niet op toestemming maar wordt gemeld.
-  versie: "1.2",
+  // v1.3 (7 okt 2026, besluit Dieudonné, optie 1): de statutaire naam staat niet
+  // meer in de tekst zelf; wel handelsnaam + KvK-nummer, met een link naar
+  // /bedrijfsgegevens waar de statutaire naam staat. Na de naamswijziging naar
+  // DNDN Services B.V. hoeft deze tekst niet om (KvK blijft gelijk).
+  // ⚠️ AANNAME dat dit volstaat voor de identiteit van de verwerkingsverantwoordelijke
+  // (AVG overw. 42) — door de juridische chat laten bevestigen.
+  versie: "1.3",
   tekst:
-    "Ja, Thuisbatterij-installaties — handelsnaam van Tjapz Alphen B.V. — mag mij telefonisch en per e-mail benaderen over mijn berekening, mij adviseren en mij namens Limsolar B.V. een offerte doen. Thuisbatterij-installaties mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de thuisbatterij levert en installeert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de privacyverklaring.",
+    "Ja, Thuisbatterij-installaties (KvK " + ENTITEIT.kvk + ") mag mij telefonisch en per e-mail benaderen over mijn berekening, mij adviseren en mij namens Limsolar B.V. een offerte doen. Thuisbatterij-installaties mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de thuisbatterij levert en installeert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de bedrijfsgegevens en de privacyverklaring.",
 };
 
 /** Disclaimer onder het rekenresultaat. Staat er direct onder, niet in de voettekst. */
