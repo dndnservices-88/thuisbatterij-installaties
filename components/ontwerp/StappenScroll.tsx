@@ -16,7 +16,7 @@ type Stap = {
   tekst: string;
   punten: string[];
   beeld: ReactNode;
-  /** Alleen bij stap 1: knop die naar de rekentool in de hero springt. */
+  /** Knop die naar de rekentool in de hero springt. Sinds 7 okt 2026 bij elke stap (besluit Dieudonné). */
   knop?: string;
 };
 
@@ -41,6 +41,7 @@ const STAPPEN: Stap[] = [
     titel: "Wij bellen je op het gekozen dagdeel",
     tekst: "Een gesprek van een minuut of tien. We lopen je berekening samen na en beantwoorden je vragen.",
     punten: ["Jij kiest het dagdeel", "Je berekening samen nalopen", "Alleen met jouw toestemming"],
+    knop: "Bereken mijn situatie",
     beeld: <NepGesprek />,
   },
   {
@@ -48,6 +49,7 @@ const STAPPEN: Stap[] = [
     titel: "Adviesgesprek bij je thuis",
     tekst: "Alleen als het zinvol is. We kijken naar de meterkast, het verbruikspatroon en de plek voor de batterij.",
     punten: ["Meterkast en aansluiting", "Plek voor de batterij", "Capaciteit die past"],
+    knop: "Bereken mijn situatie",
     beeld: <Foto src={fotoMeterkast} alt="Monteur meet met een multimeter aan een groepenkast" />,
   },
   {
@@ -55,6 +57,7 @@ const STAPPEN: Stap[] = [
     titel: "Installatie door Limsolar",
     tekst: "Welk systeem het wordt en wat het kost, staat vooraf op papier. Daarna plant Limsolar de installatie in.",
     punten: ["Prijs vooraf op papier", "Uitgevoerd door Limsolar", "Planning in overleg"],
+    knop: "Bereken mijn situatie",
     beeld: <Foto src={fotoBatterij} alt="Een thuisbatterij tegen een buitenmuur, met de omvormer erboven" />,
   },
 ];
