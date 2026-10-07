@@ -3,6 +3,15 @@ import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 
 /**
+ * Versie van Meta's Marketing API (Conversions API). Meta zet oude versies na
+ * ongeveer twee jaar uit en stuurt aanroepen dan stil door naar een nieuwere,
+ * zonder foutmelding. v20.0 verliep op 24 sep 2026; v25.0 heeft per 7 okt 2026
+ * nog geen einddatum (developers.facebook.com/docs/graph-api/changelog/versions).
+ * Bij een upgrade alleen deze regel aanpassen en opnieuw testen.
+ */
+export const META_API_VERSIE = "v25.0";
+
+/**
  * Opslag van leads. Server-side, in app/api/lead/route.ts aangeroepen.
  *
  * ⚠️ Vercel heeft een tijdelijk bestandssysteem: het lokale ndjson-bestand is
@@ -203,7 +212,7 @@ export async function stuurNaarMetaCapi(lead: Lead): Promise<void> {
   };
 
   try {
-    await fetch(`https://graph.facebook.com/v20.0/${pixel}/events?access_token=${token}`, {
+    await fetch(`https://graph.facebook.com/${META_API_VERSIE}/${pixel}/events?access_token=${token}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
