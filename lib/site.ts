@@ -45,7 +45,17 @@ export const ENTITEIT_KORT = `${ENTITEIT.handelsnaam} · KvK ${ENTITEIT.kvk}`;
  * Gebruik deze overal waar het juridisch moet kloppen — footer, attributie,
  * bevestigingsmail — zodat merk en rechtspersoon nooit uit elkaar lopen.
  */
-export const ENTITEIT_VOLUIT = `${ENTITEIT.handelsnaam}, handelsnaam van ${ENTITEIT.naam}, KvK ${ENTITEIT.kvk}`;
+// Met zetel: art. 2:186 lid 1 BW eist "de volledige naam van de vennootschap en
+// haar woonplaats" op stukken die van de BV uitgaan (juridische chat, 7 okt 2026).
+export const ENTITEIT_VOLUIT = `${ENTITEIT.handelsnaam}, handelsnaam van ${ENTITEIT.naam}, gevestigd te ${ENTITEIT.zetel}, KvK ${ENTITEIT.kvk}`;
+
+/**
+ * Versie van /bedrijfsgegevens. Die pagina hoort bij de toestemmingstekst (v1.3
+ * linkt ernaartoe), dus per lead leggen we vast welke versie de klant kon zien
+ * (art. 7 lid 1 AVG, juridische chat 7 okt 2026). Ophogen bij elke inhoudelijke
+ * wijziging van die pagina of van ENTITEIT.
+ */
+export const BEDRIJFSGEGEVENS_VERSIE = "1.0";
 
 /**
  * Het domein, op één plek. Het staat onder het logo in de kopbalk en komt terug

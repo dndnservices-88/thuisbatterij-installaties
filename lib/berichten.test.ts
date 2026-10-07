@@ -62,6 +62,8 @@ function maakLead(overschrijf: Partial<Lead> = {}): Lead {
     consent_tekst: "Toestemmingstekst",
     consent_versie: "1.0",
     consent_tijdstip: "2026-08-24T10:00:00.000Z",
+    privacy_versie: "2.0",
+    bedrijfsgegevens_versie: "1.0",
     ip_adres: "84.24.1.9",
     user_agent: "Mozilla/5.0",
     pagina_url: "https://thuisbatterij-installaties.nl/",

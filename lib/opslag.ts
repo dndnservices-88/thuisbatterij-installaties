@@ -28,6 +28,9 @@ export type Lead = {
   consent_tekst: string;
   consent_versie: string;
   consent_tijdstip: string; // server-side bepaald, niet uit de browser
+  /** Versies van de pagina's waar de toestemmingstekst naar linkt (art. 7 lid 1 AVG). */
+  privacy_versie: string;
+  bedrijfsgegevens_versie: string;
   ip_adres: string;
   user_agent: string;
   pagina_url: string;

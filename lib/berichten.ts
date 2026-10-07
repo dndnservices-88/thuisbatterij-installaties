@@ -297,6 +297,7 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
       "Toestemming (bewaar dit, dit is de dekking onder het telefoontje):",
       `- Tekst v${lead.consent_versie}: ${lead.consent_tekst}`,
       `- Tijdstip: ${lead.consent_tijdstip}`,
+      `- Gelinkte pagina's: privacyverklaring v${lead.privacy_versie}, bedrijfsgegevens v${lead.bedrijfsgegevens_versie}`,
       `- IP: ${lead.ip_adres}`,
       `- Lead-id: ${lead.id}`,
     ].join("\n")

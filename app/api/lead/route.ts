@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { bewaarLead, stuurNaarMetaCapi, type Lead } from "@/lib/opslag";
-import { CONSENT } from "@/lib/site";
+import { BEDRIJFSGEGEVENS_VERSIE, CONSENT } from "@/lib/site";
+import { PRIVACY_VERSIE } from "@/lib/privacy";
 import { toestemmingUitCookieHeader } from "@/lib/toestemming";
 import { kiesVariant } from "@/lib/varianten";
 import { controleer } from "@/lib/leadcontrole";
@@ -86,6 +87,8 @@ export async function POST(request: Request) {
     consent_tekst: CONSENT.tekst,
     consent_versie: CONSENT.versie,
     consent_tijdstip: new Date().toISOString(),
+    privacy_versie: PRIVACY_VERSIE,
+    bedrijfsgegevens_versie: BEDRIJFSGEGEVENS_VERSIE,
     ip_adres: ip,
     user_agent: h.get("user-agent") || "onbekend",
     pagina_url: tekst(body.pagina_url, 1000),
