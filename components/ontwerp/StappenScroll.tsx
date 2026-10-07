@@ -8,7 +8,6 @@ import { KnopLink } from "@/components/ui/Knop";
 import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
 import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
 
-const SFEERBEELD = "Sfeerbeeld, geen foto van een eigen project.";
 
 type Stap = {
   kort: string;
@@ -234,9 +233,6 @@ function Foto({ src, alt }: { src: StaticImageData; alt: string }) {
   return (
     <figure className="absolute inset-0">
       <Image src={src} alt={alt} fill placeholder="blur" sizes="(min-width: 1024px) 600px, 100vw" className="object-cover" />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-s3 pb-s3 pt-s6">
-        <figcaption className="text-[0.78rem] text-n-200">{SFEERBEELD}</figcaption>
-      </div>
     </figure>
   );
 }

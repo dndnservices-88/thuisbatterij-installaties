@@ -97,8 +97,8 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
               FOTO VERVANGEN: zet een nieuw bestand in public/beeld/ en pas de
               import bovenaan aan. Liggend formaat, minimaal 1600 × 1000 px
               (verhouding 16:10), webp of jpg. Het beeld wordt bijgesneden tot
-              16:10, dus houd het onderwerp in het midden. Is het een eigen foto
-              van Limsolar, haal dan het bijschrift "Sfeerbeeld" weg. */}
+              16:10, dus houd het onderwerp in het midden. Bijschrift "Sfeerbeeld"
+              weggehaald op verzoek van Dieudonné, 7 okt 2026. */}
           <figure className="intro mt-s4 hidden lg:block" style={v(520)}>
             <div className="relative aspect-[16/10] overflow-hidden rounded-merk shadow-[0_30px_80px_-24px_rgba(0,0,0,0.55)]">
               <Image
@@ -111,9 +111,6 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#240040]/50 via-transparent to-transparent" />
             </div>
-            <figcaption className="mt-s2 text-[0.78rem] text-n-200">
-              Sfeerbeeld, geen foto van een eigen project.
-            </figcaption>
           </figure>
         </div>
       </div>

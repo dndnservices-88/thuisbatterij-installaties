@@ -39,7 +39,6 @@ import logoWit from "@/public/beeld/logo-wit.webp";
  * geen "onze monteur", geen herkenbaar merk van een fabrikant. Een foto is
  * juridisch net zo goed een mededeling als een zin (claimregister, blok V).
  */
-const SFEERBEELD = "Sfeerbeeld, geen foto van een eigen project.";
 
 /**
  * De elf secties uit het sectieplan (playbook fase 2), in die volgorde.
@@ -110,9 +109,6 @@ export function Hero({ variant }: { variant: Variant }) {
             sizes="(min-width: 1024px) 380px, 260px"
             className="mx-auto h-auto w-full max-w-[260px] lg:max-w-[380px]"
           />
-          <figcaption className="mt-s2 text-center text-[0.78rem] text-n-200">
-            {SFEERBEELD}
-          </figcaption>
         </figure>
       </div>
 
@@ -297,7 +293,6 @@ export function HoeHetWerkt() {
           bij="Aansluiting in de meterkast"
         />
       </div>
-      <p className="mt-s2 text-[0.78rem] text-n-500">{SFEERBEELD}</p>
     </Sectie>
   );
 }
@@ -340,7 +335,7 @@ export function Aanbod() {
           className="h-auto w-full rounded-merk"
         />
         <figcaption className="mt-s2 text-[0.78rem] text-n-500">
-          {SFEERBEELD} Welk systeem bij jou past, bepalen we in het adviesgesprek.
+          Welk systeem bij jou past, bepalen we in het adviesgesprek.
         </figcaption>
       </figure>
 

@@ -109,8 +109,7 @@ export default function ReviewsGoogle() {
                     Lees zelf wat klanten over Limsolar zeggen.
                   </p>
                   <p className="mt-s2 text-[0.95rem] leading-relaxed text-n-500">
-                    Alle beoordelingen staan op het openbare Google-profiel van {LIMSOLAR.naam},
-                    ook de mindere.
+                    Alle beoordelingen staan op het openbare Google-profiel van {LIMSOLAR.naam}.
                   </p>
                 </>
               )}
