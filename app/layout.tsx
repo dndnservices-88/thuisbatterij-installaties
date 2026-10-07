@@ -98,7 +98,6 @@ const ORGANISATIE_LD = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: ENTITEIT.handelsnaam,
-  legalName: ENTITEIT.naam,
   url: `https://${DOMEIN}`,
   logo: `https://${DOMEIN}/beeld/logo-kleur.webp`,
   areaServed: "NL",
