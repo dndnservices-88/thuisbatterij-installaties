@@ -27,10 +27,10 @@ import { laadGtm } from "@/lib/gtm";
  *     is dus zichtbaar uitgeschakeld in plaats van weggelaten. Wat je niet toont,
  *     kan de bezoeker niet controleren.
  *
- *  3. Klik-ID's worden altijd vastgelegd, ook zonder toestemming. Dat mag: het is
- *     functionele, first-party opslag voor de eigen leadadministratie, niet voor
- *     het volgen over websites heen. De tags in Tag Manager blijven wél uit tot
- *     iemand accepteert.
+ *  3. Klik-ID's (gclid e.d.) staan zonder toestemming alleen in het geheugen van
+ *     de pagina en worden pas met marketingtoestemming in cookie/localStorage
+ *     bewaard (art. 11.7a Tw, besluit 8 okt 2026). Tag Manager laadt pas na
+ *     toestemming voor statistieken of marketing (variant 2).
  *
  *  4. De banner is te heropenen vanuit de voettekst. Een toestemming die je niet
  *     kunt intrekken, is geen geldige toestemming.
