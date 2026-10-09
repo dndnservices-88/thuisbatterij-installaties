@@ -11,6 +11,14 @@
  *
  * Zonder dit veld is de terugkoppelingsloop later niet meer te maken, ook niet
  * met terugwerkende kracht.
+ *
+ * Sinds 8 okt 2026 (juridische chat dossier 6, punt 1; art. 11.7a Tw): pas
+ * wegschrijven ná marketingtoestemming. Tot die keuze staan de klik-ID's alleen
+ * in het werkgeheugen van deze pagina — de site wisselt van pagina zonder te
+ * herladen, dus ze overleven het bezoek zolang de bezoeker blijft. Weigert hij,
+ * dan wissen we een eventuele oude cookie en localStorage-waarde.
+ * Gevolg: bij weigeraars gaat er geen gclid/fbclid mee met de lead, en is hun
+ * afspraak of sale niet terug te koppelen naar Google of Meta.
  */
 
 const COOKIE = "tbi_attributie";
@@ -62,8 +70,10 @@ function uuid(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-export function leesAttributie(): Attributie {
-  if (typeof window === "undefined") return {};
+/** Klik-ID's van dit bezoek, alleen in het geheugen. Overleeft paginawissels zonder herladen. */
+let geheugen: Attributie = {};
+
+function leesOpgeslagen(): Attributie {
   try {
     const uitCookie = leesCookie(COOKIE);
     const uitStorage = window.localStorage.getItem(COOKIE);
@@ -73,10 +83,43 @@ export function leesAttributie(): Attributie {
   }
 }
 
-/** Roep dit één keer aan bij binnenkomst op elke pagina. */
-export function vangKlikIds(): Attributie {
+export function leesAttributie(): Attributie {
   if (typeof window === "undefined") return {};
-  const bestaand = leesAttributie();
+  return { ...leesOpgeslagen(), ...geheugen };
+}
+
+/** Schrijft de klik-ID's van dit bezoek weg. Alleen aanroepen bij marketingtoestemming. */
+export function bewaarKlikIds() {
+  if (typeof window === "undefined") return;
+  const json = JSON.stringify(leesAttributie());
+  zetCookie(COOKIE, json, DAGEN);
+  try {
+    window.localStorage.setItem(COOKIE, json);
+  } catch {
+    /* localStorage kan geblokkeerd zijn; de cookie is de primaire opslag */
+  }
+}
+
+/** Wist opgeslagen klik-ID's (weigeren of intrekken). Het geheugen van dit bezoek blijft. */
+export function wisKlikIds() {
+  if (typeof window === "undefined") return;
+  if (leesCookie(COOKIE) !== undefined) {
+    document.cookie = `${COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+  }
+  try {
+    window.localStorage.removeItem(COOKIE);
+  } catch {
+    /* niets */
+  }
+}
+
+/**
+ * Roep dit één keer aan bij binnenkomst op elke pagina.
+ * @param magOpslaan true alleen bij een eerder gegeven marketingtoestemming.
+ */
+export function vangKlikIds(magOpslaan: boolean): Attributie {
+  if (typeof window === "undefined") return {};
+  const bestaand = magOpslaan ? leesAttributie() : { ...geheugen };
   const params = new URLSearchParams(window.location.search);
   const nieuw: Attributie = { ...bestaand };
 
@@ -103,12 +146,8 @@ export function vangKlikIds(): Attributie {
   if (vers || !nieuw.landing_url) nieuw.landing_url = window.location.href;
   if (vers || !nieuw.referrer) nieuw.referrer = document.referrer || undefined;
 
-  const json = JSON.stringify(nieuw);
-  zetCookie(COOKIE, json, DAGEN);
-  try {
-    window.localStorage.setItem(COOKIE, json);
-  } catch {
-    /* localStorage kan geblokkeerd zijn; de cookie is de primaire opslag */
-  }
+  geheugen = nieuw;
+  if (magOpslaan) bewaarKlikIds();
+  else wisKlikIds();
   return nieuw;
 }

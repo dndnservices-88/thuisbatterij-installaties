@@ -11,7 +11,8 @@ import {
   HEROPEN_EVENT,
   type Toestemming,
 } from "@/lib/tracking";
-import { vangKlikIds } from "@/lib/klikids";
+import { bewaarKlikIds, vangKlikIds, wisKlikIds } from "@/lib/klikids";
+import { laadGtm } from "@/lib/gtm";
 
 /**
  * Cookiebanner met toestemming per categorie.
@@ -43,8 +44,9 @@ export default function ConsentBanner({ direct = false }: { direct?: boolean }) 
   const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
-    vangKlikIds();
     const bestaand = leesConsent();
+    // Klik-ID's alleen wegschrijven bij marketingtoestemming (8 okt 2026).
+    vangKlikIds(bestaand?.marketing === true);
 
     if (!bestaand) {
       setZichtbaar(true);
@@ -81,6 +83,11 @@ export default function ConsentBanner({ direct = false }: { direct?: boolean }) 
     const t: Toestemming = nieuweToestemming(keuze);
     bewaarConsent(t);
     pasConsentToe(t, "banner");
+    // Klik-ID's volgen de marketingkeuze; de container laadt pas nu, en alleen
+    // als er iets aanstaat (variant 2, 8 okt 2026).
+    if (keuze.marketing) bewaarKlikIds();
+    else wisKlikIds();
+    if (keuze.statistieken || keuze.marketing) laadGtm();
     setStatistieken(keuze.statistieken);
     setMarketing(keuze.marketing);
     setZichtbaar(false);
@@ -136,7 +143,7 @@ export default function ConsentBanner({ direct = false }: { direct?: boolean }) 
           <div className="mt-s3 border-t border-n-200 pt-s3">
             <Categorie
               titel="Noodzakelijk"
-              uitleg="Nodig om de site te laten werken en om jouw keuze hier te onthouden. Hier zit ook de vastlegging van hoe je op de site kwam, voor onze eigen administratie."
+              uitleg="Nodig om de site te laten werken en om jouw keuze hier te onthouden."
               aan
               vast
             />
@@ -148,7 +155,7 @@ export default function ConsentBanner({ direct = false }: { direct?: boolean }) 
             />
             <Categorie
               titel="Marketing"
-              uitleg="Meet welke advertentie tot een berekening leidde, bij Google en Meta. Zonder deze cookies betalen we voor advertenties zonder te weten welke iets opleveren."
+              uitleg="Meet welke advertentie tot een berekening leidde, bij Google en Meta, en onthoudt via welke advertentie je binnenkwam (90 dagen). Zonder deze cookies betalen we voor advertenties zonder te weten welke iets opleveren."
               aan={marketing}
               onWijzig={setMarketing}
             />

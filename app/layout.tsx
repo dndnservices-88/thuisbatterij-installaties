@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { GTM_AAN, GTM_ID, OMGEVING, gtmSnippet } from "@/lib/gtm";
 
 // Lettertypen lokaal via next/font (sinds 7 okt 2026). Tot dan zes losse
 // @fontsource-CSS-bestanden; PageSpeed (mobiel, 7 okt) telde die mee in 1.210 ms
@@ -139,20 +140,8 @@ gtag('consent', 'default', {
  * daarna weg. Niet op Production zetten; daar doet hij niets en hij verbergt
  * alleen wat er werkelijk aan staat.
  */
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-
-/**
- * Vercel vult dit met "production", "preview" of "development" — maar alléén als
- * "Automatically expose System Environment Variables" aanstaat in de
- * projectinstellingen. Staat dat uit, dan is deze waarde undefined en laadt de
- * container ook in productie niet. Daarom hieronder een expliciete waarschuwing
- * in plaats van stilte: dit is precies het soort fout dat je pas ontdekt als je
- * na drie weken adverteren nul conversies blijkt te hebben.
- */
-const OMGEVING = process.env.NEXT_PUBLIC_VERCEL_ENV;
-const GTM_AAN =
-  Boolean(GTM_ID) &&
-  (OMGEVING === "production" || process.env.NEXT_PUBLIC_GTM_IN_PREVIEW === "true");
+// GTM_ID, OMGEVING, GTM_AAN en gtmSnippet staan sinds 8 okt 2026 in lib/gtm.ts,
+// omdat de banner de container nu ook in de browser moet kunnen laden.
 
 /**
  * De omgeving gaat óók de dataLayer in, vóór de container laadt. Zo kun je in
@@ -169,22 +158,29 @@ ${
 }
 `;
 
-// Functie en geen constante: anders staat het containeradres met de tekst
-// "undefined" erin sowieso in de bundel, ook in een bouw zonder container.
-const gtmSnippet = (id: string) => `
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
-var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
-j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');
-`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const variant = kiesVariant(headers().get("host"));
   // Heeft de bezoeker nog geen keuze gemaakt, dan staat de cookiebanner al in de
   // server-HTML. Tot 7 okt 2026 verscheen hij pas na het laden van JavaScript; op
   // mobiel was hij daardoor het traagste grote element (LCP, 1.630 ms
   // vertraging volgens PageSpeed).
-  const vraagCookiekeuze = toestemmingUitCookieHeader(headers().get("cookie")).bron === "geen_keuze";
+  const cookiekeuze = toestemmingUitCookieHeader(headers().get("cookie"));
+  const vraagCookiekeuze = cookiekeuze.bron === "geen_keuze";
+  // Container alleen meteen laden bij een eerder gegeven toestemming (8 okt 2026,
+  // variant 2). Zonder keuze of na weigeren laadt hij pas als de bezoeker in de
+  // banner iets aanzet — zie laadGtm() in lib/gtm.ts.
+  const metenMag = cookiekeuze.statistieken || cookiekeuze.marketing;
+  const consentUpdate = metenMag
+    ? // Zelfde vertaling als consentSignalen() in lib/tracking.ts (dat is een
+      // client-module en mag hier niet in). Staat vóór de snippet, zodat de
+      // eerste paginaweergave al met de juiste toestemming meet.
+      `gtag('consent','update',${JSON.stringify({
+        ad_storage: cookiekeuze.marketing ? "granted" : "denied",
+        ad_user_data: cookiekeuze.marketing ? "granted" : "denied",
+        ad_personalization: cookiekeuze.marketing ? "granted" : "denied",
+        analytics_storage: cookiekeuze.statistieken ? "granted" : "denied",
+      })});`
+    : "";
 
   return (
     <html lang="nl" className={`${fontKop.variable} ${fontTekst.variable} ${fontAccent.variable}`}>
@@ -192,24 +188,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ORGANISATIE_LD }} />
         <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />
         <script dangerouslySetInnerHTML={{ __html: MEETCONTEXT }} />
-        {GTM_AAN && GTM_ID && <script dangerouslySetInnerHTML={{ __html: gtmSnippet(GTM_ID) }} />}
+        {GTM_AAN && GTM_ID && metenMag && (
+          <script dangerouslySetInnerHTML={{ __html: consentUpdate + gtmSnippet(GTM_ID) }} />
+        )}
       </head>
       <body>
-        {/* De noscript-variant hoort direct achter de body-opening. Hij vangt
-            bezoekers zonder JavaScript op; die tellen niet mee in GA4 maar wel
-            in de paginaweergaven, en zonder dit blok mist Google Ads ze
-            helemaal. */}
-        {GTM_AAN && GTM_ID && (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-              title="Tag Manager"
-            />
-          </noscript>
-        )}
+        {/* Geen noscript-variant meer (8 okt 2026): zonder JavaScript kan niemand
+            toestemming geven, dus laadt de container daar ook niet. */}
         <Bouwstatus variant={variant} />
         <Kopbalk />
         {/* De keurmerkenstrip stond hier, als witte balk tussen kopbalk en hero.

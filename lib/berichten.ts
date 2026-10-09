@@ -199,7 +199,9 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
         ? `LEAD ZONDER DOORREKENING (${route})`
         : "NIEUWE LEAD";
 
-  const onderwerp = `${kop} — ${naam}, ${lead.dagdeel} — ${lead.postcode}`;
+  // Lead-ID erin (8 okt 2026): de Google Sheet bevat geen namen meer, dus het
+  // belteam zoekt de rij op Lead-ID.
+  const onderwerp = `${kop} — ${naam}, ${lead.dagdeel} — ${lead.postcode} — ${lead.id}`;
 
   const waarschuwingen: string[] = [];
   if (controle.komt_overeen === false) {

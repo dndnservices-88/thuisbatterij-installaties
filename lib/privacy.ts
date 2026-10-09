@@ -11,7 +11,7 @@ export const PRIVACY_VERSIE = "2.0";
  * 2 = meetscripts laden pas ná toestemming.
  * Eén regel wijzigen als de meetchat omschakelt.
  */
-export const COOKIE_VARIANT: 1 | 2 = 1;
+export const COOKIE_VARIANT: 1 | 2 = 2; // 8 okt 2026: container laadt pas na toestemming (lib/gtm.ts)
 
 /**
  * Wat er in de privacyverklaring nog nagekeken of ingevuld moet worden. Staat in

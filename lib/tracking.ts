@@ -101,8 +101,8 @@ export function schrijfConsent(t: Toestemming): string {
  *
  * functionality_storage en security_storage staan altijd op granted. Dat is
  * geen sluiproute: de site gebruikt die categorieën uitsluitend voor dingen die
- * strikt noodzakelijk zijn — de toestemmingscookie zelf en de first-party
- * opslag van klik-ID's voor de eigen leadadministratie. Zou daar ooit iets bij
+ * strikt noodzakelijk zijn — de toestemmingscookie zelf. (De klik-ID's staan
+ * sinds 8 okt 2026 pas na marketingtoestemming in een cookie; zie lib/klikids.ts.) Zou daar ooit iets bij
  * komen dat niet strikt noodzakelijk is, dan hoort het een eigen categorie in
  * de banner te krijgen en niet stilletjes hier.
  */
