@@ -122,11 +122,21 @@ async function naarBestand(lead: Lead) {
   await appendFile(path.join(map, "leads.ndjson"), JSON.stringify(lead) + "\n", "utf8");
 }
 
+/**
+ * Wat er naar de webhook (Make) gaat: de lead plus calc_snapshot als één
+ * tekst. Make kan een geneste structuur niet zelf als tekst in een
+ * Pipedrive-veld zetten; zo komt de berekening die de bezoeker zag letterlijk
+ * in het dealveld "Calculator-snapshot" (claimregister R4, besluit 11 okt 2026).
+ */
+export function webhookPayload(lead: Lead) {
+  return { ...lead, calc_snapshot_tekst: JSON.stringify(lead.calc_snapshot ?? null) };
+}
+
 async function naarWebhook(lead: Lead, url: string) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(lead),
+    body: JSON.stringify(webhookPayload(lead)),
   });
   if (!res.ok) throw new Error(`Webhook gaf ${res.status}`);
 }
