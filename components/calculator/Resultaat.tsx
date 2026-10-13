@@ -66,7 +66,11 @@ export default function Resultaat({
         <Kaart
           label="Thuisbatterij van"
           waarde={`${cap} kWh`}
-          onder={prijsZichtbaar ? `vanaf ${euro(uitkomst.product.prijs_eur)} incl. installatie` : "prijs in het adviesgesprek"}
+          onder={
+            prijsZichtbaar
+              ? `vanaf ${euro(uitkomst.product.prijs_eur)} (1-fase) of ${euro(uitkomst.product_3fase.prijs_eur)} (3-fase), incl. installatie`
+              : "prijs in het adviesgesprek"
+          }
         />
         {prijsZichtbaar ? (
           <Kaart

@@ -38,7 +38,9 @@ export const CLAIMS = {
     // Op "bevestigd" gezet op besluit van Dieudonné, 7 okt 2026 ("prijzen kunnen
     // live"). Bewijsstuk: prijslijst 9 sep 2026 in Bewijs/. Aftekening Limsolar ontbreekt nog.
     id: "P2",
-    tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.808",
+    // 13 okt 2026: de € 5.808 geldt alleen bij een 1-fase-aansluiting (Marstek);
+    // 3-fase begint bij Dyness 10 kWh, € 5.950 excl. = € 7.200 incl.
+    tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.808 (1-fase) of € 7.200 (3-fase)",
     status: "bevestigd",
     nodig: "Aftekening Limsolar. Bewijsstuk (prijslijst 9 sep 2026) staat in Bewijs/.",
   },

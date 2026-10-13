@@ -28,7 +28,7 @@
  * dynamisch voordeel € 0,15, bruikbaar 95%. Jaarlijkse kosten, btw-teruggave en
  * subsidie als aparte posten, standaard € 0.
  */
-export const REKENVERSIE = "1.4.1";
+export const REKENVERSIE = "1.5.0";
 export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
@@ -190,13 +190,25 @@ export type Product = {
   /** Consumentenprijs incl. 21% btw, afgerond op hele euro's. Hiermee rekent de tool. */
   prijs_eur: number;
   backup: "noodstroom" | "volledig" | "geen";
+  /** Aansluiting waarop dit systeem past (prijslijst 13 okt 2026). */
+  fase: 1 | 3;
   /** Claimregister-status van de prijs. Alleen 'bevestigd' hoort live te staan. */
   prijs_status: "bevestigd" | "toegezegd" | "open";
 };
 
 /**
- * Interne verkoopprijslijst Limsolar, 9 september 2026 (staat in
- * 06 - Legal & Compliance/Bewijs/). Prijzen excl. btw, inclusief installatie
+ * Interne verkoopprijslijst Limsolar, versie met fase per product (aangeleverd
+ * 13 okt 2026, staat in 06 - Legal & Compliance/Bewijs/ als
+ * "…_met_fase_13okt2026.docx"). Wijzigingen t.o.v. 9 sep: Deye 15 kWh € 6.705 →
+ * € 6.750, Dyness 25,6 kWh € 9.205 → € 9.250, Dyness 51,2 kWh € 13.405 →
+ * € 13.450, AlphaESS 18,6 kWh zonder backup € 8.875.
+ *
+ * Fase: Marstek en Deye 1-fase; Pylontech, Dyness en AlphaESS 3-fase. INGETROKKEN
+ * (13 okt 2026): "Marstek sluit aan op beide fases" — gelezen uit "aangesloten op
+ * de fase(s)" in de oude lijst; de nieuwe lijst zegt 1-fase. De tool vraagt de
+ * fase niet uit (extra vraag = afhakers, aanname) en toont daarom beide
+ * vanaf-prijzen.
+ * Prijzen excl. btw, inclusief installatie
  * (bevestigd door Dieudonné, 6 okt 2026); "kW" in de lijst betekent kWh.
  *
  * Nog niet bekend en dus niet gebruikt: welke merken bij een eenfase- of
@@ -208,35 +220,32 @@ export type Product = {
  * 2026, "uit Opus"; de lijst noemde € 9.499). Excl. btw zoals de rest van de
  * lijst — aanname, nagevraagd.
  *
- * Antwoord vraag 5 (13 okt 2026): "zie prijslijst" — Deye is 1-fase, Marstek
- * sluit aan op de fase(s). Marstek is bij elke maat tot 20 kWh de goedkoopste,
- * dus de vanaf-prijs geldt voor elke aansluiting.
  */
-const PRIJSLIJST: [merk: string, kwh: number, excl: number, backup: Product["backup"]][] = [
-  ["Marstek Venus E 3.0", 10, 4800, "noodstroom"],
-  ["Marstek Venus E 3.0", 15, 5950, "noodstroom"],
-  ["Marstek Venus E 3.0", 20, 6950, "noodstroom"],
-  ["Deye 1-fase", 5, 5150, "volledig"],
-  ["Deye 1-fase", 10, 5900, "volledig"],
-  ["Deye 1-fase", 15, 6705, "volledig"],
-  ["Deye 1-fase", 20, 7250, "volledig"],
-  ["Pylontech Force H3X", 10, 6995, "volledig"],
-  ["Pylontech Force H3X", 15, 7899, "volledig"],
-  ["Pylontech Force H3X", 20, 8699, "volledig"],
-  ["Pylontech Force H3X", 25, 9649, "volledig"],
-  ["Dyness Stack 100 Pro", 10, 5950, "volledig"],
-  ["Dyness Stack 100 Pro", 15, 6789, "volledig"],
-  ["Dyness Stack 100 Pro", 20.48, 7980, "volledig"],
-  ["Dyness Stack 100 Pro", 25.6, 9205, "volledig"],
-  ["Dyness Stack 100 Pro", 30, 10450, "volledig"],
-  ["Dyness Stack 100 Pro", 40, 12150, "volledig"],
-  ["Dyness Stack 100 Pro", 51.2, 13405, "volledig"],
-  ["AlphaESS", 9.3, 6995, "geen"],
-  ["AlphaESS", 18.6, 8875, "geen"],
-  ["AlphaESS", 27.9, 10675, "geen"],
-  ["AlphaESS", 18.6, 9499, "volledig"],
-  ["AlphaESS", 27.9, 11400, "volledig"],
-  ["AlphaESS", 37.2, 13545, "volledig"],
+const PRIJSLIJST: [merk: string, kwh: number, excl: number, backup: Product["backup"], fase: Product["fase"]][] = [
+  ["Marstek Venus E 3.0", 10, 4800, "noodstroom", 1],
+  ["Marstek Venus E 3.0", 15, 5950, "noodstroom", 1],
+  ["Marstek Venus E 3.0", 20, 6950, "noodstroom", 1],
+  ["Deye 1-fase", 5, 5150, "volledig", 1],
+  ["Deye 1-fase", 10, 5900, "volledig", 1],
+  ["Deye 1-fase", 15, 6750, "volledig", 1],
+  ["Deye 1-fase", 20, 7250, "volledig", 1],
+  ["Pylontech Force H3X", 10, 6995, "volledig", 3],
+  ["Pylontech Force H3X", 15, 7899, "volledig", 3],
+  ["Pylontech Force H3X", 20, 8699, "volledig", 3],
+  ["Pylontech Force H3X", 25, 9649, "volledig", 3],
+  ["Dyness Stack 100 Pro", 10, 5950, "volledig", 3],
+  ["Dyness Stack 100 Pro", 15, 6789, "volledig", 3],
+  ["Dyness Stack 100 Pro", 20.48, 7980, "volledig", 3],
+  ["Dyness Stack 100 Pro", 25.6, 9250, "volledig", 3],
+  ["Dyness Stack 100 Pro", 30, 10450, "volledig", 3],
+  ["Dyness Stack 100 Pro", 40, 12150, "volledig", 3],
+  ["Dyness Stack 100 Pro", 51.2, 13450, "volledig", 3],
+  ["AlphaESS", 9.3, 6995, "geen", 3],
+  ["AlphaESS", 18.6, 8875, "geen", 3],
+  ["AlphaESS", 27.9, 10675, "geen", 3],
+  ["AlphaESS", 18.6, 9499, "volledig", 3],
+  ["AlphaESS", 27.9, 11400, "volledig", 3],
+  ["AlphaESS", 37.2, 13545, "volledig", 3],
 ];
 
 const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -247,9 +256,9 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
  * daarboven komen andere zaken kijken. De prijslijst blijft volledig hierboven
  * staan; alleen de keuze is begrensd.
  */
-export const MAX_CAPACITEIT_KWH = 20;
+export const MAX_CAPACITEIT_KWH = 20.5; // 20,5 zodat Dyness 20,48 kWh als "20 kWh" meetelt
 
-export const ASSORTIMENT: Product[] = PRIJSLIJST.filter(([, kwh]) => kwh <= MAX_CAPACITEIT_KWH).map(([merk, kwh, excl, backup]) => ({
+export const ASSORTIMENT: Product[] = PRIJSLIJST.filter(([, kwh]) => kwh <= MAX_CAPACITEIT_KWH).map(([merk, kwh, excl, backup, fase]) => ({
   id: `${slug(merk)}-${String(kwh).replace(".", "-")}-${backup}`,
   naam: `${merk} ${kwh} kWh`,
   merk,
@@ -257,6 +266,7 @@ export const ASSORTIMENT: Product[] = PRIJSLIJST.filter(([, kwh]) => kwh <= MAX_
   prijs_excl_eur: excl,
   prijs_eur: Math.round(excl * (1 + CONSTANTEN.BTW)),
   backup,
+  fase,
   prijs_status: "toegezegd", // claimregister P2/P3
 }));
 
@@ -394,6 +404,8 @@ export type Berekening = {
    */
   terugleverkosten_antwoord?: TerugleverAntwoord;
   product: Product;
+  /** Goedkoopste passende 3-fase-systeem van dezelfde maat; tweede vanaf-prijs. */
+  product_3fase: Product;
   /** true als het opslagpotentieel groter is dan het grootste product met bekende prijs */
   product_is_begrensd: boolean;
   jaarverbruik_kwh: number;
@@ -456,16 +468,17 @@ export function indicatieveCapaciteit(opslagpotentieel: number): number {
  * maat. Bestaat er geen product dat groot genoeg is, dan het grootste, en dan
  * gemarkeerd als begrensd: liever te klein adviseren dan een prijs verzinnen.
  */
-export function kiesProduct(opslagpotentieel: number): { product: Product; begrensd: boolean } {
+export function kiesProduct(opslagpotentieel: number, fase?: 1 | 3): { product: Product; begrensd: boolean } {
   const nodig = indicatieveCapaciteit(opslagpotentieel);
-  const passend = ASSORTIMENT.filter((p) => p.capaciteit_kwh >= nodig);
+  const keuze = fase ? ASSORTIMENT.filter((p) => p.fase === fase) : ASSORTIMENT;
+  const passend = keuze.filter((p) => p.capaciteit_kwh >= nodig);
   if (passend.length > 0) {
     const goedkoopste = passend.reduce((a, b) =>
       b.prijs_eur < a.prijs_eur || (b.prijs_eur === a.prijs_eur && b.capaciteit_kwh < a.capaciteit_kwh) ? b : a
     );
     return { product: goedkoopste, begrensd: false };
   }
-  const grootste = ASSORTIMENT.reduce((a, b) => (b.capaciteit_kwh > a.capaciteit_kwh ? b : a));
+  const grootste = keuze.reduce((a, b) => (b.capaciteit_kwh > a.capaciteit_kwh ? b : a));
   return { product: grootste, begrensd: true };
 }
 
@@ -497,7 +510,11 @@ export function bereken(a: Antwoorden): Uitkomst {
   // overschot kijken adviseert stelselmatig te grote systemen.
   const opslagpotentieel = Math.min(overschot, avondbehoefte);
 
-  const { product, begrensd } = kiesProduct(opslagpotentieel);
+  // Twee vanaf-prijzen: de fase vragen we niet uit. De besparing rekent met het
+  // 1-fase-product; de terugverdientijd loopt van 1-fase (ondergrens) tot 3-fase
+  // (bovengrens), zodat de band voor elke aansluiting klopt.
+  const { product, begrensd } = kiesProduct(opslagpotentieel, 1);
+  const { product: product3 } = kiesProduct(opslagpotentieel, 3);
 
   // De batterij heeft een jaarbudget aan doorzet. Eerst gaat dat naar eigen
   // zonnestroom, want die kWh is het meest waard. Wat daarna overblijft kan
@@ -516,13 +533,14 @@ export function bereken(a: Antwoorden): Uitkomst {
   // platform) gaan eraf; standaard € 0.
   const besparing = Math.max(0, opslagWerkelijk * waarde + handelsopbrengst - CONSTANTEN.JAARLIJKSE_KOSTEN);
   const investering = nettoInvestering(product);
+  const investering3 = nettoInvestering(product3);
 
   const besparingBand = band(besparing);
   // Terugverdientijd draait om: hoge besparing = korte tijd.
   const tvt: Band = {
     min: besparingBand.max > 0 ? rond(investering / besparingBand.max, 1) : Infinity,
     midden: besparingBand.midden > 0 ? rond(investering / besparingBand.midden, 1) : Infinity,
-    max: besparingBand.min > 0 ? rond(investering / besparingBand.min, 1) : Infinity,
+    max: besparingBand.min > 0 ? rond(investering3 / besparingBand.min, 1) : Infinity,
   };
 
   const berekening: Berekening = {
@@ -543,6 +561,7 @@ export function bereken(a: Antwoorden): Uitkomst {
         ? a.terugleverkosten
         : CONSTANTEN.TERUGLEVERKOSTEN,
     product,
+    product_3fase: product3,
     product_is_begrensd: begrensd,
     jaarverbruik_kwh: verbruik,
     aantal_panelen: panelen,

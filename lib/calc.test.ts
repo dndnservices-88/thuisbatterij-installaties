@@ -324,7 +324,7 @@ test("de contractkeuze reist mee in de snapshot", () => {
 // ── Rekenversie 1.4.0: assortiment, maatkeuze en tarieven Fabian ─────────────
 
 test("prijzen in het assortiment zijn de prijslijst plus 21% btw, afgerond", () => {
-  assert.equal(ASSORTIMENT.length, 15); // 24 regels in de prijslijst, 15 tot en met 20 kWh
+  assert.equal(ASSORTIMENT.length, 16); // 24 regels in de prijslijst, 16 tot en met 20,5 kWh
   for (const p of ASSORTIMENT) {
     assert.equal(p.prijs_eur, Math.round(p.prijs_excl_eur * 1.21), p.naam);
   }
@@ -368,11 +368,11 @@ test("de tarieven komen uit de aantekeningen van Fabian", () => {
 
 // ── Rekenversie 1.4.1: antwoorden Limsolar 13 okt 2026 ───────────────────────
 
-test("de tool adviseert nooit meer dan 20 kWh (Limsolar, vraag 9)", () => {
-  assert.ok(ASSORTIMENT.every((p) => p.capaciteit_kwh <= 20));
+test("de tool adviseert nooit meer dan 20 kWh (Limsolar, vraag 9; Dyness 20,48 telt als 20)", () => {
+  assert.ok(ASSORTIMENT.every((p) => p.capaciteit_kwh <= 20.5));
   const { product, begrensd } = kiesProduct(100000);
   assert.equal(begrensd, true);
-  assert.ok(product.capaciteit_kwh <= 20);
+  assert.ok(product.capaciteit_kwh <= 20.5);
 });
 
 test("AlphaESS 18,6 kWh zonder backup kost € 8.875 excl. btw (Limsolar, vraag 4)", () => {
@@ -380,10 +380,29 @@ test("AlphaESS 18,6 kWh zonder backup kost € 8.875 excl. btw (Limsolar, vraag 
   assert.equal(a?.prijs_excl_eur, 8875);
 });
 
-test("Marstek is bij elke maat tot 20 kWh de goedkoopste (vanaf-prijs geldt voor elke fase)", () => {
+test("Marstek (1-fase) is bij elke maat tot 20 kWh de goedkoopste", () => {
   for (const maat of [10, 15, 20]) {
     const passend = ASSORTIMENT.filter((p) => p.capaciteit_kwh >= maat);
     const goedkoopste = passend.reduce((a, b) => (b.prijs_eur < a.prijs_eur ? b : a));
     assert.ok(goedkoopste.merk.startsWith("Marstek"), `${maat} kWh: ${goedkoopste.naam}`);
   }
+});
+
+// ── Rekenversie 1.5.0: prijslijst met fase (13 okt 2026) ─────────────────────
+
+test("3-fase vanaf-prijzen: 10 kWh € 7.200, 15 kWh € 8.215, 20 kWh € 9.656", () => {
+  assert.equal(kiesProduct(10 * 200, 3).product.prijs_eur, 7200);
+  assert.equal(kiesProduct(15 * 200, 3).product.prijs_eur, 8215);
+  assert.equal(kiesProduct(20 * 200, 3).product.prijs_eur, 9656);
+  assert.equal(kiesProduct(10 * 200, 1).product.prijs_eur, 5808);
+});
+
+test("terugverdientijd: ondergrens met 1-fase-prijs, bovengrens met 3-fase-prijs", () => {
+  const u = bereken({ ...basis, contract: "dynamisch" });
+  if (u.route === "huurder" || u.route === "geen_pv") throw new Error("verwacht een berekening");
+  assert.equal(u.product.fase, 1);
+  assert.equal(u.product_3fase.fase, 3);
+  assert.ok(u.product_3fase.prijs_eur > u.product.prijs_eur);
+  assert.equal(u.terugverdientijd_jaar.max, Math.round((u.product_3fase.prijs_eur / u.besparing_eur.min) * 10) / 10);
+  assert.equal(u.terugverdientijd_jaar.min, Math.round((u.product.prijs_eur / u.besparing_eur.max) * 10) / 10);
 });

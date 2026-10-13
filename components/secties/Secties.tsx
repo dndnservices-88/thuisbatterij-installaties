@@ -597,6 +597,14 @@ export function Faq() {
       </>,
     ],
     [
+      "Wat zit er in de prijs, en wat niet?",
+      "De vanaf-prijzen zijn inclusief installatie en tot 10 meter kabel. Soms is een nieuwe meterkast nodig; dat hangt af van je situatie en staat dan vooraf in de offerte van Limsolar. Ook het verschil tussen een 1-fase- en een 3-fase-aansluiting zie je terug in de prijs.",
+    ],
+    [
+      "Kan ik de btw op een thuisbatterij terugkrijgen?",
+      "Limsolar stuurt je een link waarmee je je bij de btw-teruggave aanmeldt. Heb je de teruggave voor je zonnepanelen al aangevraagd op naam van je partner? Dan moet ook de factuur van de batterij op naam van je partner staan.",
+    ],
+    [
       "Wat gebeurt er met mijn gegevens?",
       <>
         We bewaren wat je invult, samen met de uitkomst van je berekening, om je te kunnen bellen en
