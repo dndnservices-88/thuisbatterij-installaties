@@ -42,7 +42,7 @@ export const CLAIMS = {
     // 3-fase begint bij Dyness 10 kWh, € 5.950 excl. = € 7.200 incl.
     tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.808 (1-fase) of € 7.200 (3-fase)",
     status: "bevestigd",
-    nodig: "Aftekening Limsolar. Bewijsstuk (prijslijst 9 sep 2026) staat in Bewijs/.",
+    nodig: "Aftekening Limsolar (aftekenpakket 13 okt 2026). Bewijsstuk: prijslijst met fase, 13 okt 2026, in Bewijs/.",
   },
   P6: {
     // Op "bevestigd" gezet op besluit van Dieudonné, 7 okt 2026 ("prijzen kunnen
@@ -55,7 +55,15 @@ export const CLAIMS = {
     // daarna niet meer kan bijstellen.
     tekst: "Rekenvoorbeeld met een standaard thuisbatterij van deze capaciteit",
     status: "bevestigd",
-    nodig: "Aftekening Limsolar. Prijslijst per capaciteit (9 sep 2026) staat in Bewijs/.",
+    nodig: "Aftekening Limsolar (aftekenpakket 13 okt 2026). Prijslijst met fase, 13 okt 2026, in Bewijs/.",
+  },
+  P7: {
+    // 13 okt 2026, besluit Dieudonné: de verwijzing naar de privacyverklaring van
+    // Limsolar hoort in het register. Wordt getoond in /privacyverklaring.
+    id: "P7",
+    tekst: "Voor wat Limsolar met je gegevens doet, geldt de privacyverklaring van Limsolar (limsolar.nl/privacy-regelgeving)",
+    status: "toegezegd",
+    nodig: "Toestemming Limsolar voor de verwijzing en bevestiging dat dit de actuele privacyverklaring is (aftekenpakket 13 okt 2026).",
   },
 
   // ── Reken- en besparingsclaims ───────────────────────────────────────────
@@ -81,8 +89,11 @@ export const CLAIMS = {
     // zinsdelen; dit is een hele zin die achter de rekendisclaimer wordt
     // geplakt. Zonder punt in de regel blijft er bij het wegvallen van de claim
     // een losse punt achter op de pagina.
-    tekst: "Tarieven gecontroleerd op 24 augustus 2026.",
-    status: "open",
+    // 13 okt 2026: op "bevestigd" op besluit van Dieudonné — de tarieven zijn van
+    // Fabian (Limsolar), aantekeningen 6 okt. Schriftelijke aftekening volgt via
+    // het aftekenpakket (06 - Legal & Compliance).
+    tekst: "Tarieven van Limsolar, peildatum 6 oktober 2026.",
+    status: "bevestigd",
     nodig:
       "Aftekening door Limsolar van de vier tarieven in lib/calc.ts (leveringstarief, terugleververgoeding, terugleverkosten, dynamische marge), met eigen peildatum. Bij aftekening ook TARIEVEN_STATUS op 'bevestigd' zetten en REKENVERSIE verhogen.",
   },

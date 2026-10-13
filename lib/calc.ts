@@ -28,7 +28,7 @@
  * dynamisch voordeel € 0,15, bruikbaar 95%. Jaarlijkse kosten, btw-teruggave en
  * subsidie als aparte posten, standaard € 0.
  */
-export const REKENVERSIE = "1.5.0";
+export const REKENVERSIE = "1.5.1";
 export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
@@ -37,7 +37,7 @@ export const PEILDATUM_TARIEVEN = "6 oktober 2026";
  * resultaat verschijnen. Dat wordt afgedwongen via claimregister R2: de
  * disclaimer toont de datum alleen als R2 op "bevestigd" staat.
  */
-export const TARIEVEN_STATUS: "voorstel" | "bevestigd" = "voorstel";
+export const TARIEVEN_STATUS: "voorstel" | "bevestigd" = "bevestigd"; // 13 okt 2026, besluit Dieudonné: tarieven van Fabian
 
 /**
  * Waar de voorgestelde waarden vandaan komen. Staat hier en niet in een los
