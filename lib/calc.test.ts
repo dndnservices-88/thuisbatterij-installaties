@@ -104,7 +104,7 @@ test("case C — dynamisch contract levert meer op en de capaciteit schiet niet 
   // Capaciteit mag nooit groter zijn dan een product dat werkelijk bestaat.
   const grootste = Math.max(...ASSORTIMENT.map((p) => p.capaciteit_kwh));
   assert.ok(dyn.product.capaciteit_kwh <= grootste);
-  // Met het volledige assortiment (tot 51,2 kWh) past dit profiel ruim.
+  // Ook met het assortiment tot 20 kWh past dit profiel.
   assert.equal(dyn.product_is_begrensd, false);
 });
 
@@ -324,7 +324,7 @@ test("de contractkeuze reist mee in de snapshot", () => {
 // ── Rekenversie 1.4.0: assortiment, maatkeuze en tarieven Fabian ─────────────
 
 test("prijzen in het assortiment zijn de prijslijst plus 21% btw, afgerond", () => {
-  assert.equal(ASSORTIMENT.length, 24);
+  assert.equal(ASSORTIMENT.length, 15); // 24 regels in de prijslijst, 15 tot en met 20 kWh
   for (const p of ASSORTIMENT) {
     assert.equal(p.prijs_eur, Math.round(p.prijs_excl_eur * 1.21), p.naam);
   }
@@ -364,4 +364,26 @@ test("de tarieven komen uit de aantekeningen van Fabian", () => {
   assert.equal(CONSTANTEN.DYN_MARGE, 0.15);
   assert.equal(CONSTANTEN.BRUIKBARE_FRACTIE, 0.95);
   assert.equal(CONSTANTEN.CAPACITEIT_FACTOR, 200);
+});
+
+// ── Rekenversie 1.4.1: antwoorden Limsolar 13 okt 2026 ───────────────────────
+
+test("de tool adviseert nooit meer dan 20 kWh (Limsolar, vraag 9)", () => {
+  assert.ok(ASSORTIMENT.every((p) => p.capaciteit_kwh <= 20));
+  const { product, begrensd } = kiesProduct(100000);
+  assert.equal(begrensd, true);
+  assert.ok(product.capaciteit_kwh <= 20);
+});
+
+test("AlphaESS 18,6 kWh zonder backup kost € 8.875 excl. btw (Limsolar, vraag 4)", () => {
+  const a = ASSORTIMENT.find((p) => p.merk === "AlphaESS" && p.capaciteit_kwh === 18.6 && p.backup === "geen");
+  assert.equal(a?.prijs_excl_eur, 8875);
+});
+
+test("Marstek is bij elke maat tot 20 kWh de goedkoopste (vanaf-prijs geldt voor elke fase)", () => {
+  for (const maat of [10, 15, 20]) {
+    const passend = ASSORTIMENT.filter((p) => p.capaciteit_kwh >= maat);
+    const goedkoopste = passend.reduce((a, b) => (b.prijs_eur < a.prijs_eur ? b : a));
+    assert.ok(goedkoopste.merk.startsWith("Marstek"), `${maat} kWh: ${goedkoopste.naam}`);
+  }
 });

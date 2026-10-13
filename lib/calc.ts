@@ -28,7 +28,7 @@
  * dynamisch voordeel € 0,15, bruikbaar 95%. Jaarlijkse kosten, btw-teruggave en
  * subsidie als aparte posten, standaard € 0.
  */
-export const REKENVERSIE = "1.4.0";
+export const REKENVERSIE = "1.4.1";
 export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
@@ -204,8 +204,13 @@ export type Product = {
  * maat de goedkoopste uitvoering en toont hij die als "vanaf"-prijs; welk
  * toestel het wordt, bepaalt de adviseur aan tafel.
  *
- * Let op: AlphaESS 18,6 kWh staat met én zonder backup op € 9.499 — bij Fabian
- * nagevraagd (vraag 4), nog geen antwoord.
+ * AlphaESS 18,6 kWh zonder backup: € 8.875 (antwoord Limsolar op vraag 4, 13 okt
+ * 2026, "uit Opus"; de lijst noemde € 9.499). Excl. btw zoals de rest van de
+ * lijst — aanname, nagevraagd.
+ *
+ * Antwoord vraag 5 (13 okt 2026): "zie prijslijst" — Deye is 1-fase, Marstek
+ * sluit aan op de fase(s). Marstek is bij elke maat tot 20 kWh de goedkoopste,
+ * dus de vanaf-prijs geldt voor elke aansluiting.
  */
 const PRIJSLIJST: [merk: string, kwh: number, excl: number, backup: Product["backup"]][] = [
   ["Marstek Venus E 3.0", 10, 4800, "noodstroom"],
@@ -227,7 +232,7 @@ const PRIJSLIJST: [merk: string, kwh: number, excl: number, backup: Product["bac
   ["Dyness Stack 100 Pro", 40, 12150, "volledig"],
   ["Dyness Stack 100 Pro", 51.2, 13405, "volledig"],
   ["AlphaESS", 9.3, 6995, "geen"],
-  ["AlphaESS", 18.6, 9499, "geen"],
+  ["AlphaESS", 18.6, 8875, "geen"],
   ["AlphaESS", 27.9, 10675, "geen"],
   ["AlphaESS", 18.6, 9499, "volledig"],
   ["AlphaESS", 27.9, 11400, "volledig"],
@@ -236,7 +241,15 @@ const PRIJSLIJST: [merk: string, kwh: number, excl: number, backup: Product["bac
 
 const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-export const ASSORTIMENT: Product[] = PRIJSLIJST.map(([merk, kwh, excl, backup]) => ({
+/**
+ * Grootste batterij die de tool adviseert: 20 kWh. Limsolar, vraag 9 (13 okt
+ * 2026): "ga uit van 20 kWh … gewone situaties zullen niet boven 20 komen";
+ * daarboven komen andere zaken kijken. De prijslijst blijft volledig hierboven
+ * staan; alleen de keuze is begrensd.
+ */
+export const MAX_CAPACITEIT_KWH = 20;
+
+export const ASSORTIMENT: Product[] = PRIJSLIJST.filter(([, kwh]) => kwh <= MAX_CAPACITEIT_KWH).map(([merk, kwh, excl, backup]) => ({
   id: `${slug(merk)}-${String(kwh).replace(".", "-")}-${backup}`,
   naam: `${merk} ${kwh} kWh`,
   merk,
