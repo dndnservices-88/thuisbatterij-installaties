@@ -100,20 +100,15 @@ export const GOOGLE_PROFIEL = {
  * Het e-mailadres en het postadres horen bij JOUW entiteit, niet bij Limsolar:
  * jij bent de partij die de gegevens verzamelt en de toestemming vastlegt.
  *
- * Stand 1 september 2026: e-mailadres en postadres zijn echt. Het telefoonnummer
- * is een plaatshouder tot het CloudTalk-nummer er is (besluit 7 okt 2026; eerder Rinkel) — zie `telefoon_fictief`.
+ * Stand 25 oktober 2026: e-mailadres, postadres en telefoonnummer zijn echt.
+ * Telefoon = CloudTalk-nummer, aangeleverd door Dieudonné op 25 okt 2026.
  */
 export const CONTACT = {
   email: "info@thuisbatterij-installaties.nl",
 
-  /**
-   * ⚠️ PLAATSHOUDER. 0612345678 is niet van ons. Zolang `telefoon_fictief` op
-   * true staat mag dit nummer nergens naar buiten: niet in een mail, niet in een
-   * advertentie, niet in het belscript. Vervang het door het CloudTalk-nummer en
-   * zet dan beide vlaggen om.
-   */
-  telefoon: "06 12 34 56 78",
-  telefoon_fictief: true,
+  /** CloudTalk-nummer (Dieudonné, 25 okt 2026). Vervangt de plaatshouder 06 12 34 56 78. */
+  telefoon: "085 333 5387",
+  telefoon_fictief: false,
 
   /** Correspondentieadres voor privacyverzoeken. Los van het KvK-vestigingsadres. */
   adres: "Entrada 400",
@@ -125,7 +120,7 @@ export const CONTACT = {
    * Blijft dus false zolang het telefoonnummer verzonnen is. `lib/berichten.ts`
    * dwingt dit af; niet omzeilen om "even te testen" — daar is de preview voor.
    */
-  ingevuld: false,
+  ingevuld: true, // 25 okt 2026: telefoon echt; mail gaat alleen als ook MAIL_VAN in Vercel staat
 };
 
 /** Het correspondentieadres in één regel, voor de privacyverklaring en de voet. */

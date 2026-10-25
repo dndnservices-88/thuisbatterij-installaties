@@ -248,11 +248,18 @@ test("elk blok uit de tekstversie komt ook in de HTML terug", () => {
 
 // ── De poort ────────────────────────────────────────────────────────────────
 
-test("zonder contactpunt gaat er geen bevestiging naar een klant", () => {
-  // CONTACT.ingevuld staat op false zolang de entiteitskeuze niet rond is.
-  const poort = magBevestigingVersturen();
-  assert.equal(poort.mag, false);
-  assert.match(poort.reden ?? "", /CONTACT/);
+test("bevestigingsmail: contactpunt compleet, maar zonder MAIL_VAN gaat er niets uit", () => {
+  // Sinds 25 okt 2026 is CONTACT compleet (CloudTalk-nummer). De laatste poort
+  // is dan het geverifieerde afzenderadres.
+  const oud = process.env.MAIL_VAN;
+  delete process.env.MAIL_VAN;
+  const zonder = magBevestigingVersturen();
+  assert.equal(zonder.mag, false);
+  assert.match(zonder.reden ?? "", /MAIL_VAN/);
+  process.env.MAIL_VAN = "test@thuisbatterij-installaties.nl";
+  assert.equal(magBevestigingVersturen().mag, true);
+  if (oud === undefined) delete process.env.MAIL_VAN;
+  else process.env.MAIL_VAN = oud;
 });
 
 test("een huurder krijgt geen bedragen te zien in de bevestigingsmail", () => {

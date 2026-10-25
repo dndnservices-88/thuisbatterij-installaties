@@ -19,7 +19,6 @@ export const COOKIE_VARIANT: 1 | 2 = 2; // 8 okt 2026: container laadt pas na to
  * punt pas weghalen als het in de tekst is opgelost.
  */
 export const PRIVACY_OPEN = [
-  "Telefoonnummer (CloudTalk)",
   "Link privacyverklaring Limsolar laten bevestigen door Limsolar",
   "Grondslag toestemmingsbewijs, gespreksopname en klik-ID's (jurist, G1/G2)",
   "Gespreksopname: is besloten dat CloudTalk opneemt?",
