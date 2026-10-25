@@ -280,3 +280,26 @@ test("de meldingsmail zet naam en nummer in het onderwerp", () => {
   assert.match(mail.onderwerp, /Sander de Wit/);
   assert.match(mail.onderwerp, /1689 ZX/);
 });
+
+// ── Opmaak klantmail (25 okt 2026) ──────────────────────────────────────────
+
+test("opgemaakte klantmail bevat alle verplichte tekst, beide logo's en de belknop", () => {
+  const controle = controleer(SNAPSHOT_MET_TLK);
+  const mail = bevestigingAanKlant(maakLead(), controle);
+  assert.match(mail.html, /<meta charset="utf-8">/);
+  assert.match(mail.html, /beeld\/mail\/logo-thuisbatterij-wit\.png/);
+  assert.match(mail.html, /beeld\/mail\/logo-limsolar\.png/);
+  assert.match(mail.html, /href="tel:\+31853335387"/);
+  assert.match(mail.html, /Het is geen aanbod en er kunnen geen rechten aan worden ontleend/);
+  assert.match(mail.html, /Je hebt aangevinkt/);
+  assert.match(mail.html, /Installatie, levering, garantie en service door Limsolar B\.V\./);
+  assert.match(mail.html, /Wat er nu gebeurt/);
+  assert.match(mail.html, /0,109/, "terugleverkosten-zin moet ook in de HTML staan");
+});
+
+test("opgemaakte klantmail toont geen bedragen bij een huurder", () => {
+  const huurder = { ...SNAPSHOT_MET_TLK, antwoorden: { ...SNAPSHOT_MET_TLK.antwoorden, eigenaar: false } };
+  const mail = bevestigingAanKlant(maakLead({ calc_snapshot: huurder }), controleer(huurder));
+  assert.doesNotMatch(mail.html, /bespaar je naar verwachting/);
+  assert.match(mail.html, /geen doorrekening/);
+});
