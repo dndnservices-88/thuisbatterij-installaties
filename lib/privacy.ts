@@ -3,7 +3,7 @@
  * (tekst: juridische chat, "Limsolar_Concept_Privacyverklaring_en_Sitepakket_7okt2026.docx", onderdeel A).
  */
 
-export const PRIVACY_VERSIE = "2.0";
+export const PRIVACY_VERSIE = "2.1"; // 25 okt 2026: Rinkel i.p.v. CloudTalk, geen gespreksopname
 
 /**
  * Welke tekst bij "Cookies en meten". Keuze ligt bij de meetchat:
@@ -20,8 +20,8 @@ export const COOKIE_VARIANT: 1 | 2 = 2; // 8 okt 2026: container laadt pas na to
  */
 export const PRIVACY_OPEN = [
   "Link privacyverklaring Limsolar laten bevestigen door Limsolar",
-  "Grondslag toestemmingsbewijs, gespreksopname en klik-ID's (jurist, G1/G2)",
-  "Gespreksopname: is besloten dat CloudTalk opneemt?",
+  "Grondslag toestemmingsbewijs en klik-ID's (jurist, G1/G2)",
+  "Rinkel: vestiging, doorgifte buiten de EER en verwerkersovereenkomst",
   "Vercel: verwerkersovereenkomst geldt alleen op Pro/Enterprise — plan controleren",
   "Make: verwerkersovereenkomst alleen op betaald plan; hostingzone (EU/US) controleren",
   "Google Sheet onder gratis Gmail-account (jurist, G4)",

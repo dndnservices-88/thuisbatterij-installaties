@@ -52,7 +52,7 @@ export default function Bedrijfsgegevens() {
               ) : (
                 <span className="placeholder">
                   {CONTACT.telefoon}
-                  <span className="placeholder-label">fictief — CloudTalk-nummer</span>
+                  <span className="placeholder-label">fictief — echt nummer invullen</span>
                 </span>
               )
             ) : (

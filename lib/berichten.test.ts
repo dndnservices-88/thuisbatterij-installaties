@@ -249,7 +249,7 @@ test("elk blok uit de tekstversie komt ook in de HTML terug", () => {
 // ── De poort ────────────────────────────────────────────────────────────────
 
 test("bevestigingsmail: contactpunt compleet, maar zonder MAIL_VAN gaat er niets uit", () => {
-  // Sinds 25 okt 2026 is CONTACT compleet (CloudTalk-nummer). De laatste poort
+  // Sinds 25 okt 2026 is CONTACT compleet (Rinkel-nummer). De laatste poort
   // is dan het geverifieerde afzenderadres.
   const oud = process.env.MAIL_VAN;
   delete process.env.MAIL_VAN;

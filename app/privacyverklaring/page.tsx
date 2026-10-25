@@ -29,7 +29,7 @@ export default function Privacy() {
     isLive ? null : (
       <>
         {" "}
-        of <Nakijken label="CloudTalk-nummer">{CONTACT.telefoon}</Nakijken>
+        of <Nakijken label="telefoonnummer">{CONTACT.telefoon}</Nakijken>
       </>
     )
   ) : (
@@ -72,8 +72,7 @@ export default function Privacy() {
             <ul className="list-disc space-y-s1 pl-s4">
               <li>
                 <strong className="text-n-900">Wij ({ENTITEIT.handelsnaam})</strong> voor de website, de
-                berekening, het aanvraagformulier en het telefonische contact met jou, inclusief de{" "}
-                <Nakijken label="opname besloten?">opname van dat gesprek</Nakijken>.
+                berekening, het aanvraagformulier en het telefonische contact met jou.
               </li>
               <li>
                 <strong className="text-n-900">{LIMSOLAR.naam}</strong> (KvK {LIMSOLAR.kvk}, {LIMSOLAR.adres},{" "}
@@ -121,11 +120,6 @@ export default function Privacy() {
                   <Nakijken key="g2" label="jurist (G2)">Gerechtvaardigd belang</Nakijken>,
                 ],
                 [
-                  <Nakijken key="op" label="opname besloten?">Opname van het telefoongesprek</Nakijken>,
-                  "Vastleggen wat er is afgesproken (zeker bij een telefonische offerte of koop) en de kwaliteit van onze gesprekken verbeteren",
-                  <Nakijken key="g2b" label="jurist (G2)">Gerechtvaardigd belang</Nakijken>,
-                ],
-                [
                   "Herkomst van je bezoek (advertentie-ID's, campagnegegevens)",
                   "Weten via welke advertentie je binnenkwam, voor onze eigen administratie en om advertenties op resultaat te sturen",
                   <Nakijken key="g1" label="jurist (G1) + meetchat">Nog te bepalen</Nakijken>,
@@ -148,14 +142,11 @@ export default function Privacy() {
           </Blok>
 
           <Blok titel="Telefoongesprekken">
-            <p>
-              <Nakijken label="opname besloten?">
-                We nemen onze telefoongesprekken op. Dat zeggen we aan het begin van elk gesprek. We
-                bewaren een opname zes maanden. Is er in het gesprek een offerte geaccepteerd of een koop
-                gesloten, dan bewaren we de opname tot de bedenktijd voorbij is en de afrekening met
-                Limsolar rond is.
-              </Nakijken>
-            </p>
+            {/* 25 okt 2026: telefonie via Rinkel, zonder gespreksopname (Dieudonné). De
+                tekst over opname (concept juridische chat, voor CloudTalk) is vervallen. Gaat er
+                ooit wél opgenomen worden: eerst de juridische chat (melding, grondslag,
+                bewaartermijn, verwerkersovereenkomst). */}
+            <p>We nemen onze telefoongesprekken niet op.</p>
           </Blok>
 
           <Blok titel="Cookies en meten">
@@ -216,9 +207,9 @@ export default function Privacy() {
                   "Pipedrive OÜ (Estland), opslag in de EU; doorgifte buiten de EER alleen onder het Data Privacy Framework of standaardcontractbepalingen",
                 ],
                 [
-                  "CloudTalk s.r.o. (Bratislava)",
-                  <Nakijken key="ct" label="opname besloten?">Telefonie en gespreksopname</Nakijken>,
-                  "EU; doorgifte aan CloudTalk.io Inc. (VS) onder het Data Privacy Framework",
+                  "Rinkel",
+                  "Telefonie (zonder gespreksopname)",
+                  <Nakijken key="rk" label="vestiging + verwerkersovereenkomst Rinkel">—</Nakijken>,
                 ],
                 [
                   <Nakijken key="p" label="welke dienst?">Pushdienst</Nakijken>,
@@ -240,10 +231,6 @@ export default function Privacy() {
               rijen={[
                 ["Aanvraag zonder afspraak of koop", "12 maanden na het laatste contact"],
                 ["Bewijs van je toestemming", "5 jaar na het laatste contact"],
-                [
-                  <Nakijken key="o" label="opname besloten?">Opname van een telefoongesprek</Nakijken>,
-                  "6 maanden; bij offerte of koop tot de bedenktijd voorbij is en de afrekening met Limsolar rond is",
-                ],
                 [
                   "Aanvraag die tot een koop leidt",
                   "De klantgegevens liggen dan bij Limsolar. Wij bewaren alleen wat in onze administratie hoort, 7 jaar (fiscale bewaarplicht)",

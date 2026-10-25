@@ -55,7 +55,7 @@ export const ENTITEIT_VOLUIT = `${ENTITEIT.handelsnaam}, handelsnaam van ${ENTIT
  * (art. 7 lid 1 AVG, juridische chat 7 okt 2026). Ophogen bij elke inhoudelijke
  * wijziging van die pagina of van ENTITEIT.
  */
-export const BEDRIJFSGEGEVENS_VERSIE = "1.0";
+export const BEDRIJFSGEGEVENS_VERSIE = "1.1"; // 25 okt 2026: echt telefoonnummer (Rinkel)
 
 /**
  * Het domein, op één plek. Het staat onder het logo in de kopbalk en komt terug
@@ -101,12 +101,12 @@ export const GOOGLE_PROFIEL = {
  * jij bent de partij die de gegevens verzamelt en de toestemming vastlegt.
  *
  * Stand 25 oktober 2026: e-mailadres, postadres en telefoonnummer zijn echt.
- * Telefoon = CloudTalk-nummer, aangeleverd door Dieudonné op 25 okt 2026.
+ * Telefoon = Rinkel-nummer, aangeleverd door Dieudonné op 25 okt 2026 (niet CloudTalk).
  */
 export const CONTACT = {
   email: "info@thuisbatterij-installaties.nl",
 
-  /** CloudTalk-nummer (Dieudonné, 25 okt 2026). Vervangt de plaatshouder 06 12 34 56 78. */
+  /** Rinkel-nummer (Dieudonné, 25 okt 2026; telefonie via Rinkel, niet CloudTalk). Vervangt de plaatshouder 06 12 34 56 78. */
   telefoon: "085 333 5387",
   telefoon_fictief: false,
 
