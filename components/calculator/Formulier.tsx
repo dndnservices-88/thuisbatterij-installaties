@@ -223,7 +223,7 @@ export default function Formulier({
           fout={fouten.postcode}
           onChange={(e) => setV({ ...v, postcode: e.target.value.toUpperCase() })}
         />
-        <div className="grid grid-cols-[2fr_1fr] gap-s2">
+        <div className="grid min-w-0 grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-s2">
           <GetalVeld
             id="huisnummer"
             label="Huisnummer"

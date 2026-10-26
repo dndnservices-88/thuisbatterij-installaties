@@ -13,7 +13,7 @@ export function Veld({
   ...rest
 }: { label: string; hint?: string; fout?: string } & ComponentProps<"input">) {
   return (
-    <div className="flex flex-col gap-s1">
+    <div className="flex min-w-0 flex-col gap-s1">
       <label htmlFor={id} className="font-kop text-[0.9rem] font-semibold text-n-900">
         {label}
       </label>
@@ -22,7 +22,7 @@ export function Veld({
         id={id}
         aria-invalid={Boolean(fout)}
         aria-describedby={fout ? `${id}-fout` : undefined}
-        className={`min-h-[52px] rounded-merk border bg-n-000 px-s3 text-[1rem] outline-none ${
+        className={`min-h-[52px] w-full min-w-0 rounded-merk border bg-n-000 px-s3 text-[1rem] outline-none ${
           fout ? "border-red-700" : "border-n-200 focus:border-paars"
         }`}
         {...rest}
