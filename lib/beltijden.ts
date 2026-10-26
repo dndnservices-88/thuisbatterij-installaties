@@ -1,9 +1,9 @@
 /**
  * Belttijden voor de keuze "Zo snel mogelijk" (26 okt 2026).
  *
- * Uren 09:00–21:00 bevestigd door Dieudonné (26 okt 2026). Dagen maandag t/m
- * vrijdag zijn nog een aanname (weekend niet genoemd). Aanpassen = deze
- * constante; mail en tests volgen vanzelf.
+ * Bevestigd door Dieudonné (26 okt 2026): maandag t/m vrijdag 09:00–21:00, geen
+ * zaterdag. Make (module 7, belactiviteit) gebruikt dezelfde tijden: wijzig je
+ * dit, pas dan ook de Make-formule aan.
  */
 export const BELTIJDEN = { dagen: [1, 2, 3, 4, 5], vanUur: 9, totUur: 21 } as const;
 
