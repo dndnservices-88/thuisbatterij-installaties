@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     siteName: ENTITEIT.handelsnaam,
     title: TITEL,
     description: OMSCHRIJVING,
-    images: [{ url: "/beeld/og-deelbeeld.jpg", width: 1200, height: 630, alt: "Thuisbatterij aan een buitenmuur" }],
+    images: [{ url: "/beeld/og-deelbeeld.jpg", width: 1200, height: 630, alt: "Rijtjeshuis met zonnepanelen op het dak" }],
   },
   twitter: { card: "summary_large_image", title: TITEL, description: OMSCHRIJVING },
   robots: {
