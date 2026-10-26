@@ -49,7 +49,7 @@ const STAPPEN: Stap[] = [
     tekst: "Alleen als het zinvol is. We kijken naar de meterkast, het verbruikspatroon en de plek voor de batterij.",
     punten: ["Meterkast en aansluiting", "Plek voor de batterij", "Capaciteit die past"],
     knop: "Bereken mijn situatie",
-    beeld: <Foto src={fotoAdvies} alt="Twee mensen aan de keukentafel bekijken grafieken over energieverbruik op een laptop" />,
+    beeld: <Foto src={fotoAdvies} positie="object-left" alt="Twee mensen aan de keukentafel bekijken grafieken over energieverbruik op een laptop" />,
   },
   {
     kort: "Installatie",
@@ -229,10 +229,10 @@ export default function StappenScroll() {
 
 /* ── Beelden per stap ─────────────────────────────────────────────────────── */
 
-function Foto({ src, alt }: { src: StaticImageData; alt: string }) {
+function Foto({ src, alt, positie = "object-center" }: { src: StaticImageData; alt: string; positie?: string }) {
   return (
     <figure className="absolute inset-0">
-      <Image src={src} alt={alt} fill placeholder="blur" sizes="(min-width: 1024px) 600px, 100vw" className="object-cover" />
+      <Image src={src} alt={alt} fill placeholder="blur" sizes="(min-width: 1024px) 600px, 100vw" className={`object-cover ${positie}`} />
     </figure>
   );
 }
