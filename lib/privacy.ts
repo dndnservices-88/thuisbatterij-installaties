@@ -19,11 +19,8 @@ export const COOKIE_VARIANT: 1 | 2 = 2; // 8 okt 2026: container laadt pas na to
  * punt pas weghalen als het in de tekst is opgelost.
  */
 export const PRIVACY_OPEN = [
-  "Link privacyverklaring Limsolar laten bevestigen door Limsolar",
   "Grondslag toestemmingsbewijs en klik-ID's (jurist, G1/G2)",
-  "Rinkel: vestiging, doorgifte buiten de EER en verwerkersovereenkomst",
-  "Vercel: verwerkersovereenkomst geldt alleen op Pro/Enterprise — plan controleren",
-  "Make: verwerkersovereenkomst alleen op betaald plan; hostingzone (EU/US) controleren",
+  "Make: verwerkersovereenkomst alleen op betaald plan — welk plan? (zone eu1 bevestigd 26 okt)",
   "Google Sheet onder gratis Gmail-account (jurist, G4)",
   "Pushdienst: welke dienst zit achter PUSH_WEBHOOK_URL?",
   "Publicatiedatum invullen bij livegang",

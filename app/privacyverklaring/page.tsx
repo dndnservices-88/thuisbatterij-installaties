@@ -79,16 +79,14 @@ export default function Privacy() {
                 {LIMSOLAR.postcode} {LIMSOLAR.plaats}) voor de offerte, de koop, de levering, de
                 installatie, de garantie en de service. Voor wat Limsolar met je gegevens doet, geldt de
                 privacyverklaring van Limsolar:{" "}
-                <Nakijken label="link laten bevestigen door Limsolar">
-                  <a
-                    href="https://limsolar.nl/privacy-regelgeving/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-paars underline"
-                  >
-                    limsolar.nl/privacy-regelgeving
-                  </a>
-                </Nakijken>
+                <a
+                  href="https://limsolar.nl/privacy-regelgeving/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-paars underline"
+                >
+                  limsolar.nl/privacy-regelgeving
+                </a>
                 .
               </li>
             </ul>
@@ -184,16 +182,14 @@ export default function Privacy() {
                 [
                   "Vercel",
                   "Hosting van de website",
-                  <Nakijken key="v" label="Pro-plan controleren">
-                    VS — EU-US Data Privacy Framework en standaardcontractbepalingen
-                  </Nakijken>,
+                  "VS — EU-US Data Privacy Framework en standaardcontractbepalingen",
                 ],
                 ["Resend", "Versturen van e-mail", "VS — EU-US Data Privacy Framework en standaardcontractbepalingen"],
                 [
                   "Make",
                   "Doorsturen van aanvragen naar onze systemen",
-                  <Nakijken key="m" label="plan en zone controleren">
-                    Celonis Inc. (VS) — EU-US Data Privacy Framework; verwerking in de EU
+                  <Nakijken key="m" label="betaald plan? (verwerkersovereenkomst)">
+                    Celonis Inc. (VS) — EU-US Data Privacy Framework; verwerking in de EU (zone eu1)
                   </Nakijken>,
                 ],
                 [
@@ -209,7 +205,7 @@ export default function Privacy() {
                 [
                   "Rinkel",
                   "Telefonie (zonder gespreksopname)",
-                  <Nakijken key="rk" label="vestiging + verwerkersovereenkomst Rinkel">—</Nakijken>,
+                  "Nederland (EU); geen doorgifte buiten de EER bekend",
                 ],
                 [
                   <Nakijken key="p" label="welke dienst?">Pushdienst</Nakijken>,

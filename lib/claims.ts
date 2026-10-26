@@ -62,8 +62,9 @@ export const CLAIMS = {
     // Limsolar hoort in het register. Wordt getoond in /privacyverklaring.
     id: "P7",
     tekst: "Voor wat Limsolar met je gegevens doet, geldt de privacyverklaring van Limsolar (limsolar.nl/privacy-regelgeving)",
-    status: "toegezegd",
-    nodig: "Toestemming Limsolar voor de verwijzing en bevestiging dat dit de actuele privacyverklaring is (aftekenpakket 13 okt 2026).",
+    // 26 okt 2026: Limsolar akkoord ("ja mag", via Dieudonné). Schriftelijk in het aftekenpakket.
+    status: "bevestigd",
+    nodig: "Schriftelijke bevestiging in het aftekenpakket (deel C).",
   },
 
   // ── Reken- en besparingsclaims ───────────────────────────────────────────
