@@ -22,6 +22,5 @@ export const PRIVACY_OPEN = [
   "Grondslag toestemmingsbewijs en klik-ID's (jurist, G1/G2)",
   "Make: verwerkersovereenkomst alleen op betaald plan — welk plan? (zone eu1 bevestigd 26 okt)",
   "Google Sheet onder gratis Gmail-account (jurist, G4)",
-  "Pushdienst: welke dienst zit achter PUSH_WEBHOOK_URL?",
   "Publicatiedatum invullen bij livegang",
 ] as const;

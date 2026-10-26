@@ -207,11 +207,6 @@ export default function Privacy() {
                   "Telefonie (zonder gespreksopname)",
                   "Nederland (EU); geen doorgifte buiten de EER bekend",
                 ],
-                [
-                  <Nakijken key="p" label="welke dienst?">Pushdienst</Nakijken>,
-                  "Melding van een nieuwe aanvraag aan ons",
-                  <Nakijken key="p2" label="controleren">—</Nakijken>,
-                ],
               ]}
             />
             <p>

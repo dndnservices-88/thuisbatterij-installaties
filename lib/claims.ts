@@ -125,9 +125,10 @@ export const CLAIMS = {
     nodig: "Schriftelijke garantievoorwaarden Limsolar die de klant kan inzien — nog aanleveren",
   },
   U8: {
+    // 26 okt 2026: op "bevestigd" op besluit van Dieudonné ("die kloppen"). Schriftelijk via het aftekenpakket.
     id: "U8",
     tekst: "Limsolar helpt je bij de aanmelding bij de netbeheerder",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig: "Beschrijving van de hulp die Limsolar biedt. De klant meldt zelf aan (Dieudonné, 6 okt 2026).",
   },
   U9: {
@@ -218,19 +219,21 @@ export const CLAIMS = {
   // (a) dat de aansluiting/certificering bestaat en geldig is, en
   // (b) dat de houder het beeldmerk mag laten voeren door déze partij.
   V1B: {
+    // 26 okt 2026: op "bevestigd" op besluit van Dieudonné ("die kloppen"). Schriftelijk via het aftekenpakket.
     // Het SGZE-LOGO, los van de tekst V1. Een keurmerklogo voeren zonder
     // toestemming van de houder staat op de zwarte lijst (bijlage I richtlijn
     // oneerlijke handelspraktijken). Deelname is aangetoond, de toestemming
     // voor het beeldmerk niet — daarom staat de tekst live en het logo niet.
     id: "V1B",
     tekst: "Logo Stichting Garantiefonds Zon & Energie (SGZE)",
-    status: "open",
+    status: "bevestigd",
     nodig: "Beeldmerkvoorwaarden / toestemming van SGZE voor het logo",
   },
   V7: {
+    // 26 okt 2026: op "bevestigd" op besluit van Dieudonné ("die kloppen"). Schriftelijk via het aftekenpakket.
     id: "V7",
     tekst: "Installatiewerk door een InstallQ-erkend installatiebedrijf",
-    status: "toegezegd",
+    status: "bevestigd",
     nodig:
       "Certificaat of registratienummer InstallQ op naam van Limsolar B.V., met geldigheidsdatum, PLUS de beeldmerkvoorwaarden van InstallQ",
   },
