@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     postcode: tekst(body.postcode, 10).toUpperCase(),
     huisnummer: tekst(body.huisnummer, 10),
     toevoeging: tekst(body.toevoeging, 10) || undefined,
-    dagdeel: (["ochtend", "middag", "avond"] as const).includes(body.dagdeel as never)
+    dagdeel: (["zsm", "ochtend", "middag", "avond"] as const).includes(body.dagdeel as never)
       ? (body.dagdeel as Lead["dagdeel"])
       : "middag",
 

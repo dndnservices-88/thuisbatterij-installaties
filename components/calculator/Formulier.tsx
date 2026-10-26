@@ -23,9 +23,12 @@ import { Veld, GetalVeld } from "@/components/ui/Veld";
  * contact op" een afspraak en verhoogt de bereikratio.
  */
 
-type Dagdeel = "ochtend" | "middag" | "avond";
+type Dagdeel = "zsm" | "ochtend" | "middag" | "avond";
 
+// "Zo snel mogelijk" bovenaan (26 okt 2026, verzoek Dieudonné): die lead wordt
+// als eerste gebeld; wie een dagdeel kiest, op dat dagdeel.
 const DAGDELEN: [Dagdeel, string][] = [
+  ["zsm", "Zo snel mogelijk"],
   ["ochtend", "Ochtend — 09:00 tot 12:00"],
   ["middag", "Middag — 12:00 tot 18:00"],
   ["avond", "Avond — tot 21:00"],
@@ -124,8 +127,8 @@ export default function Formulier({
         <h3 className="mb-s3 text-[1.4rem]">Gelukt — we bellen je</h3>
         <p className="text-[0.95rem] leading-relaxed text-n-500">
           Je berekening is verstuurd. Je krijgt een bevestiging per e-mail met de uitkomst en het
-          dagdeel dat je hebt gekozen. Wij bellen je op dat moment voor een adviesgesprek van een
-          minuut of tien.
+          belmoment dat je hebt gekozen. Wij bellen je dan voor een adviesgesprek van een minuut of
+          tien.
         </p>
       </div>
     );
@@ -136,7 +139,8 @@ export default function Formulier({
       <div>
         <h3 className="mb-s2 text-[1.4rem]">Wanneer bellen we je?</h3>
         <p className="mb-s3 text-[0.9rem] text-n-500">
-          Kies een dagdeel dat jou uitkomt. Dan hoef je niet te wachten op een onbekend nummer.
+          Zo snel mogelijk, of op een dagdeel dat jou uitkomt. Dan hoef je niet te wachten op een
+          onbekend nummer.
         </p>
         <div className="grid gap-s2">
           {DAGDELEN.map(([w, l]) => (

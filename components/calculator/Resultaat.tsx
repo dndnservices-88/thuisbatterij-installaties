@@ -97,7 +97,7 @@ export default function Resultaat({
       <div className="mt-s3">
         <Knop onClick={onDoorgaan}>Vraag een advies op maat aan →</Knop>
         <p className="mt-s1 text-center text-[0.8rem] text-n-500">
-          Vrijblijvend. Wij bellen je op het dagdeel dat jij kiest.
+          Vrijblijvend. Wij bellen je zo snel mogelijk, of op het dagdeel dat jij kiest.
         </p>
       </div>
 

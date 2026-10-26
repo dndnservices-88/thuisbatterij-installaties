@@ -2,6 +2,7 @@ import { centen, euro, getal, jaren, type Uitkomst } from "./calc";
 import { CLAIMS, mag } from "./claims";
 import { CONTACT, ENTITEIT, ENTITEIT_VOLUIT, LIMSOLAR, REKEN_DISCLAIMER, DOMEIN } from "./site";
 import type { Lead } from "./opslag";
+import { zsmMoment } from "./beltijden";
 import type { Leadcontrole } from "./leadcontrole";
 
 /**
@@ -25,6 +26,7 @@ import type { Leadcontrole } from "./leadcontrole";
  */
 
 const DAGDEELTEKST: Record<Lead["dagdeel"], string> = {
+  zsm: "zo snel mogelijk",
   ochtend: "in de ochtend, tussen 09:00 en 12:00",
   middag: "in de middag, tussen 12:00 en 18:00",
   avond: "in de avond, tot 21:00",
@@ -102,7 +104,13 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
       ? u.terugleverkosten_eur
       : 0;
 
-  const onderwerp = `Je berekening en je belafspraak — ${DAGDEELTEKST[lead.dagdeel].split(",")[0]}`;
+  // Belmoment: bij "zsm" hangt de belofte af van het tijdstip van de aanvraag
+  // (buiten belttijden: de eerstvolgende werkdag), zie lib/beltijden.ts.
+  const moment = lead.dagdeel === "zsm" ? zsmMoment(new Date(lead.consent_tijdstip)) : DAGDEELTEKST[lead.dagdeel];
+  const onderwerp =
+    lead.dagdeel === "zsm"
+      ? `Je berekening — we bellen je ${moment.split(":")[0]}`
+      : `Je berekening en je belafspraak — ${DAGDEELTEKST[lead.dagdeel].split(",")[0]}`;
 
   const alinea: string[] = [];
   alinea.push(`Hallo ${lead.voornaam},`);
@@ -124,7 +132,7 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
     lead.consent_tijdstip
   ).toLocaleString("nl-NL", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Amsterdam" })}. Wil je die toestemming intrekken, dan is één mail naar ${CONTACT.email} genoeg. Dat mag op elk moment en je hoeft er niets bij uit te leggen.`;
 
-  const belAlinea = `Wij bellen je ${DAGDEELTEKST[lead.dagdeel]}. Het gesprek duurt ongeveer tien minuten. Komt het dan toch niet uit? Laat het weten via ${CONTACT.email} of ${CONTACT.telefoon}, dan verzetten we het.`;
+  const belAlinea = `Wij bellen je ${moment}. Het gesprek duurt ongeveer tien minuten. Komt het dan toch niet uit? Laat het weten via ${CONTACT.email} of ${CONTACT.telefoon}, dan verzetten we het.`;
 
   // centen() en niet euro(): het gaat hier om een tarief van tienden van centen.
   //
@@ -155,7 +163,7 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
     voornaam: lead.voornaam,
     u: regels.length ? (u as Exclude<Uitkomst, { route: "huurder" | "geen_pv" }>) : null,
     alineaZonderUitkomst: regels.length === 0 || krap ? alinea.slice(2) : [],
-    dagdeel: DAGDEELTEKST[lead.dagdeel],
+    dagdeel: moment,
     disclaimer: disclaimerAlinea,
     consent: consentAlinea,
     attributie: attributieregel(),
@@ -283,7 +291,7 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
 
   // Lead-ID erin (8 okt 2026): de Google Sheet bevat geen namen meer, dus het
   // belteam zoekt de rij op Lead-ID.
-  const onderwerp = `${kop} — ${naam}, ${lead.dagdeel} — ${lead.postcode} — ${lead.id}`;
+  const onderwerp = `${lead.dagdeel === "zsm" ? "ZSM BELLEN · " : ""}${kop} — ${naam}, ${lead.dagdeel === "zsm" ? "zo snel mogelijk" : lead.dagdeel} — ${lead.postcode} — ${lead.id}`;
 
   const waarschuwingen: string[] = [];
   if (controle.komt_overeen === false) {
@@ -435,6 +443,6 @@ export function pushregel(lead: Lead, controle: Leadcontrole): { titel: string; 
   const titel = route === "niet_rendabel" ? "Zachte lead" : "Nieuwe lead";
   return {
     titel,
-    bericht: `${lead.voornaam} ${lead.achternaam} · ${lead.telefoon} · bellen ${lead.dagdeel} · ${lead.postcode}`,
+    bericht: `${lead.voornaam} ${lead.achternaam} · ${lead.telefoon} · bellen ${lead.dagdeel === "zsm" ? "ZO SNEL MOGELIJK" : lead.dagdeel} · ${lead.postcode}`,
   };
 }

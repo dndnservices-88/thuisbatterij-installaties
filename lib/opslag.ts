@@ -31,7 +31,8 @@ export type Lead = {
   postcode: string;
   huisnummer: string;
   toevoeging?: string;
-  dagdeel: "ochtend" | "middag" | "avond";
+  /** "zsm" = zo snel mogelijk (sinds 26 okt 2026); Pipedrive-optie en Make-formule moeten dit kennen. */
+  dagdeel: "zsm" | "ochtend" | "middag" | "avond";
 
   /** ── Toestemming: dit is de juridische dekking ── */
   consent_tekst: string;

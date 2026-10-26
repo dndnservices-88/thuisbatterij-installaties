@@ -303,3 +303,25 @@ test("opgemaakte klantmail toont geen bedragen bij een huurder", () => {
   assert.doesNotMatch(mail.html, /bespaar je naar verwachting/);
   assert.match(mail.html, /geen doorrekening/);
 });
+
+// ── Zo snel mogelijk (26 okt 2026) ──────────────────────────────────────────
+
+test("zsm binnen belttijden: 'zo snel mogelijk', zonder belofte over morgen", () => {
+  // Dinsdag 27 okt 2026, 14:00 Nederlandse tijd (13:00 UTC).
+  const mail = bevestigingAanKlant(maakLead({ dagdeel: "zsm", consent_tijdstip: "2026-10-27T13:00:00.000Z" }), controleer(SNAPSHOT_MET_TLK));
+  assert.match(mail.onderwerp, /zo snel mogelijk/);
+  assert.match(mail.tekst, /Wij bellen je zo snel mogelijk\./);
+  assert.doesNotMatch(mail.tekst, /eerstvolgende werkdag/);
+});
+
+test("zsm buiten belttijden: eerstvolgende werkdag vanaf 09:00", () => {
+  // Zaterdag 31 okt 2026, 22:30 Nederlandse tijd.
+  const mail = bevestigingAanKlant(maakLead({ dagdeel: "zsm", consent_tijdstip: "2026-10-31T21:30:00.000Z" }), controleer(SNAPSHOT_MET_TLK));
+  assert.match(mail.tekst, /eerstvolgende werkdag vanaf 09:00/);
+  assert.match(mail.html, /eerstvolgende werkdag vanaf 09:00/);
+});
+
+test("zsm staat vooraan in het onderwerp van de melding aan het belteam", () => {
+  const m = meldingAanAdviseur(maakLead({ dagdeel: "zsm" }), controleer(SNAPSHOT_MET_TLK));
+  assert.match(m.onderwerp, /^ZSM BELLEN · /);
+});

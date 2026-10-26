@@ -37,9 +37,9 @@ const STAPPEN: Stap[] = [
   },
   {
     kort: "Gesprek",
-    titel: "Wij bellen je op het gekozen dagdeel",
+    titel: "Wij bellen je terug, wanneer het jou uitkomt",
     tekst: "Een gesprek van een minuut of tien. We lopen je berekening samen na en beantwoorden je vragen.",
-    punten: ["Jij kiest het dagdeel", "Je berekening samen nalopen", "Alleen met jouw toestemming"],
+    punten: ["Zo snel mogelijk of op jouw dagdeel", "Je berekening samen nalopen", "Alleen met jouw toestemming"],
     knop: "Bereken mijn situatie",
     beeld: <NepGesprek />,
   },
@@ -284,7 +284,7 @@ function NepGesprek() {
             <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z" />
           </svg>
         </div>
-        <p className="mt-s4 text-[0.75rem] uppercase tracking-[0.14em] text-[#CBB6E8]">Op jouw gekozen dagdeel</p>
+        <p className="mt-s4 text-[0.75rem] uppercase tracking-[0.14em] text-[#CBB6E8]">Zo snel mogelijk of op jouw dagdeel</p>
         <p className="mt-s1 font-kop text-[1.3rem] font-semibold">Thuisbatterij Installaties</p>
         <div className="golf mx-auto mt-s4 flex h-10 items-center justify-center gap-[5px]" aria-hidden="true">
           {Array.from({ length: 14 }).map((_, i) => (
