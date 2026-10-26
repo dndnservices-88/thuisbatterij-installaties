@@ -30,7 +30,7 @@ import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
 import fotoMonteurHero from "@/public/beeld/monteur-hero.webp";
 import fotoMeterkast from "@/public/beeld/meterkast-meting-1600.webp";
 import fotoVerdeelkast from "@/public/beeld/verdeelkast-1600.webp";
-import fotoMonteur from "@/public/beeld/monteur-portret-1600.webp";
+import fotoSlot from "@/public/beeld/rijtjeshuis-zonnepanelen-1200.webp";
 import logoWit from "@/public/beeld/logo-wit.webp";
 
 /**
@@ -655,8 +655,8 @@ export function SlotCta({ variant }: { variant: Variant }) {
         </div>
         <figure className="order-last">
           <Image
-            src={fotoMonteur}
-            alt="Installateur in werkkleding met een veiligheidshelm"
+            src={fotoSlot}
+            alt="Rijtjeshuis met zonnepanelen op het dak, op een zonnige dag"
             placeholder="blur"
             sizes="(min-width: 1024px) 40vw, 100vw"
             className="h-auto w-full rounded-merk"

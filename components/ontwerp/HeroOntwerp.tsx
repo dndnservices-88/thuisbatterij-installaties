@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
-import fotoHero from "@/public/beeld/advies-opname-1600.webp";
+import fotoHero from "@/public/beeld/keukentafel-rekenen-1600.webp";
 import Calculator from "@/components/calculator/Calculator";
 import Keurmerken from "@/components/Keurmerken";
 import type { Variant } from "@/lib/varianten";
@@ -103,7 +103,7 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
             <div className="relative aspect-[16/10] overflow-hidden rounded-merk shadow-[0_30px_80px_-24px_rgba(0,0,0,0.55)]">
               <Image
                 src={fotoHero}
-                alt="Adviseur met tablet naast een thuisbatterij aan de muur"
+                alt="Vrouw aan de keukentafel bekijkt op haar telefoon een berekening, met haar energierekening voor zich"
                 fill
                 placeholder="blur"
                 sizes="(min-width: 1024px) 520px, 0px"
