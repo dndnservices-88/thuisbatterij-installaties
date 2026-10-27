@@ -5,8 +5,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { KnopLink } from "@/components/ui/Knop";
 // advies-opname staat sinds 6 okt 2026 in de hero; hier de meterkastmeting,
 // die ook beter past bij "we kijken naar de meterkast".
-import fotoAdvies from "@/public/beeld/adviesgesprek-keukentafel-1600.webp";
-import fotoBatterij from "@/public/beeld/garage-batterij-1600.webp";
+import fotoAdvies from "@/public/beeld/adviesgesprek-meterkast-1600.webp";
+import fotoBatterij from "@/public/beeld/installatie-monteur-1600.webp";
 
 
 type Stap = {
@@ -49,7 +49,7 @@ const STAPPEN: Stap[] = [
     tekst: "Alleen als het zinvol is. We kijken naar de meterkast, het verbruikspatroon en de plek voor de batterij.",
     punten: ["Meterkast en aansluiting", "Plek voor de batterij", "Capaciteit die past"],
     knop: "Bereken mijn situatie",
-    beeld: <Foto src={fotoAdvies} positie="object-left" alt="Twee mensen aan de keukentafel bekijken grafieken over energieverbruik op een laptop" />,
+    beeld: <Foto src={fotoAdvies} alt="Adviseur met tablet legt een bewoner iets uit bij de open meterkast in de gang" />,
   },
   {
     kort: "Installatie",
@@ -57,7 +57,7 @@ const STAPPEN: Stap[] = [
     tekst: "Welk systeem het wordt en wat het kost, staat vooraf op papier. Daarna plant Limsolar de installatie in.",
     punten: ["Prijs vooraf op papier", "Uitgevoerd door Limsolar", "Planning in overleg"],
     knop: "Bereken mijn situatie",
-    beeld: <Foto src={fotoBatterij} alt="Een staande thuisbatterij in een garage, met de omvormer ernaast aan de muur" />,
+    beeld: <Foto src={fotoBatterij} alt="Installateur zit geknield naast een thuisbatterij in een garage en kijkt op zijn telefoon" />,
   },
 ];
 

@@ -11,7 +11,7 @@ import type { Variant } from "@/lib/varianten";
 
 // Statische imports: Next kent daardoor de afmetingen, zet ze in de HTML en
 // voorkomt dat de pagina verspringt terwijl het beeld laadt.
-import fotoBatterij from "@/public/beeld/thuisbatterij-buitenmuur-1600.webp";
+import fotoBatterij from "@/public/beeld/aanbod-bijkeuken-2000.webp";
 // Aangeleverd door de ontwerper: 1400×1900 met echte transparantie, zonder
 // tekst en zonder slagschaduw. Hier bijgesneden op de figuur (er zat 285 pixels
 // leegte boven het hoofd) en daarna afgesneden op de gereedschapsgordel, want
@@ -329,7 +329,7 @@ export function Aanbod() {
       <figure className="mb-s4">
         <Image
           src={fotoBatterij}
-          alt="Een thuisbatterij tegen een buitenmuur, met de omvormer erboven"
+          alt="Thuisbatterij met omvormer erboven, netjes aan de muur van een bijkeuken"
           placeholder="blur"
           sizes="(min-width: 1024px) 1100px, 100vw"
           className="h-auto w-full rounded-merk"
