@@ -3,7 +3,7 @@
  * (tekst: juridische chat, "Limsolar_Concept_Privacyverklaring_en_Sitepakket_7okt2026.docx", onderdeel A).
  */
 
-export const PRIVACY_VERSIE = "2.1"; // 25 okt 2026: Rinkel i.p.v. CloudTalk, geen gespreksopname
+export const PRIVACY_VERSIE = "2.2"; // 28 okt 2026: adrescontrole via PDOK (Kadaster). 2.1 (25 okt): Rinkel, geen gespreksopname
 
 /**
  * Welke tekst bij "Cookies en meten". Keuze ligt bij de meetchat:
@@ -23,4 +23,5 @@ export const PRIVACY_OPEN = [
   "Make: verwerkersovereenkomst alleen op betaald plan — welk plan? (zone eu1 bevestigd 26 okt)",
   "Google Sheet onder gratis Gmail-account (jurist, G4)",
   "Publicatiedatum invullen bij livegang",
+  "Adrescontrole via PDOK/Kadaster: formulering en grondslag (jurist, 28 okt)",
 ] as const;

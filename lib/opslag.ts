@@ -31,6 +31,18 @@ export type Lead = {
   postcode: string;
   huisnummer: string;
   toevoeging?: string;
+  /**
+   * Adrescontrole via PDOK/BAG (28 okt 2026), server-side bij ontvangst.
+   * null = controle niet gelukt (storing of time-out); de lead is dan gewoon
+   * opgeslagen. Nooit een reden om een lead te weigeren.
+   */
+  adres_controle?: {
+    gevonden: boolean;
+    straat?: string;
+    woonplaats?: string;
+    provincie?: string;
+    toevoeging_klopt: boolean | null;
+  } | null;
   /** "zsm" = zo snel mogelijk (sinds 26 okt 2026); Pipedrive-optie en Make-formule moeten dit kennen. */
   dagdeel: "zsm" | "ochtend" | "middag" | "avond";
 

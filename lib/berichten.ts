@@ -276,6 +276,20 @@ export function klantmailHtml(d: {
  * hem op een telefoon in drie seconden leest en meteen kunt bellen: naam en
  * nummer bovenaan, dan het dagdeel, dan pas de details.
  */
+/**
+ * Adresregel voor de melding aan het belteam (28 okt 2026). Met de
+ * BAG-controle erbij, zodat het team niet hoeft te vragen wat al bekend is,
+ * en wél weet wanneer het adres even nagevraagd moet worden.
+ */
+export function adresregel(lead: Lead): string {
+  const nr = `${lead.huisnummer}${lead.toevoeging ? lead.toevoeging : ""}`;
+  const a = lead.adres_controle;
+  if (!a) return `${nr}, ${lead.postcode} (adres niet gecontroleerd)`;
+  if (!a.gevonden) return `${nr}, ${lead.postcode} — NIET gevonden in de BAG, adres even navragen`;
+  const basis = `${a.straat} ${nr}, ${lead.postcode} ${a.woonplaats}${a.provincie ? ` (${a.provincie})` : ""}`;
+  return a.toevoeging_klopt === false ? `${basis} — toevoeging "${lead.toevoeging}" bestaat niet in de BAG, navragen` : basis;
+}
+
 export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
   const u = controle.uitkomst;
   const regels = uitkomstregels(u);
@@ -346,7 +360,7 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
     `${kop}`,
     `${naam}\n${lead.telefoon}\n${lead.email}`,
     `Bellen: ${DAGDEELTEKST[lead.dagdeel]}`,
-    `Adres: ${lead.huisnummer}${lead.toevoeging ?? ""}, ${lead.postcode}`,
+    `Adres: ${adresregel(lead)}`,
   ];
 
   // Restblok: alles wat in de HTML-versie in het grijze <pre>-vlak belandt.
@@ -413,7 +427,7 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
   </p>
   <p style="margin:0 0 16px;padding:10px 12px;background:#f4eefa;border-radius:8px">
     <strong>Bellen:</strong> ${esc(DAGDEELTEKST[lead.dagdeel])}<br>
-    <strong>Adres:</strong> ${esc(`${lead.huisnummer}${lead.toevoeging ?? ""}, ${lead.postcode}`)}
+    <strong>Adres:</strong> ${esc(adresregel(lead))}
   </p>
   ${
     waarschuwingen.length

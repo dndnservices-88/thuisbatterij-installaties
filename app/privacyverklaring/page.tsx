@@ -209,6 +209,16 @@ export default function Privacy() {
                 ],
               ]}
             />
+            {/* 28 okt 2026: adrescontrole via PDOK (Kadaster). Geen verwerker maar een
+                openbare overheidsdienst die wij raadplegen; formulering ter toetsing bij de jurist. */}
+            <p>
+              <Nakijken label="jurist (adrescontrole)">
+                Je postcode, huisnummer en toevoeging controleren we bij PDOK, de openbare adresdienst van
+                het Kadaster, zodat we het juiste adres hebben. Daarbij sturen we alleen die drie gegevens
+                mee: geen naam, geen contactgegevens en niet je IP-adres. Het Kadaster is een Nederlandse
+                overheidsorganisatie.
+              </Nakijken>
+            </p>
             <p>
               Gaan gegevens naar een land buiten de Europese Economische Ruimte, dan gebeurt dat op basis
               van het EU-US Data Privacy Framework of de standaardcontractbepalingen van de Europese

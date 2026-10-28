@@ -7,6 +7,7 @@ import { toestemmingUitCookieHeader } from "@/lib/toestemming";
 import { kiesVariant } from "@/lib/varianten";
 import { controleer } from "@/lib/leadcontrole";
 import { stuurMail, stuurPush } from "@/lib/mail";
+import { zoekAdres } from "@/lib/adres";
 import { bevestigingAanKlant, magBevestigingVersturen, meldingAanAdviseur, pushregel } from "@/lib/berichten";
 
 export const runtime = "nodejs";
@@ -63,6 +64,10 @@ export async function POST(request: Request) {
 
   // Herberekening vóór de opslag, zodat het resultaat mee de opslag in gaat.
   const controle = controleer(body.calc_snapshot);
+
+  // Adrescontrole (PDOK/BAG) ook hier, niet alleen in de browser: wat de
+  // browser meestuurt is niet te vertrouwen. Max 2,5 s; mislukt = null en door.
+  const adres = await zoekAdres(tekst(body.postcode, 10), tekst(body.huisnummer, 10), tekst(body.toevoeging, 10));
   const gecontroleerd =
     controle.uitkomst && controle.uitkomst.route !== "huurder" && controle.uitkomst.route !== "geen_pv"
       ? controle.uitkomst
@@ -78,6 +83,15 @@ export async function POST(request: Request) {
     postcode: tekst(body.postcode, 10).toUpperCase(),
     huisnummer: tekst(body.huisnummer, 10),
     toevoeging: tekst(body.toevoeging, 10) || undefined,
+    adres_controle: adres
+      ? {
+          gevonden: adres.gevonden,
+          straat: adres.straat,
+          woonplaats: adres.woonplaats,
+          provincie: adres.provincie,
+          toevoeging_klopt: adres.toevoeging_klopt,
+        }
+      : null,
     dagdeel: (["zsm", "ochtend", "middag", "avond"] as const).includes(body.dagdeel as never)
       ? (body.dagdeel as Lead["dagdeel"])
       : "middag",

@@ -59,6 +59,7 @@ export default function Formulier({
   const [fouten, setFouten] = useState<Record<string, string>>({});
   const [bezig, setBezig] = useState(false);
   const [serverfout, setServerfout] = useState<string | null>(null);
+  const adres = useAdresControle(v.postcode, v.huisnummer);
 
   useEffect(() => {
     meld("lead_form_view", { zacht });
@@ -235,10 +236,19 @@ export default function Formulier({
             id="toevoeging"
             label="Toevoeging"
             value={v.toevoeging}
-            onChange={(e) => setV({ ...v, toevoeging: e.target.value })}
+            list={adres?.toevoegingen.length ? "toevoegingen" : undefined}
+            onChange={(e) => setV({ ...v, toevoeging: e.target.value.toUpperCase() })}
           />
+          {adres?.toevoegingen.length ? (
+            <datalist id="toevoegingen">
+              {adres.toevoegingen.map((t) => (
+                <option key={t} value={t} />
+              ))}
+            </datalist>
+          ) : null}
         </div>
       </div>
+      <AdresRegel adres={adres} huisnummer={v.huisnummer} toevoeging={v.toevoeging} />
 
       <label
         htmlFor="consent"
@@ -276,5 +286,65 @@ export default function Formulier({
         Volgende
       </Knop>
     </form>
+  );
+}
+
+/**
+ * Adrescontrole onder de velden (28 okt 2026). Vraagt via /api/adres (onze
+ * server, niet rechtstreeks PDOK) zodra postcode en huisnummer geldig zijn.
+ * Ter bevestiging, nooit als blokkade: ook bij "niet gevonden" of een storing
+ * kan de bezoeker gewoon door.
+ */
+type Adres = {
+  gevonden: boolean;
+  straat?: string;
+  woonplaats?: string;
+  toevoegingen: string[];
+};
+
+function useAdresControle(postcode: string, huisnummer: string): Adres | null {
+  const [adres, setAdres] = useState<Adres | null>(null);
+  useEffect(() => {
+    const pc = postcode.replace(/\s+/g, "").toUpperCase();
+    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc) || !/^[1-9][0-9]{0,4}$/.test(huisnummer)) {
+      setAdres(null);
+      return;
+    }
+    let geldig = true;
+    const t = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/adres?postcode=${pc}&huisnummer=${huisnummer}`);
+        const j = await r.json();
+        if (geldig) setAdres(j.beschikbaar ? j : null);
+      } catch {
+        if (geldig) setAdres(null);
+      }
+    }, 400);
+    return () => {
+      geldig = false;
+      clearTimeout(t);
+    };
+  }, [postcode, huisnummer]);
+  return adres;
+}
+
+function AdresRegel({ adres, huisnummer, toevoeging }: { adres: Adres | null; huisnummer: string; toevoeging: string }) {
+  if (!adres) return null;
+  if (!adres.gevonden)
+    return (
+      <p role="status" className="mt-s2 text-[0.85rem] text-n-500">
+        We vinden dit adres niet terug. Klopt het? Je kunt gewoon verder.
+      </p>
+    );
+  const t = toevoeging.trim();
+  return (
+    <p role="status" className="mt-s2 text-[0.9rem] text-paars-donker">
+      <span aria-hidden="true">✓ </span>
+      {adres.straat} {huisnummer}
+      {t}, {adres.woonplaats}
+      {adres.toevoegingen.length > 0 && !t ? (
+        <span className="text-n-500"> · kies je toevoeging: {adres.toevoegingen.join(", ")}</span>
+      ) : null}
+    </p>
   );
 }
