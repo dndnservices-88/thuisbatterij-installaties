@@ -104,7 +104,7 @@ export default function Privacy() {
                 ],
                 [
                   "Naam, telefoonnummer, e-mailadres, postcode, huisnummer, gewenst dagdeel",
-                  `Je bellen en mailen over je berekening, je adviseren en je namens ${LIMSOLAR.naam} een offerte doen`,
+                  `Je bellen, mailen en WhatsAppen over je berekening, je adviseren en je namens ${LIMSOLAR.naam} een offerte doen`,
                   "Toestemming",
                 ],
                 [
@@ -131,7 +131,7 @@ export default function Privacy() {
             />
             <p>
               Je bent niet verplicht gegevens te geven. Zonder telefoonnummer of e-mailadres kunnen we je
-              alleen niet bellen of mailen.
+              alleen niet bellen, mailen of WhatsAppen.
             </p>
             <p>
               We nemen geen besluiten over jou die uitsluitend geautomatiseerd tot stand komen.
@@ -203,12 +203,25 @@ export default function Privacy() {
                   "Pipedrive OÜ (Estland), opslag in de EU; doorgifte buiten de EER alleen onder het Data Privacy Framework of standaardcontractbepalingen",
                 ],
                 [
+                  "WhatsApp",
+                  "Berichten via WhatsApp, als je daarvoor toestemming gaf",
+                  <Nakijken key="w" label="jurist (WhatsApp: vestiging, doorgifte, voorwaarden)">
+                    WhatsApp Ireland Ltd. (Meta), Ierland
+                  </Nakijken>,
+                ],
+                [
                   "Rinkel",
                   "Telefonie (zonder gespreksopname)",
                   "Nederland (EU); geen doorgifte buiten de EER bekend",
                 ],
               ]}
             />
+            {/* 28 okt 2026: WhatsApp (toestemming v1.4, prikbord r. 27). */}
+            <p>
+              <Nakijken label="jurist (WhatsApp)">
+                In elk WhatsApp-bericht staat wie het stuurt en hoe je je afmeldt.
+              </Nakijken>
+            </p>
             {/* 28 okt 2026: adrescontrole via PDOK (Kadaster). Geen verwerker maar een
                 openbare overheidsdienst die wij raadplegen; formulering ter toetsing bij de jurist. */}
             <p>
@@ -244,7 +257,7 @@ export default function Privacy() {
             <p>
               Je mag opvragen welke gegevens we van je hebben, ze laten corrigeren of verwijderen, de
               verwerking laten beperken, bezwaar maken, en je gegevens laten overdragen. Je kunt je
-              toestemming op elk moment intrekken; vanaf dat moment bellen en mailen we je niet meer. Wat
+              toestemming op elk moment intrekken; vanaf dat moment bellen, mailen en WhatsAppen we je niet meer. Wat
               we vóór dat moment deden, blijft rechtmatig. Stuur je verzoek naar{" "}
               <a href={`mailto:${CONTACT.email}`} className="text-paars underline">
                 {CONTACT.email}

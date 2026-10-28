@@ -163,9 +163,15 @@ export const CONSENT = {
   // DNDN Services B.V. hoeft deze tekst niet om (KvK blijft gelijk).
   // ⚠️ AANNAME dat dit volstaat voor de identiteit van de verwerkingsverantwoordelijke
   // (AVG overw. 42) — door de juridische chat laten bevestigen.
-  versie: "1.3",
+  // v1.4 (28 okt 2026, besluit Dieudonné; juridische chat, prikbord r. 27):
+  // "telefonisch en per e-mail" → "telefonisch, per e-mail en via WhatsApp".
+  // Grond: een WhatsApp-bericht is een elektronisch bericht (art. 11.1 sub i Tw;
+  // ACM "Spam voorkomen") en vraagt toestemming vooraf (art. 11.7 lid 1 Tw).
+  // Leads met v1.3 of lager krijgen GEEN commerciële WhatsApp; elk bericht
+  // noemt de afzender en hoe je je afmeldt.
+  versie: "1.4",
   tekst:
-    "Ja, Thuisbatterij-installaties (KvK " + ENTITEIT.kvk + ") mag mij telefonisch en per e-mail benaderen over mijn berekening, mij adviseren en mij namens Limsolar B.V. een offerte doen. Thuisbatterij-installaties mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de thuisbatterij levert en installeert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de bedrijfsgegevens en de privacyverklaring.",
+    "Ja, Thuisbatterij-installaties (KvK " + ENTITEIT.kvk + ") mag mij telefonisch, per e-mail en via WhatsApp benaderen over mijn berekening, mij adviseren en mij namens Limsolar B.V. een offerte doen. Thuisbatterij-installaties mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de thuisbatterij levert en installeert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de bedrijfsgegevens en de privacyverklaring.",
 };
 
 /** Disclaimer onder het rekenresultaat. Staat er direct onder, niet in de voettekst. */
