@@ -49,7 +49,7 @@ export default function Aanbod() {
             <h1 className="mt-s3 max-w-[22ch] text-n-000">Thuisbatterij inclusief installatie</h1>
             <p className="mt-s3 max-w-[52ch] text-[1.05rem] leading-relaxed text-n-200">
               Voor elke aansluiting een passende batterij. Alle prijzen zijn vanaf-prijzen, inclusief
-              btw en inclusief installatie door {LIMSOLAR.naam}. Reken hiernaast uit wat het jou
+              btw en inclusief installatie door {LIMSOLAR.naam} Reken hiernaast uit wat het jou
               oplevert, of laat je terugbellen.
             </p>
             <div className="mt-s4 flex flex-wrap gap-s2">
@@ -129,7 +129,7 @@ export default function Aanbod() {
           </div>
           <p className="mt-s5 text-[0.8rem] leading-relaxed text-n-500">
             <Claim id="P8" />. De rekentool rekent met capaciteiten tot 20 kWh. Welke batterij en capaciteit bij
-            jouw woning past en de definitieve prijs staan in de offerte van {LIMSOLAR.naam}. Foto&apos;s ter
+            jouw woning past en de definitieve prijs staan in de offerte van {LIMSOLAR.naam} Foto&apos;s ter
             illustratie.
           </p>
         </Sectie>

@@ -347,7 +347,7 @@ export function Aanbod() {
           </p>
           <p className="mt-s2 text-[0.9rem] text-n-500">
             <Claim id="P6" alsWeg="Het instapsysteem uit ons assortiment" />. Inclusief installatie
-            door {LIMSOLAR.naam}.
+            door {LIMSOLAR.naam}
           </p>
           {/* Garanties als blikvanger (verzoek Dieudonné 7 okt 2026): het is een
               van de sterkste verkoopargumenten, dus groter en met vinkje. */}
@@ -527,7 +527,7 @@ export function Reviews() {
         boven="Ervaringen"
         onder={
           <>
-            De installatie wordt uitgevoerd door {LIMSOLAR.naam}. Zo ervaren klanten hun werk.
+            De installatie wordt uitgevoerd door {LIMSOLAR.naam} Zo ervaren klanten hun werk.
           </>
         }
       >

@@ -30,7 +30,7 @@ export default function Bedrijfsgegevens() {
         <h1 className="mt-s3">Bedrijfsgegevens</h1>
         <p className="mt-s2 text-[0.95rem] text-n-500">
           {ENTITEIT.handelsnaam} is een handelsnaam van {ENTITEIT.naam}. Wij adviseren en doen een
-          offerte namens {LIMSOLAR.naam}.
+          offerte namens {LIMSOLAR.naam}
         </p>
 
         <dl className="mt-s5 grid gap-x-s4 gap-y-s2 text-[0.95rem] sm:grid-cols-[auto_1fr]">
