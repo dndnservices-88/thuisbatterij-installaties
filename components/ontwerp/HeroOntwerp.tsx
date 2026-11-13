@@ -65,14 +65,16 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
             </span>
           </h1>
 
+          {/* Prijs boven de vouw + "Bel mij terug" (13 nov 2026, prikbord r. 34).
+              Direct onder de kop, vóór de introtekst: anders viel de knop op een
+              laptopscherm net onder de vouw (gemeten 13 nov). */}
+          <div className="intro" style={v(420)}>
+            <PrijsBlok />
+          </div>
+
           <p className="intro mt-s4 max-w-[46ch] text-[1.08rem] leading-relaxed text-n-200" style={v(460)}>
             {variant.hero.sub}
           </p>
-
-          {/* Prijs boven de vouw + "Bel mij terug" (13 nov 2026, prikbord r. 34). */}
-          <div className="intro" style={v(520)}>
-            <PrijsBlok />
-          </div>
 
           <div className="intro mt-s5 hidden sm:block" style={v(600)}>
             <EnergieStroom className="h-auto w-full max-w-[520px]" />

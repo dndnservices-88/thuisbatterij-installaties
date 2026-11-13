@@ -25,17 +25,34 @@ export default function PrijsBlok() {
   const vanaf = CLAIMS.P2.tekst.match(/€\s?[\d.]+/)?.[0];
 
   return (
-    <div className="mt-s4 max-w-[520px] rounded-merk border border-white/15 bg-white/[0.07] p-s4">
-      <AlsClaim id="P2">
-        <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-[#CBB6E8]">
-          Thuisbatterij met installatie
-        </p>
-        {vanaf && (
-          <p className="mt-s1 font-kop text-[2.2rem] font-extrabold leading-none text-n-000">
-            <span className="text-[1rem] font-semibold text-n-200">vanaf </span>
-            {vanaf}
+    <div className="mt-s4 max-w-[520px] rounded-merk border border-white/15 bg-white/[0.07] p-s3 sm:p-s4">
+      {/* Prijs en knop op één regel: zo staat de knop op een laptopscherm
+          (±800 px hoog) boven de vouw (gemeten 13 nov 2026). */}
+      <div className="flex flex-wrap items-end justify-between gap-s3">
+        <AlsClaim id="P2">
+          <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-[#CBB6E8]">
+            Thuisbatterij met installatie
           </p>
+          {vanaf && (
+            <p className="mt-s1 font-kop text-[2.2rem] font-extrabold leading-none text-n-000">
+              <span className="text-[1rem] font-semibold text-n-200">vanaf </span>
+              {vanaf}
+            </p>
+          )}
+        </AlsClaim>
+        {!open && (
+          <Knop
+            volleBreedte={false}
+            onClick={() => {
+              meld("terugbel_open");
+              setOpen(true);
+            }}
+          >
+            Bel mij terug
+          </Knop>
         )}
+      </div>
+      <AlsClaim id="P2">
         <p className="mt-s2 text-[0.9rem] leading-snug text-n-200">
           <Claim id="P2" />.
         </p>
@@ -59,20 +76,9 @@ export default function PrijsBlok() {
       )}
 
       {!open ? (
-        <div className="mt-s4 flex flex-col gap-s2 sm:flex-row sm:items-center">
-          <Knop
-            volleBreedte={false}
-            onClick={() => {
-              meld("terugbel_open");
-              setOpen(true);
-            }}
-          >
-            Bel mij terug
-          </Knop>
-          <a href="#calculator" className="text-center text-[0.92rem] font-semibold text-n-000 underline sm:text-left">
-            of reken eerst uit wat het jou oplevert
-          </a>
-        </div>
+        <a href="#calculator" className="mt-s3 inline-block text-[0.92rem] font-semibold text-n-000 underline">
+          of reken eerst uit wat het jou oplevert
+        </a>
       ) : (
         <div className="mt-s4 rounded-merk bg-n-000 p-s4 text-n-900">
           <Formulier soort="terugbel" eventId={eventId} zacht={false} />
