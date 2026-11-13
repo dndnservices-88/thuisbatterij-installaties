@@ -8,7 +8,7 @@ import { KnopLink } from "@/components/ui/Knop";
 import { AANBOD } from "@/lib/aanbod";
 import { euro } from "@/lib/calc";
 import { mag } from "@/lib/claims";
-import { LIMSOLAR } from "@/lib/site";
+import { CONTACT, LIMSOLAR } from "@/lib/site";
 import AanbodTerugbel from "./AanbodTerugbel";
 import Calculator from "@/components/calculator/Calculator";
 
@@ -135,9 +135,31 @@ export default function Aanbod() {
         </Sectie>
       </AlsClaim>
 
-      <Sectie id="terugbellen" fond="tint" smal>
-        <AanbodTerugbel />
-      </Sectie>
+      {/* Terugbellen loopt door in hetzelfde grijze vlak als de prijzen
+          (Dieudonné 13 nov: geen los groot blok). Links waarom, rechts het
+          korte formulier. */}
+      <section id="terugbellen" className="scroll-mt-s5 bg-n-100 px-s3 pb-s6">
+        <div className="mx-auto grid max-w-inhoud items-center gap-s5 rounded-merk bg-paars p-s4 text-n-000 sm:p-s5 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <h2 className="text-[1.6rem] text-n-000">Liever eerst even praten?</h2>
+            <p className="mt-s2 text-[1rem] leading-relaxed text-n-200">
+              Laat je gegevens achter, dan bellen we je terug. We bespreken de prijs en welke batterij bij
+              jouw woning past.
+            </p>
+            <ul className="mt-s3 space-y-[6px] text-[0.95rem]">
+              <li>✓ Vrijblijvend, een gesprek van ongeveer tien minuten</li>
+              <li>✓ Zo snel mogelijk, of op het dagdeel dat jij kiest</li>
+              <li>
+                ✓ Of bel zelf:{" "}
+                <a href={`tel:${CONTACT.telefoon.replace(/\s/g, "")}`} className="font-semibold underline">
+                  {CONTACT.telefoon}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <AanbodTerugbel />
+        </div>
+      </section>
 
       <Footer />
     </main>

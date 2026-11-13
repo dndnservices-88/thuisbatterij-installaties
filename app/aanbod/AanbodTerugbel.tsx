@@ -8,7 +8,7 @@ import { nieuwEventId } from "@/lib/tracking";
 export default function AanbodTerugbel() {
   const eventId = useMemo(() => nieuwEventId(), []);
   return (
-    <div className="rounded-merk bg-n-000 p-s4 sm:p-s5">
+    <div className="rounded-merk bg-n-000 p-s4 text-n-900 sm:p-s5">
       <Formulier soort="terugbel" eventId={eventId} zacht={false} />
     </div>
   );
