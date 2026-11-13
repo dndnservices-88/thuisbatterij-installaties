@@ -323,13 +323,15 @@ test("de contractkeuze reist mee in de snapshot", () => {
 
 // ── Rekenversie 1.4.0: assortiment, maatkeuze en tarieven Fabian ─────────────
 
-test("prijzen in het assortiment zijn de prijslijst plus 21% btw, afgerond", () => {
+test("prijzen in het assortiment: prijslijst plus 21% btw, naar beneden op …99 (1.5.2)", () => {
   assert.equal(ASSORTIMENT.length, 16); // 24 regels in de prijslijst, 16 tot en met 20,5 kWh
   for (const p of ASSORTIMENT) {
-    assert.equal(p.prijs_eur, Math.round(p.prijs_excl_eur * 1.21), p.naam);
+    const exact = Math.round(p.prijs_excl_eur * 1.21);
+    assert.equal(p.prijs_eur % 100, 99, p.naam);
+    assert.ok(p.prijs_eur <= exact && exact - p.prijs_eur < 100, p.naam);
   }
   const marstek10 = ASSORTIMENT.find((p) => p.merk.startsWith("Marstek") && p.capaciteit_kwh === 10);
-  assert.equal(marstek10?.prijs_eur, 5808);
+  assert.equal(marstek10?.prijs_eur, 5799);
 });
 
 test("Fabians voorbeeld: 2.450 kWh opslag wordt een batterij van 15 kWh", () => {
@@ -390,11 +392,11 @@ test("Marstek (1-fase) is bij elke maat tot 20 kWh de goedkoopste", () => {
 
 // ── Rekenversie 1.5.0: prijslijst met fase (13 okt 2026) ─────────────────────
 
-test("3-fase vanaf-prijzen: 10 kWh € 7.200, 15 kWh € 8.215, 20 kWh € 9.656", () => {
-  assert.equal(kiesProduct(10 * 200, 3).product.prijs_eur, 7200);
-  assert.equal(kiesProduct(15 * 200, 3).product.prijs_eur, 8215);
-  assert.equal(kiesProduct(20 * 200, 3).product.prijs_eur, 9656);
-  assert.equal(kiesProduct(10 * 200, 1).product.prijs_eur, 5808);
+test("3-fase vanaf-prijzen (1.5.2): 10 kWh € 7.199, 15 kWh € 8.199, 20 kWh € 9.599", () => {
+  assert.equal(kiesProduct(10 * 200, 3).product.prijs_eur, 7199);
+  assert.equal(kiesProduct(15 * 200, 3).product.prijs_eur, 8199);
+  assert.equal(kiesProduct(20 * 200, 3).product.prijs_eur, 9599);
+  assert.equal(kiesProduct(10 * 200, 1).product.prijs_eur, 5799);
 });
 
 test("terugverdientijd: ondergrens met 1-fase-prijs, bovengrens met 3-fase-prijs", () => {

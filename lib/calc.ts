@@ -27,8 +27,14 @@
  * aantekeningen van Fabian (Limsolar): inkoop € 0,30, terugleververgoeding € 0,05,
  * dynamisch voordeel € 0,15, bruikbaar 95%. Jaarlijkse kosten, btw-teruggave en
  * subsidie als aparte posten, standaard € 0.
+ *
+ * 1.5.2 (13 nov 2026, prikbord r. 41, besluit Dieudonné 21:20/21:23): consumenten-
+ * prijzen naar beneden afgerond op …99 (5.808 → 5.799, 7.200 → 7.199, 7.139 →
+ * 7.099, 8.464 → 8.399, 10.739 → 10.699). Akkoord Limsolar volgens D. (rust op één
+ * bron; schriftelijke bevestiging opvragen). Overal dezelfde prijzen: site,
+ * rekentool, mails, /aanbod en advertenties.
  */
-export const REKENVERSIE = "1.5.1";
+export const REKENVERSIE = "1.5.2";
 export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
@@ -258,13 +264,23 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
  */
 export const MAX_CAPACITEIT_KWH = 20.5; // 20,5 zodat Dyness 20,48 kWh als "20 kWh" meetelt
 
+/**
+ * Consumentenprijs incl. 21% btw, naar beneden afgerond op …99 (rekenversie
+ * 1.5.2, besluit Dieudonné 13 nov 2026). Altijd lager dan of gelijk aan de
+ * exacte btw-prijs, nooit hoger: 5.808 → 5.799, 7.200 → 7.199.
+ */
+export function consumentenprijs(excl: number): number {
+  const incl = Math.round(excl * (1 + CONSTANTEN.BTW));
+  return Math.floor((incl + 1) / 100) * 100 - 1;
+}
+
 export const ASSORTIMENT: Product[] = PRIJSLIJST.filter(([, kwh]) => kwh <= MAX_CAPACITEIT_KWH).map(([merk, kwh, excl, backup, fase]) => ({
   id: `${slug(merk)}-${String(kwh).replace(".", "-")}-${backup}`,
   naam: `${merk} ${kwh} kWh`,
   merk,
   capaciteit_kwh: kwh,
   prijs_excl_eur: excl,
-  prijs_eur: Math.round(excl * (1 + CONSTANTEN.BTW)),
+  prijs_eur: consumentenprijs(excl),
   backup,
   fase,
   prijs_status: "toegezegd", // claimregister P2/P3

@@ -40,7 +40,9 @@ export const CLAIMS = {
     id: "P2",
     // 13 okt 2026: de € 5.808 geldt alleen bij een 1-fase-aansluiting (Marstek);
     // 3-fase begint bij Dyness 10 kWh, € 5.950 excl. = € 7.200 incl.
-    tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.808 (1-fase) of € 7.200 (3-fase)",
+    // 13 nov 2026 (prikbord r. 41, besluit D.): afgerond op …99, was € 5.808 / € 7.200.
+    // Akkoord Limsolar volgens D.; opnieuw aftekenen via JURIDISCH.
+    tekst: "Instapmodel van 10 kWh inclusief installatie vanaf € 5.799 (1-fase) of € 7.199 (3-fase)",
     status: "bevestigd",
     nodig: "Aftekening Limsolar (aftekenpakket 13 okt 2026). Bewijsstuk: prijslijst met fase, 13 okt 2026, in Bewijs/.",
   },
