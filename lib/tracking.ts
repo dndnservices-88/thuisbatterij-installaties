@@ -52,7 +52,10 @@ export type CalcEvent =
   | "calc_no_pv"
   | "calc_not_viable"
   | "lead_form_view"
-  | "lead_timeslot";
+  | "lead_timeslot"
+  // 13 nov 2026 (prikbord r. 34): knop "Bel mij terug" in het prijsblok. Het
+  // formulier daarachter meldt lead_form_view en Lead met formulier: "terugbel".
+  | "terugbel_open";
 
 /**
  * De enige uitgang naar de meetlaag. Pusht naar de dataLayer en verder niets.

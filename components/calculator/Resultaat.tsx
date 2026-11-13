@@ -42,6 +42,8 @@ export default function Resultaat({
   const prijsZichtbaar = mag("P6");
   const cap = new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(uitkomst.product.capaciteit_kwh);
   const gekozen = TERUGLEVERKOSTEN_OPTIES.find((o) => o.id === antwoord);
+  // Instapmodel tonen als het advies groter is dan 10 kWh en P2 mag.
+  const toonInstap = mag("P2") && uitkomst.product.capaciteit_kwh > 10.5;
 
   // Opbouw sinds 7 okt 2026 (op verzoek van Dieudonné: minder scrollen, knop
   // direct in beeld): eerst de besparing, dan maat/prijs en terugverdientijd,
@@ -62,9 +64,18 @@ export default function Resultaat({
         <p className="text-[0.85rem] text-n-500">per jaar</p>
       </div>
 
+      {/* Sinds 13 nov 2026 (prikbord r. 34, akkoord Dieudonné): naast het advies
+          ook het instapmodel van 10 kWh (claim P2), omdat de advertentie die
+          prijs noemt. Bij het doorsnee profiel (12 panelen, 3.500 kWh) levert
+          10 kWh volgens dezelfde som evenveel op als het geadviseerde 15 kWh:
+          10 kWh verwerkt 2.375 kWh/jaar, het opslagpotentieel is 2.333 kWh.
+          De capaciteitskeuze zelf (vuistregel Limsolar, opslag ÷ 200) blijft
+          ongewijzigd: welke capaciteit past, bepaalt Limsolar in de offerte.
+          De terugverdientijd blijft staan, maar als regel onder de kaarten in
+          plaats van als kaart naast de besparing. */}
       <dl className="mt-s2 grid grid-cols-2 gap-s2">
         <Kaart
-          label="Thuisbatterij van"
+          label="Advies op basis van je antwoorden"
           waarde={`${cap} kWh`}
           onder={
             prijsZichtbaar
@@ -72,12 +83,8 @@ export default function Resultaat({
               : "prijs in het adviesgesprek"
           }
         />
-        {prijsZichtbaar ? (
-          <Kaart
-            label="Terugverdientijd"
-            waarde={`${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(uitkomst.terugverdientijd_jaar.max)} jaar`}
-            onder="prijs ÷ besparing"
-          />
+        {toonInstap ? (
+          <Kaart label="Instapmodel" waarde="10 kWh" onder={<Claim id="P2" />} />
         ) : (
           <Kaart
             label="Extra eigen stroom"
@@ -86,6 +93,13 @@ export default function Resultaat({
           />
         )}
       </dl>
+      {prijsZichtbaar && (
+        <p className="mt-s2 text-[0.85rem] text-n-500">
+          Terugverdientijd van het advies: {jaren(uitkomst.terugverdientijd_jaar.min)} –{" "}
+          {jaren(uitkomst.terugverdientijd_jaar.max)} jaar (prijs ÷ besparing). Welke capaciteit bij jou
+          past, bepaalt Limsolar in de offerte.
+        </p>
+      )}
 
       {uitkomst.product_is_begrensd && (
         <p className="mt-s2 text-[0.8rem] text-paars">

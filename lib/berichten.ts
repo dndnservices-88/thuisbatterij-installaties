@@ -107,18 +107,30 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
   // Belmoment: bij "zsm" hangt de belofte af van het tijdstip van de aanvraag
   // (buiten belttijden: de eerstvolgende werkdag), zie lib/beltijden.ts.
   const moment = lead.dagdeel === "zsm" ? zsmMoment(new Date(lead.consent_tijdstip)) : DAGDEELTEKST[lead.dagdeel];
+  // Terugbelverzoek zonder berekening (13 nov 2026, prikbord r. 34): andere
+  // aanhef, geen "uit je antwoorden kwam geen doorrekening", wel de vanaf-prijs.
+  const terugbel = lead.formulier === "terugbel";
+  const onderwerpBasis = terugbel ? "Je terugbelverzoek" : "Je berekening";
   const onderwerp =
     lead.dagdeel === "zsm"
-      ? `Je berekening — we bellen je ${moment.split(":")[0]}`
-      : `Je berekening en je belafspraak — ${DAGDEELTEKST[lead.dagdeel].split(",")[0]}`;
+      ? `${onderwerpBasis} — we bellen je ${moment.split(":")[0]}`
+      : `${terugbel ? "Je terugbelverzoek" : "Je berekening en je belafspraak"} — ${DAGDEELTEKST[lead.dagdeel].split(",")[0]}`;
+
+  const intro = terugbel
+    ? `Je hebt op ${DOMEIN} gevraagd om teruggebeld te worden over een thuisbatterij. In het gesprek bespreken we de prijs en wat er bij jouw woning past.`
+    : `Je hebt op ${DOMEIN} een berekening gemaakt voor een thuisbatterij. Hieronder staat wat eruit kwam, zodat je het kunt teruglezen voordat we bellen.`;
 
   const alinea: string[] = [];
   alinea.push(`Hallo ${lead.voornaam},`);
-  alinea.push(
-    `Je hebt op ${DOMEIN} een berekening gemaakt voor een thuisbatterij. Hieronder staat wat eruit kwam, zodat je het kunt teruglezen voordat we bellen.`
-  );
+  alinea.push(intro);
 
-  if (regels.length === 0) {
+  if (terugbel) {
+    if (mag("P2")) {
+      alinea.push(
+        `Ter oriëntatie: ${CLAIMS.P2.tekst}. Welke batterij bij jouw woning past en wat die precies kost, staat in de offerte van ${LIMSOLAR.naam}.`
+      );
+    }
+  } else if (regels.length === 0) {
     alinea.push(
       "Uit je antwoorden kwam geen doorrekening — dat gebeurt bijvoorbeeld als je huurt of nog geen zonnepanelen hebt. We bellen je om te horen wat er wél mogelijk is."
     );
@@ -163,6 +175,10 @@ export function bevestigingAanKlant(lead: Lead, controle: Leadcontrole) {
     voornaam: lead.voornaam,
     u: regels.length ? (u as Exclude<Uitkomst, { route: "huurder" | "geen_pv" }>) : null,
     alineaZonderUitkomst: regels.length === 0 || krap ? alinea.slice(2) : [],
+    intro,
+    stap2: terugbel
+      ? (["We bespreken de prijs", "en wat er bij jouw woning past."] as [string, string])
+      : (["We lopen je berekening samen na", "en beantwoorden je vragen."] as [string, string]),
     dagdeel: moment,
     disclaimer: disclaimerAlinea,
     consent: consentAlinea,
@@ -200,6 +216,10 @@ export function klantmailHtml(d: {
   voornaam: string;
   u: Exclude<Uitkomst, { route: "huurder" | "geen_pv" }> | null;
   alineaZonderUitkomst: string[];
+  /** Openingsalinea; standaard de tekst voor een berekening. */
+  intro?: string;
+  /** Stap 2 onder "Wat er nu gebeurt" (vet, rest). */
+  stap2?: [string, string];
   dagdeel: string;
   disclaimer: string;
   consent: string;
@@ -244,7 +264,7 @@ export function klantmailHtml(d: {
  <tr><td style="padding:28px 28px 8px">
   <p style="margin:0 0 6px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:${P};font-weight:bold">Jouw indicatie</p>
   <h1 style="margin:0 0 14px;font-size:22px;line-height:1.3;color:#1a1a1a">Hallo ${esc(d.voornaam)}, ${toonCijfers ? "dit kwam er uit je berekening" : "bedankt voor je aanvraag"}</h1>
-  <p style="margin:0 0 20px;font-size:15px;line-height:1.6">Je hebt op ${esc(DOMEIN)} een berekening gemaakt voor een thuisbatterij. Hieronder staat wat eruit kwam, zodat je het kunt teruglezen voordat we bellen.</p>
+  <p style="margin:0 0 20px;font-size:15px;line-height:1.6">${esc(d.intro ?? `Je hebt op ${DOMEIN} een berekening gemaakt voor een thuisbatterij. Hieronder staat wat eruit kwam, zodat je het kunt teruglezen voordat we bellen.`)}</p>
  </td></tr>
  ${cijfers}
  ${zonderUitkomst}
@@ -252,7 +272,7 @@ export function klantmailHtml(d: {
   <p style="margin:0 0 12px;font-size:17px;font-weight:bold;color:#1a1a1a">Wat er nu gebeurt</p>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
    ${stap(1, `We bellen je ${d.dagdeel}.`, "Het gesprek duurt ongeveer tien minuten.")}
-   ${stap(2, "We lopen je berekening samen na", "en beantwoorden je vragen.")}
+   ${stap(2, (d.stap2 ?? ["We lopen je berekening samen na", "en beantwoorden je vragen."])[0], (d.stap2 ?? ["", "en beantwoorden je vragen."])[1])}
    ${stap(3, `Past het, dan krijg je een offerte van ${LIMSOLAR.naam}.`, "Daarin staat welk systeem technisch past en wat het kost.")}
   </table>
  </td></tr>
@@ -296,8 +316,10 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
   const route = u ? u.route : "onbekend";
   const naam = `${lead.voornaam} ${lead.achternaam}`.trim();
 
-  const kop =
-    route === "niet_rendabel"
+  const terugbel = lead.formulier === "terugbel";
+  const kop = terugbel
+    ? "TERUGBELVERZOEK (zonder berekening, via prijsblok)"
+    : route === "niet_rendabel"
       ? "ZACHTE LEAD (niet rendabel, wil toch overleg)"
       : route === "huurder" || route === "geen_pv"
         ? `LEAD ZONDER DOORREKENING (${route})`
@@ -313,7 +335,7 @@ export function meldingAanAdviseur(lead: Lead, controle: Leadcontrole) {
       `LET OP: de herberekening wijkt af van wat de browser meldde. ${controle.opmerking ?? ""} De klant heeft in de mail ONZE getallen gekregen.`
     );
   }
-  if (controle.komt_overeen === null && controle.opmerking) {
+  if (controle.komt_overeen === null && controle.opmerking && !terugbel) {
     waarschuwingen.push(`Let op: ${controle.opmerking}`);
   }
   if (!ENTITEIT.ingevuld) {

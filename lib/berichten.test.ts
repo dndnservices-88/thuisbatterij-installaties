@@ -325,3 +325,33 @@ test("zsm staat vooraan in het onderwerp van de melding aan het belteam", () => 
   const m = meldingAanAdviseur(maakLead({ dagdeel: "zsm" }), controleer(SNAPSHOT_MET_TLK));
   assert.match(m.onderwerp, /^ZSM BELLEN · /);
 });
+
+// ── Terugbelverzoek zonder berekening (13 nov 2026, prikbord r. 34) ──────────
+test("terugbelverzoek: eigen onderwerp en kop, geen rekenwaarschuwing, wel vanaf-prijs", () => {
+  const lead = {
+    id: "tb-1",
+    voornaam: "Test",
+    achternaam: "",
+    telefoon: "0612345678",
+    email: "t@example.nl",
+    postcode: "1689ZX",
+    huisnummer: "62",
+    formulier: "terugbel",
+    dagdeel: "middag",
+    consent_tekst: "x",
+    consent_versie: "1.4",
+    consent_tijdstip: "2026-11-13T12:00:00.000Z",
+    attributie: {},
+    cookie_toestemming: { statistieken: false, marketing: false, bron: "geen_keuze" },
+    calc_snapshot: null,
+  } as unknown as Lead;
+  const controle = controleer(null);
+  const klant = bevestigingAanKlant(lead, controle);
+  assert.match(klant.onderwerp, /^Je terugbelverzoek/);
+  assert.match(klant.tekst, /gevraagd om teruggebeld te worden/);
+  assert.doesNotMatch(klant.tekst, /geen doorrekening/);
+  assert.match(klant.html, /We bespreken de prijs/);
+  const melding = meldingAanAdviseur(lead, controle);
+  assert.match(melding.onderwerp, /TERUGBELVERZOEK/);
+  assert.doesNotMatch(melding.tekst, /Geen bruikbaar rekensnapshot/);
+});

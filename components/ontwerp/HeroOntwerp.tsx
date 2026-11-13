@@ -5,6 +5,7 @@ import Calculator from "@/components/calculator/Calculator";
 import Keurmerken from "@/components/Keurmerken";
 import type { Variant } from "@/lib/varianten";
 import EnergieStroom from "./EnergieStroom";
+import PrijsBlok from "./PrijsBlok";
 
 const v = (ms: number) => ({ "--vertraging": `${ms}ms` }) as CSSProperties;
 
@@ -67,6 +68,11 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
           <p className="intro mt-s4 max-w-[46ch] text-[1.08rem] leading-relaxed text-n-200" style={v(460)}>
             {variant.hero.sub}
           </p>
+
+          {/* Prijs boven de vouw + "Bel mij terug" (13 nov 2026, prikbord r. 34). */}
+          <div className="intro" style={v(520)}>
+            <PrijsBlok />
+          </div>
 
           <div className="intro mt-s5 hidden sm:block" style={v(600)}>
             <EnergieStroom className="h-auto w-full max-w-[520px]" />

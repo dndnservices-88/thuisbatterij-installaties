@@ -39,12 +39,22 @@ export default function Formulier({
   uitkomst,
   eventId,
   zacht,
+  soort = "rekentool",
 }: {
-  antwoorden: Antwoorden;
-  uitkomst: Uitkomst;
+  antwoorden?: Antwoorden;
+  uitkomst?: Uitkomst;
   eventId: string;
   zacht: boolean;
+  /**
+   * "terugbel" (13 nov 2026, prikbord r. 34): kort terugbelverzoek vanuit het
+   * prijsblok, zonder berekening en zonder achternaam. Zelfde toestemming,
+   * zelfde belmoment, zelfde Lead-event.
+   */
+  soort?: "rekentool" | "terugbel";
 }) {
+  const tb = soort === "terugbel";
+  // Beide formulieren kunnen tegelijk op de pagina staan: unieke id's.
+  const p = tb ? "tb-" : "";
   const [scherm, setScherm] = useState<"a" | "b" | "klaar">("a");
   const [v, setV] = useState({
     voornaam: "",
@@ -62,13 +72,13 @@ export default function Formulier({
   const adres = useAdresControle(v.postcode, v.huisnummer);
 
   useEffect(() => {
-    meld("lead_form_view", { zacht });
-  }, [zacht]);
+    meld("lead_form_view", { zacht, formulier: soort });
+  }, [zacht, soort]);
 
   function controleer() {
     const f: Record<string, string> = {};
     if (v.voornaam.trim().length < 2) f.voornaam = "Vul je voornaam in.";
-    if (v.achternaam.trim().length < 2) f.achternaam = "Vul je achternaam in.";
+    if (!tb && v.achternaam.trim().length < 2) f.achternaam = "Vul je achternaam in.";
     if (v.telefoon.replace(/\D/g, "").length < 10) f.telefoon = "Vul een geldig telefoonnummer in.";
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v.email)) f.email = "Vul een geldig e-mailadres in.";
     if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(v.postcode.trim()))
@@ -97,7 +107,8 @@ export default function Formulier({
           attributie: leesAttributie(),
           // Invoer én getoonde uitkomst: de adviseur ziet vóór het telefoontje
           // precies wat de klant op het scherm zag (claimregister R4).
-          calc_snapshot: { antwoorden, uitkomst, zachte_lead: zacht },
+          formulier: soort,
+          calc_snapshot: tb ? null : { antwoorden, uitkomst, zachte_lead: zacht },
           pagina_url: window.location.href,
         }),
       });
@@ -110,7 +121,7 @@ export default function Formulier({
       // dat is met opzet: Meta ontdubbelt op event_id tegen wat de server via
       // de CAPI stuurt, Google Ads ontdubbelt op transaction_id tegen een
       // herladen bedankscherm. Eén bron, dus ze kunnen niet uit elkaar lopen.
-      meld("Lead", { event_id: eventId, transaction_id: eventId, zacht });
+      meld("Lead", { event_id: eventId, transaction_id: eventId, zacht, formulier: soort });
       setScherm("klaar");
     } catch (e) {
       setServerfout(
@@ -127,9 +138,9 @@ export default function Formulier({
       <div>
         <h3 className="mb-s3 text-[1.4rem]">Gelukt — we bellen je</h3>
         <p className="text-[0.95rem] leading-relaxed text-n-500">
-          Je berekening is verstuurd. Je krijgt een bevestiging per e-mail met de uitkomst en het
-          belmoment dat je hebt gekozen. Wij bellen je dan voor een adviesgesprek van een minuut of
-          tien.
+          {tb
+            ? "Je verzoek is verstuurd. Je krijgt een bevestiging per e-mail met het belmoment dat je hebt gekozen. Wij bellen je dan over de prijs en wat er bij jouw woning past."
+            : "Je berekening is verstuurd. Je krijgt een bevestiging per e-mail met de uitkomst en het belmoment dat je hebt gekozen. Wij bellen je dan voor een adviesgesprek van een minuut of tien."}
         </p>
       </div>
     );
@@ -174,30 +185,34 @@ export default function Formulier({
         if (controleer()) setScherm("b");
       }}
     >
-      <h3 className="mb-s2 text-[1.4rem]">Waar mogen we je advies naartoe sturen?</h3>
+      <h3 className="mb-s2 text-[1.4rem]">{tb ? "Laat je terugbellen" : "Waar mogen we je advies naartoe sturen?"}</h3>
       <p className="mb-s4 text-[0.9rem] text-n-500">
-        Zes velden, meer niet. De rest bespreken we telefonisch.
+        {tb
+          ? "We bellen je over de prijs en wat er bij jouw woning past. Vrijblijvend."
+          : "Een paar gegevens, meer niet. De rest bespreken we telefonisch."}
       </p>
 
       <div className="grid gap-s3 sm:grid-cols-2">
         <Veld
-          id="voornaam"
+          id={`${p}voornaam`}
           label="Voornaam"
           autoComplete="given-name"
           value={v.voornaam}
           fout={fouten.voornaam}
           onChange={(e) => setV({ ...v, voornaam: e.target.value })}
         />
+        {!tb && (
+          <Veld
+            id={`${p}achternaam`}
+            label="Achternaam"
+            autoComplete="family-name"
+            value={v.achternaam}
+            fout={fouten.achternaam}
+            onChange={(e) => setV({ ...v, achternaam: e.target.value })}
+          />
+        )}
         <Veld
-          id="achternaam"
-          label="Achternaam"
-          autoComplete="family-name"
-          value={v.achternaam}
-          fout={fouten.achternaam}
-          onChange={(e) => setV({ ...v, achternaam: e.target.value })}
-        />
-        <Veld
-          id="telefoon"
+          id={`${p}telefoon`}
           label="Telefoonnummer"
           type="tel"
           inputMode="tel"
@@ -207,7 +222,7 @@ export default function Formulier({
           onChange={(e) => setV({ ...v, telefoon: e.target.value })}
         />
         <Veld
-          id="email"
+          id={`${p}email`}
           label="E-mailadres"
           type="email"
           inputMode="email"
@@ -217,30 +232,30 @@ export default function Formulier({
           onChange={(e) => setV({ ...v, email: e.target.value })}
         />
         <Veld
-          id="postcode"
+          id={`${p}postcode`}
           label="Postcode"
           autoComplete="postal-code"
           value={v.postcode}
           fout={fouten.postcode}
           onChange={(e) => setV({ ...v, postcode: e.target.value.toUpperCase() })}
         />
-        <div className="grid min-w-0 grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-s2">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-s2">
           <GetalVeld
-            id="huisnummer"
+            id={`${p}huisnummer`}
             label="Huisnummer"
             value={v.huisnummer}
             fout={fouten.huisnummer}
             onChange={(e) => setV({ ...v, huisnummer: e.target.value.replace(/\D/g, "") })}
           />
           <Veld
-            id="toevoeging"
+            id={`${p}toevoeging`}
             label="Toevoeging"
             value={v.toevoeging}
-            list={adres?.toevoegingen.length ? "toevoegingen" : undefined}
+            list={adres?.toevoegingen.length ? `${p}toevoegingen` : undefined}
             onChange={(e) => setV({ ...v, toevoeging: e.target.value.toUpperCase() })}
           />
           {adres?.toevoegingen.length ? (
-            <datalist id="toevoegingen">
+            <datalist id={`${p}toevoegingen`}>
               {adres.toevoegingen.map((t) => (
                 <option key={t} value={t} />
               ))}
@@ -251,13 +266,13 @@ export default function Formulier({
       <AdresRegel adres={adres} huisnummer={v.huisnummer} toevoeging={v.toevoeging} />
 
       <label
-        htmlFor="consent"
+        htmlFor={`${p}consent`}
         className={`mt-s4 flex cursor-pointer gap-s2 rounded-merk border p-s3 text-[0.88rem] leading-relaxed ${
           fouten.consent ? "border-red-700" : "border-n-200"
         }`}
       >
         <input
-          id="consent"
+          id={`${p}consent`}
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}

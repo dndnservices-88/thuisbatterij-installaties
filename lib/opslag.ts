@@ -43,6 +43,12 @@ export type Lead = {
     provincie?: string;
     toevoeging_klopt: boolean | null;
   } | null;
+  /**
+   * Welk formulier (13 nov 2026, prikbord r. 34): "rekentool" = na de
+   * berekening; "terugbel" = kort terugbelverzoek vanuit het prijsblok, zonder
+   * berekening (calc_snapshot is dan null).
+   */
+  formulier: "rekentool" | "terugbel";
   /** "zsm" = zo snel mogelijk (sinds 26 okt 2026); Pipedrive-optie en Make-formule moeten dit kennen. */
   dagdeel: "zsm" | "ochtend" | "middag" | "avond";
 

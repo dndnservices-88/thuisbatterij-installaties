@@ -92,6 +92,7 @@ export async function POST(request: Request) {
           toevoeging_klopt: adres.toevoeging_klopt,
         }
       : null,
+    formulier: body.formulier === "terugbel" ? "terugbel" : "rekentool",
     dagdeel: (["zsm", "ochtend", "middag", "avond"] as const).includes(body.dagdeel as never)
       ? (body.dagdeel as Lead["dagdeel"])
       : "middag",
