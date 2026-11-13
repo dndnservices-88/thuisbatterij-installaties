@@ -7,5 +7,8 @@ import { DOMEIN } from "@/lib/site";
  * Komt er een pagina bij die in Google moet, voeg hem hier toe.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: `https://${DOMEIN}/`, lastModified: new Date(), changeFrequency: "monthly", priority: 1 }];
+  return [
+    { url: `https://${DOMEIN}/`, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
+    { url: `https://${DOMEIN}/aanbod`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+  ];
 }

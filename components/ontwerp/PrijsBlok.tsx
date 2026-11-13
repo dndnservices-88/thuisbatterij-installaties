@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import fotoMarstek from "@/public/beeld/marstek-10kwh.webp";
 import { CLAIMS } from "@/lib/claims";
 import { meld, nieuwEventId } from "@/lib/tracking";
@@ -26,35 +27,42 @@ export default function PrijsBlok() {
   const eventId = useMemo(() => nieuwEventId(), []);
   const vanaf = CLAIMS.P2.tekst.match(/€\s?[\d.]+/)?.[0];
 
-  // Compact sinds 13 nov 2026 (Dieudonné: "banner veel te groot"): één strook
-  // met prijs + knop en één regel kleine tekst. Garanties staan al in de balk
-  // eronder en de rekentool staat ernaast, dus die zijn hier weggelaten.
+  // Geel blok met transparante batterij en paarse knoppen (13 nov 2026,
+  // Dieudonné: "ziet er goedkoop uit" met witte tegel). Het blok zelf is nu het
+  // gele element in de hero; de knoppen zijn daarom paars. Geen merknaam
+  // (besluit P6): de foto is "een voorbeeld van een 10 kWh-thuisbatterij".
   return (
-    <div className="mt-s4 max-w-[520px] rounded-merk border border-white/15 bg-white/[0.07] px-s3 py-s3">
-      {/* Productfoto (13 nov 2026, verzoek Dieudonné): het instapmodel van P2
-          (1-fase, € 5.808) is de Marstek Venus E 3.0 10 kWh (prijslijst 13 okt).
-          Uitgesneden uit het eigen advertentiebeeld. De 3-fase-prijs hoort bij
-          een ander merk; daarom het onderschrift "Op de foto: …". */}
-      <div className="flex flex-wrap items-center gap-s3">
-        <div className="shrink-0 rounded-[10px] bg-n-000 p-[6px]">
-          <Image src={fotoMarstek} alt="Thuisbatterij Marstek Venus E 3.0, 10 kWh" width={64} height={75} />
-        </div>
+    <div className="mt-s4 max-w-[540px] rounded-merk bg-geel px-s4 py-s4 text-n-900 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)]">
+      <div className="flex items-center gap-s4">
+        <Image
+          src={fotoMarstek}
+          alt="Voorbeeld van een thuisbatterij van 10 kWh"
+          width={84}
+          height={102}
+          className="shrink-0 drop-shadow-[0_10px_14px_rgba(0,0,0,0.35)]"
+        />
         <div className="min-w-0 flex-1">
-        <AlsClaim id="P2">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#CBB6E8]">
-            Thuisbatterij 10 kWh incl. installatie
-          </p>
-          {vanaf && (
-            <p className="font-kop text-[1.9rem] font-extrabold leading-tight text-n-000">
-              <span className="text-[0.95rem] font-semibold text-n-200">vanaf </span>
-              {vanaf}
+          <AlsClaim id="P2">
+            <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-paars">
+              Thuisbatterij 10 kWh incl. installatie
             </p>
-          )}
-        </AlsClaim>
+            {vanaf && (
+              <p className="font-kop text-[2.1rem] font-extrabold leading-tight text-paars-donker">
+                <span className="text-[1rem] font-semibold">vanaf </span>
+                {vanaf}
+              </p>
+            )}
+            <p className="mt-[2px] text-[0.78rem] leading-snug text-n-900/75">
+              <Claim id="P2" />.
+            </p>
+          </AlsClaim>
         </div>
-        {!open && (
+      </div>
+
+      {!open ? (
+        <div className="mt-s3 grid grid-cols-2 gap-s2">
           <Knop
-            volleBreedte={false}
+            soort="secundair"
             onClick={() => {
               meld("terugbel_open");
               setOpen(true);
@@ -62,15 +70,14 @@ export default function PrijsBlok() {
           >
             Bel mij terug
           </Knop>
-        )}
-      </div>
-      <AlsClaim id="P2">
-        <p className="mt-s1 text-[0.8rem] leading-snug text-n-200">
-          <Claim id="P2" />. Op de foto: Marstek Venus E 3.0, 10 kWh (1-fase).
-        </p>
-      </AlsClaim>
-
-      {open && (
+          <Link
+            href="/aanbod"
+            className="inline-flex min-h-[52px] items-center justify-center rounded-merk border-2 border-paars px-s3 font-kop text-[1rem] font-semibold text-paars hover:bg-paars hover:text-n-000"
+          >
+            Bekijk het aanbod
+          </Link>
+        </div>
+      ) : (
         <div className="mt-s3 rounded-merk bg-n-000 p-s4 text-n-900">
           <Formulier soort="terugbel" eventId={eventId} zacht={false} />
           <button

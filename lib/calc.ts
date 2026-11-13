@@ -274,6 +274,20 @@ export function consumentenprijs(excl: number): number {
   return Math.floor((incl + 1) / 100) * 100 - 1;
 }
 
+/**
+ * De volledige prijslijst incl. btw, ook boven MAX_CAPACITEIT_KWH. Alleen voor
+ * de aanbodpagina (/aanbod, 13 nov 2026); de rekentool gebruikt ASSORTIMENT.
+ * Merk blijft intern: de site toont types, geen merknamen (besluit P6 26 aug,
+ * bevestigd door Dieudonné 13 nov 2026).
+ */
+export const PRIJSLIJST_INCL = PRIJSLIJST.map(([merk, kwh, excl, backup, fase]) => ({
+  merk,
+  capaciteit_kwh: kwh,
+  prijs_eur: consumentenprijs(excl),
+  backup,
+  fase,
+}));
+
 export const ASSORTIMENT: Product[] = PRIJSLIJST.filter(([, kwh]) => kwh <= MAX_CAPACITEIT_KWH).map(([merk, kwh, excl, backup, fase]) => ({
   id: `${slug(merk)}-${String(kwh).replace(".", "-")}-${backup}`,
   naam: `${merk} ${kwh} kWh`,
