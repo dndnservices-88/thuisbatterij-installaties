@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import fotoBanner from "@/public/beeld/banner-batterij.webp";
+import fotoBanner from "@/public/beeld/banner-batterij-garage.webp";
 import { CLAIMS } from "@/lib/claims";
 import { meld, nieuwEventId } from "@/lib/tracking";
 import { AlsClaim, Claim } from "@/components/ui/Claim";
@@ -36,7 +36,7 @@ export default function PrijsBlok() {
       <div className="relative min-h-[170px] overflow-hidden rounded-[8px]">
         <Image
           src={fotoBanner}
-          alt="Thuisbatterij van 10 kWh in een woning"
+          alt="Thuisbatterij van 10 kWh in een bijkeuken, naast de meterkast"
           fill
           sizes="150px"
           className="object-cover"
