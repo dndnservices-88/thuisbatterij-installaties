@@ -63,7 +63,7 @@ export default function Aanbod() {
                 {AANBOD.filter((t) => t.fase === fase).map((t) => (
                   <article key={t.id} className="flex flex-col overflow-hidden rounded-merk border border-n-200 bg-n-000">
                     <div className="relative aspect-[4/3] bg-n-100">
-                      <Image src={t.foto} alt={`${t.titel}, ${fase}-fase`} fill sizes="(min-width:1024px) 360px, 100vw" className="object-cover" />
+                      <Image src={t.foto} alt={`${t.titel}, ${fase}-fase`} fill sizes="(min-width:1024px) 360px, 100vw" className="object-contain p-s2" />
                     </div>
                     <div className="flex flex-1 flex-col p-s4">
                       <h3 className="text-[1.15rem]">{t.titel}</h3>
