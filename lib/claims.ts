@@ -46,6 +46,15 @@ export const CLAIMS = {
     status: "bevestigd",
     nodig: "Aftekening Limsolar (aftekenpakket 13 okt 2026). Bewijsstuk: prijslijst met fase, 13 okt 2026, in Bewijs/.",
   },
+  P9: {
+    // 13 nov 2026, besluit Dieudonné: in de banner alleen de goedkoopste variant
+    // (variant D). Onderdeel van P2 (zelfde bron, zelfde bedrag); de 3-fase-prijs
+    // staat op /aanbod. Fase blijft erbij (Principes §4a punt 2).
+    id: "P9",
+    tekst: "Instapmodel van 10 kWh voor een 1-fase-aansluiting, inclusief btw en installatie",
+    status: "bevestigd",
+    nodig: "Valt onder de aftekening van P2.",
+  },
   P8: {
     // 13 nov 2026, besluit Dieudonné ("prijs vooraan", compleet aanbod op /aanbod).
     // Bron: prijslijst Limsolar met fase, 13 okt 2026 (Bewijs/), × 1,21 btw.

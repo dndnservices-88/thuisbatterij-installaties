@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import fotoMarstek from "@/public/beeld/marstek-10kwh.webp";
+import fotoBanner from "@/public/beeld/banner-batterij.webp";
 import { CLAIMS } from "@/lib/claims";
 import { meld, nieuwEventId } from "@/lib/tracking";
 import { AlsClaim, Claim } from "@/components/ui/Claim";
@@ -27,60 +27,57 @@ export default function PrijsBlok() {
   const eventId = useMemo(() => nieuwEventId(), []);
   const vanaf = CLAIMS.P2.tekst.match(/€\s?[\d.]+/)?.[0];
 
-  // Paarse strook met transparante batterij (13 nov 2026, keuze Dieudonné na
-  // previews: "het paarse voorbeeld was het beste"). Zachte lichte gloed achter
-  // de donkere batterij; geen witte tegel, geen merknaam (besluit P6).
-  // Knoppen: geel "Bel mij terug" + omlijnd "Bekijk het aanbod" (→ /aanbod).
+  // Variant D (keuze Dieudonné 13 nov 2026): staande sfeerfoto links in de
+  // kaart, prijs en twee knoppen rechts. Alleen de goedkoopste variant (P9,
+  // 1-fase); de 3-fase-prijs staat op /aanbod. Foto is tijdelijk een
+  // huiskamerbeeld; wordt vervangen door een garage/meterkast-beeld.
   return (
-    <div className="mt-s4 max-w-[540px] rounded-merk border border-white/15 bg-white/[0.07] px-s3 py-s3">
-      <div className="flex items-center gap-s3">
-        <div className="relative shrink-0">
-          <div aria-hidden="true" className="absolute inset-[-10px] rounded-full bg-white/25 blur-[18px]" />
-          <Image
-            src={fotoMarstek}
-            alt="Voorbeeld van een thuisbatterij van 10 kWh"
-            width={72}
-            height={88}
-            className="relative drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]"
-          />
-        </div>
-        <div className="min-w-0 flex-1">
-          <AlsClaim id="P2">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#CBB6E8]">
-              Thuisbatterij 10 kWh incl. installatie
-            </p>
-            {vanaf && (
-              <p className="font-kop text-[1.9rem] font-extrabold leading-tight text-n-000">
-                <span className="text-[0.95rem] font-semibold text-n-200">vanaf </span>
-                {vanaf}
-              </p>
-            )}
-            <p className="mt-[2px] text-[0.78rem] leading-snug text-n-200">
-              <Claim id="P2" />.
-            </p>
-          </AlsClaim>
-        </div>
+    <div className="mt-s4 grid max-w-[540px] grid-cols-[120px_1fr] gap-s3 rounded-merk border border-white/15 bg-white/[0.07] p-s2 sm:grid-cols-[150px_1fr] sm:p-s3">
+      <div className="relative min-h-[170px] overflow-hidden rounded-[8px]">
+        <Image
+          src={fotoBanner}
+          alt="Thuisbatterij van 10 kWh in een woning"
+          fill
+          sizes="150px"
+          className="object-cover"
+        />
       </div>
-
-      {!open ? (
-        <div className="mt-s3 grid grid-cols-2 gap-s2">
-          <Knop
-            onClick={() => {
-              meld("terugbel_open");
-              setOpen(true);
-            }}
-          >
-            Bel mij terug
-          </Knop>
-          <Link
-            href="/aanbod"
-            className="inline-flex min-h-[52px] items-center justify-center rounded-merk border border-white/50 px-s3 font-kop text-[1rem] font-semibold text-n-000 hover:bg-white/10"
-          >
-            Bekijk het aanbod
-          </Link>
-        </div>
-      ) : (
-        <div className="mt-s3 rounded-merk bg-n-000 p-s4 text-n-900">
+      <div className="min-w-0">
+        <AlsClaim id="P2">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#CBB6E8]">
+            Thuisbatterij 10 kWh incl. installatie
+          </p>
+          {vanaf && (
+            <p className="font-kop text-[2rem] font-extrabold leading-tight text-n-000">
+              <span className="text-[0.95rem] font-semibold text-n-200">vanaf </span>
+              {vanaf}
+            </p>
+          )}
+          <p className="mt-[2px] text-[0.78rem] leading-snug text-n-200">
+            <Claim id="P9" />.
+          </p>
+        </AlsClaim>
+        {!open && (
+          <div className="mt-s3 grid gap-s2">
+            <Knop
+              onClick={() => {
+                meld("terugbel_open");
+                setOpen(true);
+              }}
+            >
+              Bel mij terug
+            </Knop>
+            <Link
+              href="/aanbod#prijzen"
+              className="inline-flex min-h-[48px] items-center justify-center rounded-merk border border-white/50 px-s3 font-kop text-[1rem] font-semibold text-n-000 hover:bg-white/10"
+            >
+              Bekijk de prijzen
+            </Link>
+          </div>
+        )}
+      </div>
+      {open && (
+        <div className="col-span-2 rounded-merk bg-n-000 p-s4 text-n-900">
           <Formulier soort="terugbel" eventId={eventId} zacht={false} />
           <button
             type="button"
