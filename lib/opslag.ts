@@ -48,6 +48,8 @@ export type Lead = {
    * berekening; "terugbel" = kort terugbelverzoek vanuit het prijsblok, zonder
    * berekening (calc_snapshot is dan null).
    */
+  // ⚠️ Make (module 4 e.v.) gebruikt deze twee waarden letterlijk (prikbord r. 45,
+  // LEADOPVOLGING 13 nov). Niet hernoemen of uitbreiden zonder LEADOPVOLGING.
   formulier: "rekentool" | "terugbel";
   /** "zsm" = zo snel mogelijk (sinds 26 okt 2026); Pipedrive-optie en Make-formule moeten dit kennen. */
   dagdeel: "zsm" | "ochtend" | "middag" | "avond";

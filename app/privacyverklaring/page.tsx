@@ -188,7 +188,10 @@ export default function Privacy() {
                 [
                   "Make",
                   "Doorsturen van aanvragen naar onze systemen",
-                  <Nakijken key="m" label="betaald plan? (verwerkersovereenkomst)">
+                  // 13 nov 2026: Make-plan = Free (D., prikbord r. 57; bewust niet upgraden).
+                  // Verwerkersovereenkomst op het gratis plan: volgens secundaire bronnen niet
+                  // beschikbaar (compound.law; Activepieces) — ter toetsing bij JURIDISCH.
+                  <Nakijken key="m" label="jurist: verwerkersovereenkomst op gratis plan">
                     Celonis Inc. (VS) — EU-US Data Privacy Framework; verwerking in de EU (zone eu1)
                   </Nakijken>,
                 ],
@@ -268,7 +271,7 @@ export default function Privacy() {
           </Blok>
 
           <p className="text-[0.85rem] italic">
-            Versie {PRIVACY_VERSIE} · <Nakijken label="publicatiedatum">7 oktober 2026</Nakijken>
+            Versie {PRIVACY_VERSIE} · 13 november 2026
           </p>
         </div>
       </Sectie>

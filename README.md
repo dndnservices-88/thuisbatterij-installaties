@@ -191,39 +191,33 @@ niets — alle componenten zijn gedeeld.
 
 ---
 
-## Wat er nog moet gebeuren voordat dit live kan
+## Checklist livegang — stand 13 nov 2026
 
-- [ ] Claimregister afgetekend door Limsolar, bewijsstukken gearchiveerd
-- [ ] **Keurmerken (op kantoor regelen, ligt op papier):** deelnamebewijs SGZE met
-      geldigheidsdatum en het InstallQ-certificaat op naam van Limsolar B.V.,
-      plus de beeldmerkvoorwaarden van InstallQ. Scans in
-      `06 - Legal & Compliance/Bewijs/`, daarna V1 en V7 in `lib/claims.ts` op
-      `bevestigd`. Tot die tijd staan de logo's wél in de preview en niet live.
-- [ ] Tarieven bevestigd mét peildatum → `CONSTANTEN` en `PEILDATUM_TARIEVEN` bij
-- [ ] Assortiment met werkelijke prijzen → `ASSORTIMENT` aanvullen
-- [ ] Consenttekst juridisch nagelezen — staat sinds 1 sep 2026 op v1.1 en noemt
-      beide partijen mét hun rol; de juridische toets is nog niet gedaan
-- [x] Entiteitskeuze rond → `ENTITEIT` in `lib/site.ts` ingevuld: Tjapz Alphen
-      B.V., KvK 90408616, gevoerd onder de handelsnaam Thuisbatterij-installaties
-- [ ] `CONTACT` compleet → e-mailadres en correspondentieadres staan erin, maar
-      `telefoon` is een **fictief** nummer tot het CloudTalk-nummer er is (eerder gepland: Rinkel).
-      Daarom staan `telefoon_fictief` op true en `ingevuld` op false, en weigert
-      `lib/berichten.ts` de bevestigingsmail. Dat is de rem, niet een bug.
-      Zodra het nummer er is: nummer vervangen, beide vlaggen omzetten
-- [ ] Privacyverklaring en algemene voorwaarden juridisch getoetst
-- [ ] `LEAD_WEBHOOK_URL` ingesteld en met een testlead doorgemeten
-- [ ] GTM-container aangemaakt onder jouw eigen Google-account, ID in
-      `NEXT_PUBLIC_GTM_ID`
-- [ ] Voorbeeldmodus in Tag Manager: `Lead` komt binnen met `event_id` en
-      `transaction_id`, en `consent_update` vuurt na een keuze in de banner
-- [ ] Elke tag in de container heeft "Aanvullende toestemming vereist" ingesteld —
-      een tag zonder toestemmingsinstelling vuurt voor iedereen
-- [ ] Meta Test Events: `Lead` verschijnt één keer, niet twee keer
-- [ ] Google Ads-conversie in testmodus geregistreerd, met `transaction_id` in het
-      veld Transactie-ID
-- [ ] `UITKOMST_TOKEN` gezet en `UITKOMST_WEBHOOK_URL` naar het CRM doorgemeten
-- [ ] Twee importconversieacties aangemaakt, "verbeterde conversies voor leads"
-      uit — anders verwacht Google gehashte e-mailadressen in plaats van klik-ID's
-- [ ] Bevestigingsmail ingericht (staat nog niet in deze codebase)
-- [ ] Logo, iconen en foto's geplaatst
-- [ ] `NEXT_PUBLIC_LIVE=true`
+*De site staat sinds 28 okt 2026 live (`NEXT_PUBLIC_LIVE=true` op Production, gezet door
+CAMPAGNES op verzoek van Dieudonné; prikbord r. 29). Bijgewerkt door WEBSITE, 13 nov 2026.
+Wat nog open staat, staat ook op het prikbord (`00_Chats/Limsolar_Overdrachten_tussen_chats.md`).*
+
+- [ ] Claimregister afgetekend door Limsolar, bewijsstukken gearchiveerd — tekenafspraak
+      gepland (D.); P2 (…99), P8, P9 en U9 meenemen (prikbord r. 40, 41, 57)
+- [ ] Schriftelijk akkoord Limsolar op de prijzen …99 in `06 - …/Bewijs/` (D.)
+- [x] Keurmerken: V1 en V7 op `bevestigd` op besluit Dieudonné (26 okt 2026)
+- [x] Tarieven bevestigd met peildatum (R2, 6 okt 2026, Fabian/Limsolar)
+- [x] Assortiment met werkelijke prijzen (prijslijst met fase, 13 okt 2026; consumentenprijs
+      op …99 via `consumentenprijs()`, rekenversie 1.5.2)
+- [x] Entiteit: Tjapz Alphen B.V., KvK 90408616, handelsnaam Thuisbatterij-installaties
+- [x] `CONTACT` compleet: 085 333 5387 (Rinkel, geen gespreksopname), adres Entrada 400,
+      1114 AA Duivendrecht (bevestigd via KvK, D. 13 nov)
+- [ ] Toestemmingstekst (nu v1.4, met WhatsApp) en privacyverklaring (nu 2.4) juridisch
+      getoetst — open punten staan in `lib/privacy.ts` (`PRIVACY_OPEN`)
+- [ ] Make op het gratis plan (D. 13 nov, bewust niet upgraden): verwerkersovereenkomst
+      laten toetsen door JURIDISCH
+- [x] `LEAD_WEBHOOK_URL` ingesteld en doorgemeten (Make → Pipedrive + sheet)
+- [x] GTM-container GTM-KTX7J4GN live (versie 6); `Lead` met `event_id` en `transaction_id`
+      gezien in Tag Assistant (26 okt 2026)
+- [x] Google Ads-conversie "TBI Lead (website)" vuurt (Tag Assistant op live versie 6, 26 okt)
+- [ ] Meta: Lead browser + server met hetzelfde `event_id` ontdubbeld in Gebeurtenissenbeheer
+      (METING)
+- [ ] Terugkoppelingsloop uitkomsten (afspraak/sale) → Google en Meta (prikbord r. 12)
+- [x] Bevestigingsmail ingericht (opgemaakt, logo's, `MAIL_VAN` in Vercel)
+- [x] Logo, iconen en foto's geplaatst (geen merknamen op de site, besluit P6)
+- [x] `NEXT_PUBLIC_LIVE=true` (28 okt 2026)

@@ -157,7 +157,9 @@ export const CLAIMS = {
     id: "U9",
     tekst: "Limsolar installeert in heel Nederland",
     status: "bevestigd",
-    nodig: "Schriftelijke bevestiging werkgebied. Let op: sgze.nl noemt (6 okt 2026) alleen Noord-Holland, Utrecht en Zuid-Holland.",
+    // 13 nov 2026: besluit Dieudonné — werkgebied heel Nederland (prikbord r. 57);
+    // meenemen in de aftekening door Limsolar (JURIDISCH).
+    nodig: "Schriftelijke bevestiging werkgebied in de aftekening. sgze.nl noemde (6 okt 2026) alleen Noord-Holland, Utrecht en Zuid-Holland; D. besloot 13 nov: heel Nederland.",
   },
   U10: {
     // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 ("dit stuk mag
