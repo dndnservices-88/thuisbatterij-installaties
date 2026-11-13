@@ -86,8 +86,9 @@ export default function Aanbod() {
           <div className="mt-s4 grid gap-s3 sm:grid-cols-2 lg:grid-cols-3">
             {AANBOD.map((t) => (
               <article key={t.id} className="flex flex-col overflow-hidden rounded-merk border border-n-200 bg-n-000">
-                <div className="relative aspect-[4/5] bg-n-100">
-                  <Image src={t.foto} alt={`${t.titel}, ${t.fase}-fase`} fill sizes="(min-width:1024px) 360px, 100vw" className="object-cover" />
+                {/* Mobiel lager beeld (4:3, hele batterij zichtbaar), vanaf sm staand 4:5. */}
+                <div className="relative aspect-[4/3] bg-[#ECE9E5] sm:aspect-[4/5]">
+                  <Image src={t.foto} alt={`${t.titel}, ${t.fase}-fase`} fill sizes="(min-width:1024px) 360px, 100vw" className="object-contain sm:object-cover" />
                   <span className="absolute left-s2 top-s2 rounded-full bg-paars px-s2 py-[3px] text-[0.75rem] font-semibold text-n-000">
                     {t.fase}-fase
                   </span>
