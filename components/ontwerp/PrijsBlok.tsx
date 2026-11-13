@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
+import fotoMarstek from "@/public/beeld/marstek-10kwh.webp";
 import { CLAIMS } from "@/lib/claims";
 import { meld, nieuwEventId } from "@/lib/tracking";
 import { AlsClaim, Claim } from "@/components/ui/Claim";
@@ -29,7 +31,15 @@ export default function PrijsBlok() {
   // eronder en de rekentool staat ernaast, dus die zijn hier weggelaten.
   return (
     <div className="mt-s4 max-w-[520px] rounded-merk border border-white/15 bg-white/[0.07] px-s3 py-s3">
-      <div className="flex flex-wrap items-center justify-between gap-s3">
+      {/* Productfoto (13 nov 2026, verzoek Dieudonné): het instapmodel van P2
+          (1-fase, € 5.808) is de Marstek Venus E 3.0 10 kWh (prijslijst 13 okt).
+          Uitgesneden uit het eigen advertentiebeeld. De 3-fase-prijs hoort bij
+          een ander merk; daarom het onderschrift "Op de foto: …". */}
+      <div className="flex flex-wrap items-center gap-s3">
+        <div className="shrink-0 rounded-[10px] bg-n-000 p-[6px]">
+          <Image src={fotoMarstek} alt="Thuisbatterij Marstek Venus E 3.0, 10 kWh" width={64} height={75} />
+        </div>
+        <div className="min-w-0 flex-1">
         <AlsClaim id="P2">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#CBB6E8]">
             Thuisbatterij 10 kWh incl. installatie
@@ -41,6 +51,7 @@ export default function PrijsBlok() {
             </p>
           )}
         </AlsClaim>
+        </div>
         {!open && (
           <Knop
             volleBreedte={false}
@@ -55,7 +66,7 @@ export default function PrijsBlok() {
       </div>
       <AlsClaim id="P2">
         <p className="mt-s1 text-[0.8rem] leading-snug text-n-200">
-          <Claim id="P2" />.
+          <Claim id="P2" />. Op de foto: Marstek Venus E 3.0, 10 kWh (1-fase).
         </p>
       </AlsClaim>
 
