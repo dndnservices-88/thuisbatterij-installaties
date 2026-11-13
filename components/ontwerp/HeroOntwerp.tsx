@@ -1,10 +1,7 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
-import fotoHero from "@/public/beeld/keukentafel-rekenen-1600.webp";
 import Calculator from "@/components/calculator/Calculator";
 import Keurmerken from "@/components/Keurmerken";
 import type { Variant } from "@/lib/varianten";
-import EnergieStroom from "./EnergieStroom";
 import PrijsBlok from "./PrijsBlok";
 
 const v = (ms: number) => ({ "--vertraging": `${ms}ms` }) as CSSProperties;
@@ -17,7 +14,8 @@ const v = (ms: number) => ({ "--vertraging": `${ms}ms` }) as CSSProperties;
  * eerste vraag staat daarmee boven de vouw — één klik in plaats van een knop,
  * een sprong naar beneden en dan pas een klik.
  */
-export default function HeroOntwerp({ variant }: { variant: Variant }) {
+// variant.hero.sub wordt sinds 13 nov 2026 niet meer getoond; prop blijft voor de aanroep.
+export default function HeroOntwerp(_props: { variant: Variant }) {
   return (
     <section className="relative overflow-hidden bg-paars px-s3 pb-s4 pt-s5 text-n-000 lg:pt-s6">
       {/* Twee zachte lichtvlekken die langzaam verschuiven. Dit is wat het vlak
@@ -49,7 +47,7 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
 
           <h1
             className="font-semibold leading-[1.02] tracking-[-0.035em]"
-            style={{ fontSize: "clamp(2.7rem, 1.3rem + 4.4vw, 4.9rem)" }}
+            style={{ fontSize: "clamp(2.4rem, 1.2rem + 3.4vw, 3.9rem)" }}
           >
             <span className="intro block" style={v(80)}>
               Eerst rekenen.
@@ -72,13 +70,8 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
             <PrijsBlok />
           </div>
 
-          <p className="intro mt-s4 max-w-[46ch] text-[1.08rem] leading-relaxed text-n-200" style={v(460)}>
-            {variant.hero.sub}
-          </p>
-
-          <div className="intro mt-s5 hidden sm:block" style={v(600)}>
-            <EnergieStroom className="h-auto w-full max-w-[520px]" />
-          </div>
+          {/* Introtekst en icoontjesrij weggehaald (13 nov 2026, "banner veel te
+              groot"): ze herhaalden wat de kop en de rekentool al zeggen. */}
         </div>
 
         {/* De rekentool. id=calculator zodat alle bestaande knoppen op de pagina
@@ -97,29 +90,9 @@ export default function HeroOntwerp({ variant }: { variant: Variant }) {
             Je ziet de uitkomst zonder gegevens achter te laten.
           </p>
 
-          {/* Foto onder de rekentool, alleen vanaf desktop. Daar is de linkerkolom
-              langer dan de rekentool en stond er een leeg paars vlak. Op een
-              telefoon zou de foto tussen rekentool en pagina komen en alleen
-              scrollen kosten, dus daar niet.
-
-              FOTO VERVANGEN: zet een nieuw bestand in public/beeld/ en pas de
-              import bovenaan aan. Liggend formaat, minimaal 1600 × 1000 px
-              (verhouding 16:10), webp of jpg. Het beeld wordt bijgesneden tot
-              16:10, dus houd het onderwerp in het midden. Bijschrift "Sfeerbeeld"
-              weggehaald op verzoek van Dieudonné, 7 okt 2026. */}
-          <figure className="intro mt-s4 hidden lg:block" style={v(520)}>
-            <div className="relative aspect-[16/10] overflow-hidden rounded-merk shadow-[0_30px_80px_-24px_rgba(0,0,0,0.55)]">
-              <Image
-                src={fotoHero}
-                alt="Vrouw aan de keukentafel bekijkt op haar telefoon een berekening, met haar energierekening voor zich"
-                fill
-                placeholder="blur"
-                sizes="(min-width: 1024px) 520px, 0px"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#240040]/50 via-transparent to-transparent" />
-            </div>
-          </figure>
+          {/* Foto onder de rekentool weggehaald (13 nov 2026): hij vulde een leeg
+              paars vlak dat er sinds het prijsblok niet meer is. Bestand blijft in
+              public/beeld/keukentafel-rekenen-1600.webp. */}
         </div>
       </div>
 
