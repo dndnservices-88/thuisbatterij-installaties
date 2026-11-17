@@ -42,49 +42,60 @@ export default function Resultaat({
   const prijsZichtbaar = mag("P6");
   const cap = new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(uitkomst.product.capaciteit_kwh);
   const gekozen = TERUGLEVERKOSTEN_OPTIES.find((o) => o.id === antwoord);
-  // Instapmodel tonen als het advies groter is dan 10 kWh en P2 mag.
-  const toonInstap = mag("P2") && uitkomst.product.capaciteit_kwh > 10.5;
+  // Sinds rekenversie 1.6.0 (17 nov 2026, prikbord r. 61 + 65): het instapmodel
+  // van 10 kWh voorop, met een eigen besparing; het advies (vuistregel ÷200)
+  // als tweede optie. Gerekend zoals Limsolar aanbiedt (dynamisch contract +
+  // automatisch handelen, min kosten). Terugverdientijd niet als eerste getal,
+  // alleen 1-fase; 3-fase als losse regel. Het eigen contract van de bezoeker
+  // als vergelijking (niet bij een dynamisch contract: dat is al het aanbod).
+  const i = uitkomst.instap;
+  const toonAdvies = uitkomst.product.capaciteit_kwh > 10.5;
+  const contractNaam = { vast: "vast of variabel", dynamisch: "dynamisch", onbekend: "je huidige contract" }[
+    uitkomst.vergelijking.contract
+  ];
 
-  // Opbouw sinds 7 okt 2026 (op verzoek van Dieudonné: minder scrollen, knop
-  // direct in beeld): eerst de besparing, dan maat/prijs en terugverdientijd,
-  // dan meteen de knop. Alles wat uitleg is, staat in twee uitklapregels.
   return (
     <div>
-      <p className="mb-s1 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-paars">
-        Jouw indicatie
+      <p className="mb-s1 inline-flex items-center gap-s1 rounded-full bg-paars-tint px-s2 py-[3px] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-paars">
+        Salderen stopt op 1 januari 2027
       </p>
-      <h3 className="mb-s3 text-[1.1rem] font-semibold text-n-500">
-        Met een thuisbatterij bespaar je naar verwachting
+      <h3 className="mb-s3 mt-s2 text-[1.1rem] font-semibold text-n-500">
+        Met een thuisbatterij van 10 kWh bespaar je naar verwachting
       </h3>
 
       <div className="rounded-merk border border-paars bg-paars-tint p-s3">
         <p className="font-kop text-[1.9rem] font-extrabold leading-tight text-paars">
-          <TelOpBereik min={uitkomst.besparing_eur.min} max={uitkomst.besparing_eur.max} opmaak={euro} />
+          <TelOpBereik min={i.besparing_eur.min} max={i.besparing_eur.max} opmaak={euro} />
         </p>
-        <p className="text-[0.85rem] text-n-500">per jaar</p>
+        <p className="text-[0.85rem] text-n-500">
+          per jaar, met een dynamisch contract en automatisch handelen zoals Limsolar het aanbiedt
+          (inclusief {euro(uitkomst.constanten.JAARLIJKSE_KOSTEN)} per jaar aan kosten)
+        </p>
       </div>
 
-      {/* Sinds 13 nov 2026 (prikbord r. 34, akkoord Dieudonné): naast het advies
-          ook het instapmodel van 10 kWh (claim P2), omdat de advertentie die
-          prijs noemt. Bij het doorsnee profiel (12 panelen, 3.500 kWh) levert
-          10 kWh volgens dezelfde som evenveel op als het geadviseerde 15 kWh:
-          10 kWh verwerkt 2.375 kWh/jaar, het opslagpotentieel is 2.333 kWh.
-          De capaciteitskeuze zelf (vuistregel Limsolar, opslag ÷ 200) blijft
-          ongewijzigd: welke capaciteit past, bepaalt Limsolar in de offerte.
-          De terugverdientijd blijft staan, maar als regel onder de kaarten in
-          plaats van als kaart naast de besparing. */}
       <dl className="mt-s2 grid grid-cols-2 gap-s2">
         <Kaart
-          label="Advies op basis van je antwoorden"
-          waarde={`${cap} kWh`}
+          nadruk
+          label="Instapmodel"
+          waarde="10 kWh"
           onder={
-            prijsZichtbaar
-              ? `vanaf ${euro(uitkomst.product.prijs_eur)} (1-fase) of ${euro(uitkomst.product_3fase.prijs_eur)} (3-fase), incl. installatie`
-              : "prijs in het adviesgesprek"
+            prijsZichtbaar && mag("P9") ? (
+              <>vanaf {euro(i.product.prijs_eur)} (1-fase), incl. installatie</>
+            ) : (
+              "prijs in het adviesgesprek"
+            )
           }
         />
-        {toonInstap ? (
-          <Kaart label="Instapmodel" waarde="10 kWh" onder={<Claim id="P2" />} />
+        {toonAdvies ? (
+          <Kaart
+            label="Meer opslag"
+            waarde={`${cap} kWh`}
+            onder={
+              prijsZichtbaar
+                ? `vanaf ${euro(uitkomst.product.prijs_eur)} (1-fase), bespaart ${euro(uitkomst.besparing_eur.min)} – ${euro(uitkomst.besparing_eur.max)} per jaar`
+                : `bespaart ${euro(uitkomst.besparing_eur.min)} – ${euro(uitkomst.besparing_eur.max)} per jaar`
+            }
+          />
         ) : (
           <Kaart
             label="Extra eigen stroom"
@@ -93,13 +104,31 @@ export default function Resultaat({
           />
         )}
       </dl>
-      {prijsZichtbaar && (
-        <p className="mt-s2 text-[0.85rem] text-n-500">
-          Terugverdientijd van het advies: {jaren(uitkomst.terugverdientijd_jaar.min)} –{" "}
-          {jaren(uitkomst.terugverdientijd_jaar.max)} jaar (prijs ÷ besparing). Welke capaciteit bij jou
-          past, bepaalt Limsolar in de offerte.
-        </p>
-      )}
+
+      <div className="mt-s2 space-y-[3px] text-[0.83rem] leading-snug text-n-500">
+        {prijsZichtbaar && (
+          <p>
+            Terugverdientijd 10 kWh: {jaren(i.terugverdientijd_jaar.min)} – {jaren(i.terugverdientijd_jaar.max)} jaar
+            (1-fase).
+            {toonAdvies &&
+              ` ${cap} kWh: ${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(uitkomst.terugverdientijd_jaar.max)} jaar.`}
+          </p>
+        )}
+        {prijsZichtbaar && (
+          <p>
+            Bij een 3-fase-aansluiting: 10 kWh vanaf {euro(i.product_3fase.prijs_eur)}, terugverdientijd{" "}
+            {jaren(i.terugverdientijd_3fase_jaar.min)} – {jaren(i.terugverdientijd_3fase_jaar.max)} jaar.
+          </p>
+        )}
+        {uitkomst.vergelijking.contract !== "dynamisch" && (
+          <p>
+            Ter vergelijking, met {contractNaam} zonder automatisch handelen:{" "}
+            {euro(uitkomst.vergelijking.besparing_eur.min)} – {euro(uitkomst.vergelijking.besparing_eur.max)} per
+            jaar.
+          </p>
+        )}
+        <p>Welke capaciteit bij jou past, bepaalt Limsolar in de offerte.</p>
+      </div>
 
       {uitkomst.product_is_begrensd && (
         <p className="mt-s2 text-[0.8rem] text-paars">

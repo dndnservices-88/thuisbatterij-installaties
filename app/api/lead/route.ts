@@ -117,6 +117,9 @@ export async function POST(request: Request) {
       route: controle.uitkomst?.route ?? null,
       besparing_midden: gecontroleerd?.besparing_eur.midden ?? null,
       terugverdientijd_midden: gecontroleerd?.terugverdientijd_jaar.midden ?? null,
+      // Sinds rekenversie 1.6.0: het instapmodel 10 kWh, dat de klant als eerste ziet.
+      instap_besparing_midden: gecontroleerd?.instap.besparing_eur.midden ?? null,
+      instap_terugverdientijd_midden: gecontroleerd?.instap.terugverdientijd_jaar.midden ?? null,
       terugleverkosten: gecontroleerd?.terugleverkosten_eur ?? null,
       terugleverkosten_antwoord: gecontroleerd?.terugleverkosten_antwoord ?? null,
       rekenversie: gecontroleerd?.rekenversie ?? null,

@@ -99,6 +99,8 @@ export type Lead = {
     route: string | null;
     besparing_midden: number | null;
     terugverdientijd_midden: number | null;
+    instap_besparing_midden?: number | null;
+    instap_terugverdientijd_midden?: number | null;
     terugleverkosten: number | null;
     /**
      * Het antwoord op vraag 5 naast het bedrag. Nul euro kan twee dingen

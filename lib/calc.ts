@@ -33,8 +33,18 @@
  * 7.099, 8.464 → 8.399, 10.739 → 10.699). Akkoord Limsolar volgens D. (rust op één
  * bron; schriftelijke bevestiging opvragen). Overal dezelfde prijzen: site,
  * rekentool, mails, /aanbod en advertenties.
+ *
+ * 1.6.0 (17 nov 2026, prikbord r. 61 + 65, vrijgegeven door Dieudonné 19:18):
+ *  - Standaard gerekend met de situatie zoals Limsolar aanbiedt: dynamisch
+ *    contract + automatisch handelen (DYN_MARGE + handel restcycli), min
+ *    JAARLIJKSE_KOSTEN € 140. Terugleverkosten tellen daarin niet mee.
+ *  - Het eigen contract van de bezoeker alleen als vergelijking (zonder
+ *    handelen, zonder kosten; terugleverkosten uit vraag 5 wel).
+ *  - Instapmodel 10 kWh (1-fase) voorop met een eigen besparing; het advies
+ *    (vuistregel ÷200) als tweede optie.
+ *  - Terugverdientijd alleen met de 1-fase-prijs; 3-fase als losse regel.
  */
-export const REKENVERSIE = "1.5.2";
+export const REKENVERSIE = "1.6.0";
 export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
@@ -136,8 +146,10 @@ export const CONSTANTEN = {
   /**
    * €/kWh extra waarde bij een dynamisch contract. Bewust laag: de spread van
    * € 0,15–0,25 die je overal leest, geldt bij actief gestuurde handel op de
-   * day-ahead- of onbalansmarkt. Dat is een aparte dienst met eigen software,
-   * en zolang Limsolar die niet levert, mag hij niet in deze som zitten.
+   * day-ahead- of onbalansmarkt. Sinds 1.6.0 (17 nov 2026) rekent de tool
+   * standaard zo: Limsolar levert de batterij met dynamisch contract en
+   * automatisch handelen (bevestigd door Limsolar volgens Dieudonné, 17 nov;
+   * schriftelijk vast te leggen).
    */
   DYN_MARGE: 0.15, // Fabian: gemiddeld netto prijsvoordeel € 0,15/kWh. Was € 0,05 t/m 1.3.0.
   /**
@@ -147,17 +159,23 @@ export const CONSTANTEN = {
    *
    * Netto € 0,05–0,08 in 2026 na energiebelasting en leverancierskosten; wij
    * nemen de onderkant. Bewust laag gehouden om een tweede reden: deze post daalt
-   * naarmate meer batterijen meedoen, en hij vereist actieve sturing. Zolang
-   * Limsolar die sturing niet levert, hoort hij klein te blijven.
+   * naarmate meer batterijen meedoen, en hij vereist actieve sturing. Die
+   * sturing levert Limsolar (zie DYN_MARGE); de kosten ervan staan in
+   * JAARLIJKSE_KOSTEN.
    */
   HANDELSMARGE_RESTCYCLI: 0.15, // Zelfde prijsvoordeel als DYN_MARGE. Was € 0,05 t/m 1.3.0.
   /** Btw op thuisbatterij en installatie. 21%, ook in 2027 (geen nultarief in Belastingplan 2027). */
   BTW: 0.21,
   /**
-   * Terugkerende kosten per jaar (EMS-abonnement, platformkosten handel).
-   * Standaard € 0 tot Limsolar opgeeft wat het werkelijk kost (vraag 13 aan Fabian).
+   * Terugkerende kosten per jaar voor handelen/EMS, alleen in het scenario
+   * "zoals Limsolar aanbiedt". € 140 = voorzichtige kant (besluit Dieudonné
+   * 17 nov 2026, prikbord r. 65). Bronnen: Frank Energie houdt ±15% van de
+   * handelswinst in (klantenservice Frank + FAQ Sessy), ≈ € 72/jr in het
+   * voorbeeld; CE Delft (Solar Magazine 10 sep 2026) € 35 software + € 35 EMS;
+   * EMS-abonnementen € 6,95–11,90 per maand (Jullix). Vervangen zodra Fabian
+   * het echte bedrag geeft (vraag 13).
    */
-  JAARLIJKSE_KOSTEN: 0,
+  JAARLIJKSE_KOSTEN: 140,
   /**
    * Btw-teruggave en subsidie, in mindering op de investering. Standaard € 0:
    * de teruggave is voorwaardelijk (claim U10) en er is geen landelijke subsidie.
@@ -436,6 +454,26 @@ export type Berekening = {
   product: Product;
   /** Goedkoopste passende 3-fase-systeem van dezelfde maat; tweede vanaf-prijs. */
   product_3fase: Product;
+  /** Terugverdientijd van het advies bij een 3-fase-aansluiting (losse regel sinds 1.6.0). */
+  terugverdientijd_3fase_jaar: Band;
+  /**
+   * Instapmodel 10 kWh (sinds 1.6.0 voorop, prikbord r. 61), met een eigen
+   * besparing: bij handelen levert een grotere batterij meer op, dus de
+   * besparing van het advies mag niet naast de prijs van 10 kWh staan.
+   */
+  instap: {
+    product: Product;
+    product_3fase: Product;
+    besparing_eur: Band;
+    terugverdientijd_jaar: Band;
+    terugverdientijd_3fase_jaar: Band;
+  };
+  /**
+   * Ter vergelijking: het eigen contract van de bezoeker, zonder automatisch
+   * handelen en zonder handelskosten, met zijn terugleverkosten uit vraag 5.
+   * Gerekend voor het instapmodel.
+   */
+  vergelijking: { contract: Contract; besparing_eur: Band };
   /** true als het opslagpotentieel groter is dan het grootste product met bekende prijs */
   product_is_begrensd: boolean;
   jaarverbruik_kwh: number;
@@ -517,6 +555,49 @@ export function nettoInvestering(p: Product): number {
   return Math.max(0, p.prijs_eur - CONSTANTEN.BTW_TERUGGAVE - CONSTANTEN.SUBSIDIE);
 }
 
+/**
+ * Eén rekenscenario voor één batterij.
+ *  - "aanbod": zoals Limsolar aanbiedt — dynamisch + automatisch handelen,
+ *    restcycli verhandeld, min JAARLIJKSE_KOSTEN, zonder terugleverkosten.
+ *  - "eigen": het contract van de bezoeker, zonder handelen en zonder kosten,
+ *    met zijn eigen terugleverkosten (vraag 5).
+ */
+export function scenario(
+  p: Product,
+  opslagpotentieel: number,
+  soort: "aanbod" | "eigen",
+  contract: Contract = "dynamisch",
+  terugleverkosten?: number
+) {
+  const budget = doorzet(p);
+  const opslag_kwh = Math.min(opslagpotentieel, budget) * CONSTANTEN.RENDEMENT;
+  if (soort === "aanbod") {
+    const waarde_per_kwh = waardePerKwh("dynamisch", undefined);
+    const restcycli_kwh = Math.max(0, budget - opslagpotentieel) * CONSTANTEN.RENDEMENT;
+    const handel_eur = restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI;
+    const besparing = Math.max(0, opslag_kwh * waarde_per_kwh + handel_eur - CONSTANTEN.JAARLIJKSE_KOSTEN);
+    return { opslag_kwh, restcycli_kwh, handel_eur, waarde_per_kwh, besparing };
+  }
+  const waarde_per_kwh = waardePerKwh(contract, terugleverkosten);
+  const besparing = Math.max(0, opslag_kwh * waarde_per_kwh);
+  return { opslag_kwh, restcycli_kwh: 0, handel_eur: 0, waarde_per_kwh, besparing };
+}
+
+/** Terugverdientijd als band: hoge besparing = korte tijd. */
+function tvtBand(investering: number, b: Band): Band {
+  return {
+    min: b.max > 0 ? rond(investering / b.max, 1) : Infinity,
+    midden: b.midden > 0 ? rond(investering / b.midden, 1) : Infinity,
+    max: b.min > 0 ? rond(investering / b.min, 1) : Infinity,
+  };
+}
+
+/** Het instapmodel: goedkoopste 10 kWh-systeem voor deze fase (P2/P9). */
+export function instapProduct(fase: 1 | 3): Product {
+  const tien = ASSORTIMENT.filter((p) => p.fase === fase && Math.round(p.capaciteit_kwh) === 10);
+  return tien.reduce((a, b) => (b.prijs_eur < a.prijs_eur ? b : a));
+}
+
 export function bereken(a: Antwoorden): Uitkomst {
   // Vraag 5 — harde kwalificatie. Huurders mogen geen batterij plaatsen.
   if (!a.eigenaar) return { route: "huurder" };
@@ -546,32 +627,24 @@ export function bereken(a: Antwoorden): Uitkomst {
   const { product, begrensd } = kiesProduct(opslagpotentieel, 1);
   const { product: product3 } = kiesProduct(opslagpotentieel, 3);
 
-  // De batterij heeft een jaarbudget aan doorzet. Eerst gaat dat naar eigen
-  // zonnestroom, want die kWh is het meest waard. Wat daarna overblijft kan
-  // alleen nog verdiend worden door van het net te laden bij een lage prijs —
-  // en dat kan uitsluitend met uurtarieven, dus met een dynamisch contract.
-  const budget = doorzet(product);
-  const opslagWerkelijk = Math.min(opslagpotentieel, budget) * CONSTANTEN.RENDEMENT;
-  const restcycli_kwh =
-    a.contract === "dynamisch"
-      ? Math.max(0, budget - opslagpotentieel) * CONSTANTEN.RENDEMENT
-      : 0;
+  // Scenario "zoals Limsolar aanbiedt" (1.6.0): dynamisch contract en
+  // automatisch handelen, min de jaarlijkse kosten. Terugleverkosten tellen
+  // hier niet mee (dynamische leveranciers rekenen weinig; r. 65 punt 3).
+  const aanbod = scenario(product, opslagpotentieel, "aanbod");
+  const besparingBand = band(aanbod.besparing);
+  const tvt = tvtBand(nettoInvestering(product), besparingBand);
+  const tvt3 = tvtBand(nettoInvestering(product3), besparingBand);
 
-  const waarde = waardePerKwh(a.contract, a.terugleverkosten);
-  const handelsopbrengst = restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI;
-  // Stap 2 van twee: is hij financieel interessant. Jaarlijkse kosten (EMS,
-  // platform) gaan eraf; standaard € 0.
-  const besparing = Math.max(0, opslagWerkelijk * waarde + handelsopbrengst - CONSTANTEN.JAARLIJKSE_KOSTEN);
-  const investering = nettoInvestering(product);
-  const investering3 = nettoInvestering(product3);
+  const instap1 = instapProduct(1);
+  const instap3 = instapProduct(3);
+  const instapAanbod = scenario(instap1, opslagpotentieel, "aanbod");
+  const instapBand = band(instapAanbod.besparing);
+  const vergelijk = scenario(instap1, opslagpotentieel, "eigen", a.contract, a.terugleverkosten);
 
-  const besparingBand = band(besparing);
-  // Terugverdientijd draait om: hoge besparing = korte tijd.
-  const tvt: Band = {
-    min: besparingBand.max > 0 ? rond(investering / besparingBand.max, 1) : Infinity,
-    midden: besparingBand.midden > 0 ? rond(investering / besparingBand.midden, 1) : Infinity,
-    max: besparingBand.min > 0 ? rond(investering3 / besparingBand.min, 1) : Infinity,
-  };
+  const opslagWerkelijk = aanbod.opslag_kwh;
+  const restcycli_kwh = aanbod.restcycli_kwh;
+  const handelsopbrengst = aanbod.handel_eur;
+  const waarde = aanbod.waarde_per_kwh;
 
   const berekening: Berekening = {
     opwek_kwh: rond(opwek),
@@ -592,6 +665,15 @@ export function bereken(a: Antwoorden): Uitkomst {
         : CONSTANTEN.TERUGLEVERKOSTEN,
     product,
     product_3fase: product3,
+    terugverdientijd_3fase_jaar: tvt3,
+    instap: {
+      product: instap1,
+      product_3fase: instap3,
+      besparing_eur: instapBand,
+      terugverdientijd_jaar: tvtBand(nettoInvestering(instap1), instapBand),
+      terugverdientijd_3fase_jaar: tvtBand(nettoInvestering(instap3), instapBand),
+    },
+    vergelijking: { contract: a.contract, besparing_eur: band(vergelijk.besparing) },
     product_is_begrensd: begrensd,
     jaarverbruik_kwh: verbruik,
     aantal_panelen: panelen,
@@ -600,7 +682,10 @@ export function bereken(a: Antwoorden): Uitkomst {
     constanten: CONSTANTEN,
   };
 
-  if (!isFinite(tvt.midden)) {
+  // Niets om op te slaan (geen overschot of geen avondbehoefte): dan gaat de
+  // rekentool niet over zonnestroom en tonen we het niet-rendabel-scherm, ook
+  // al zou alleen handelen iets opleveren (1.6.0).
+  if (!isFinite(tvt.midden) || opslagpotentieel <= 0) {
     return { route: "niet_rendabel", ...berekening };
   }
   return { route: "lead", ...berekening };

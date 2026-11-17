@@ -56,7 +56,9 @@ test("case A — de persona uit het brandbook blijft een lead en rekent met het 
   // De geleverde site kwam op 13,0 jaar door met een generieke systeemprijs te
   // rekenen in plaats van met het eigen aanbod. Dat is de kerncorrectie, en die
   // moet blijven werken ook nu de tarieven ongunstiger zijn geworden.
-  assert.ok(u.terugverdientijd_jaar.midden > 9, `middenwaarde ${u.terugverdientijd_jaar.midden}`);
+  // 1.6.0: rekent zoals Limsolar aanbiedt; de terugverdientijd ligt daardoor
+  // lager dan de 13,0 jaar van de oude site, maar met de eigen prijzen.
+  assert.ok(u.terugverdientijd_jaar.midden > 5 && u.terugverdientijd_jaar.midden < 15, `middenwaarde ${u.terugverdientijd_jaar.midden}`);
   // Sinds 1.4.0 kiest de tool uit het hele assortiment: de goedkoopste
   // uitvoering die minstens de indicatieve capaciteit (opslag ÷ 200) haalt.
   const nodig = indicatieveCapaciteit(u.opslagpotentieel_kwh);
@@ -100,7 +102,11 @@ test("case C — dynamisch contract levert meer op en de capaciteit schiet niet 
   const vast = bereken({ ...invoer, contract: "vast" });
   assert.equal(dyn.route, "lead");
   if (dyn.route !== "lead" || vast.route === "huurder" || vast.route === "geen_pv") return;
-  assert.ok(dyn.besparing_eur.midden > vast.besparing_eur.midden);
+  // 1.6.0: de hoofdsom rekent altijd zoals Limsolar aanbiedt (dynamisch +
+  // handelen), dus het eigen contract verandert hem niet; het eigen vaste
+  // contract staat als (lagere) vergelijking ernaast.
+  assert.equal(dyn.besparing_eur.midden, vast.besparing_eur.midden);
+  assert.ok(vast.vergelijking.besparing_eur.midden < vast.besparing_eur.midden);
   // Capaciteit mag nooit groter zijn dan een product dat werkelijk bestaat.
   const grootste = Math.max(...ASSORTIMENT.map((p) => p.capaciteit_kwh));
   assert.ok(dyn.product.capaciteit_kwh <= grootste);
@@ -201,8 +207,10 @@ test("de schakelaar kan de som alleen gunstiger maken, nooit ongunstiger", () =>
   const met = bereken({ ...basis, terugleverkosten: 0.109 });
   if (zonder.route === "huurder" || zonder.route === "geen_pv") return assert.fail("route");
   if (met.route === "huurder" || met.route === "geen_pv") return assert.fail("route");
-  assert.ok(met.besparing_eur.midden > zonder.besparing_eur.midden);
-  assert.ok(met.terugverdientijd_jaar.midden < zonder.terugverdientijd_jaar.midden);
+  // 1.6.0: terugleverkosten tellen alleen in de vergelijking met het eigen
+  // contract, niet in het scenario zoals Limsolar aanbiedt (r. 65 punt 3).
+  assert.ok(met.vergelijking.besparing_eur.midden > zonder.vergelijking.besparing_eur.midden);
+  assert.equal(met.besparing_eur.midden, zonder.besparing_eur.midden);
   assert.equal(met.terugleverkosten_eur, 0.109);
 });
 
@@ -282,21 +290,13 @@ test("het profiel dat ten onrechte werd afgewezen, is nu een lead", () => {
   assert.equal(u.route, "lead");
 });
 
-test("restcycli leveren alleen iets op bij een dynamisch contract", () => {
-  const vast = bereken({ ...basis, contract: "vast" });
-  const onbekend = bereken({ ...basis, contract: "onbekend" });
-  const dyn = bereken({ ...basis, contract: "dynamisch" });
-  for (const u of [vast, onbekend]) {
+test("1.6.0: restcycli worden altijd verhandeld (zoals Limsolar aanbiedt), los van het eigen contract", () => {
+  for (const contract of ["vast", "onbekend", "dynamisch"] as const) {
+    const u = bereken({ ...basis, contract });
     if (u.route === "huurder" || u.route === "geen_pv") return assert.fail("route");
-    assert.equal(u.restcycli_kwh, 0);
-    assert.equal(u.handelsopbrengst_eur, 0);
+    assert.ok(u.restcycli_kwh >= 0);
+    assert.equal(u.handelsopbrengst_eur, Math.round(u.restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI));
   }
-  if (dyn.route === "huurder" || dyn.route === "geen_pv") return assert.fail("route");
-  assert.ok(dyn.restcycli_kwh >= 0);
-  assert.equal(
-    dyn.handelsopbrengst_eur,
-    Math.round(dyn.restcycli_kwh * CONSTANTEN.HANDELSMARGE_RESTCYCLI)
-  );
 });
 
 test("de handelspost blijft klein genoeg om geen verkooppraatje te worden", () => {
@@ -351,8 +351,8 @@ test("de maat volgt de avondbehoefte, niet het kale overschot", () => {
   assert.ok(u.product.capaciteit_kwh <= 15, `${u.product.capaciteit_kwh} kWh is te groot voor dit huishouden`);
 });
 
-test("jaarlijkse kosten, btw-teruggave en subsidie staan standaard op nul", () => {
-  assert.equal(CONSTANTEN.JAARLIJKSE_KOSTEN, 0);
+test("jaarlijkse kosten € 140 (1.6.0, r. 65); btw-teruggave en subsidie op nul", () => {
+  assert.equal(CONSTANTEN.JAARLIJKSE_KOSTEN, 140);
   assert.equal(CONSTANTEN.BTW_TERUGGAVE, 0);
   assert.equal(CONSTANTEN.SUBSIDIE, 0);
   const u = bereken(basis);
@@ -399,12 +399,30 @@ test("3-fase vanaf-prijzen (1.5.2): 10 kWh € 7.199, 15 kWh € 8.199, 20 kWh �
   assert.equal(kiesProduct(10 * 200, 1).product.prijs_eur, 5799);
 });
 
-test("terugverdientijd: ondergrens met 1-fase-prijs, bovengrens met 3-fase-prijs", () => {
+test("terugverdientijd (1.6.0): band alleen met de 1-fase-prijs, 3-fase als losse band", () => {
   const u = bereken({ ...basis, contract: "dynamisch" });
   if (u.route === "huurder" || u.route === "geen_pv") throw new Error("verwacht een berekening");
   assert.equal(u.product.fase, 1);
   assert.equal(u.product_3fase.fase, 3);
   assert.ok(u.product_3fase.prijs_eur > u.product.prijs_eur);
-  assert.equal(u.terugverdientijd_jaar.max, Math.round((u.product_3fase.prijs_eur / u.besparing_eur.min) * 10) / 10);
+  assert.equal(u.terugverdientijd_jaar.max, Math.round((u.product.prijs_eur / u.besparing_eur.min) * 10) / 10);
+  assert.equal(u.terugverdientijd_3fase_jaar.max, Math.round((u.product_3fase.prijs_eur / u.besparing_eur.min) * 10) / 10);
   assert.equal(u.terugverdientijd_jaar.min, Math.round((u.product.prijs_eur / u.besparing_eur.max) * 10) / 10);
+});
+
+
+// ── Rekenversie 1.6.0 (17 nov 2026, prikbord r. 61 + 65) ─────────────────────
+test("1.6.0 voorbeeld r. 65: 12 panelen, 3.500 kWh — advies 15 kWh € 866/jr, 6,9–10,4 jaar", () => {
+  const u = bereken({ zonnepanelen: "ja", panelen: { soort: "aantal", aantal: 12 }, verbruik: { soort: "kwh", kwh: 3500 }, contract: "vast", eigenaar: true });
+  if (u.route !== "lead") return assert.fail(u.route);
+  assert.equal(u.product.capaciteit_kwh, 15);
+  assert.equal(u.besparing_eur.midden, 866);
+  assert.deepEqual([u.terugverdientijd_jaar.min, u.terugverdientijd_jaar.max], [6.9, 10.4]);
+  // Instapmodel 10 kWh voorop, met eigen besparing.
+  assert.equal(u.instap.product.prijs_eur, 5799);
+  assert.equal(u.instap.product_3fase.prijs_eur, 7199);
+  assert.deepEqual([u.instap.besparing_eur.min, u.instap.besparing_eur.max], [565, 847]);
+  assert.deepEqual([u.instap.terugverdientijd_jaar.min, u.instap.terugverdientijd_jaar.max], [6.8, 10.3]);
+  // Vergelijking met het eigen vaste contract: zonder handelen en zonder kosten.
+  assert.deepEqual([u.vergelijking.besparing_eur.min, u.vergelijking.besparing_eur.max], [420, 630]);
 });

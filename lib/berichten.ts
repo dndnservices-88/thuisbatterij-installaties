@@ -85,12 +85,26 @@ export function magBevestigingVersturen(): { mag: boolean; reden?: string } {
 /** De uitkomstregels, in gewone zinnen. Leeg als er niets te melden valt. */
 function uitkomstregels(u: Uitkomst | null): string[] {
   if (!u || u.route === "huurder" || u.route === "geen_pv") return [];
-  return [
-    `Extra zelfverbruik: ${getal(u.extra_zelfverbruik_kwh.min)} tot ${getal(u.extra_zelfverbruik_kwh.max)} kWh per jaar`,
-    `Indicatieve besparing: ${euro(u.besparing_eur.min)} tot ${euro(u.besparing_eur.max)} per jaar`,
-    `Passende capaciteit: ${new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(u.product.capaciteit_kwh)} kWh`,
-    `Indicatieve terugverdientijd: ${jaren(u.terugverdientijd_jaar.min)} tot ${jaren(u.terugverdientijd_jaar.max)} jaar`,
+  // Rekenversie 1.6.0 (17 nov 2026): instapmodel 10 kWh voorop, advies als
+  // tweede optie; gerekend zoals Limsolar aanbiedt (dynamisch + handelen).
+  const cap = new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(u.product.capaciteit_kwh);
+  const i = u.instap;
+  const regels = [
+    `Indicatieve besparing met 10 kWh: ${euro(i.besparing_eur.min)} tot ${euro(i.besparing_eur.max)} per jaar (dynamisch contract en automatisch handelen zoals Limsolar het aanbiedt, inclusief ${euro(u.constanten.JAARLIJKSE_KOSTEN)} per jaar aan kosten)`,
+    `Instapmodel 10 kWh vanaf ${euro(i.product.prijs_eur)} (1-fase) of ${euro(i.product_3fase.prijs_eur)} (3-fase), inclusief installatie; terugverdientijd ${jaren(i.terugverdientijd_jaar.min)} tot ${jaren(i.terugverdientijd_jaar.max)} jaar (1-fase)`,
   ];
+  if (u.product.capaciteit_kwh > 10.5) {
+    regels.push(
+      `Meer opslag: ${cap} kWh vanaf ${euro(u.product.prijs_eur)} (1-fase), besparing ${euro(u.besparing_eur.min)} tot ${euro(u.besparing_eur.max)} per jaar, terugverdientijd ${jaren(u.terugverdientijd_jaar.min)} tot ${jaren(u.terugverdientijd_jaar.max)} jaar`
+    );
+  }
+  if (u.vergelijking.contract !== "dynamisch") {
+    regels.push(
+      `Ter vergelijking, met je huidige contract zonder automatisch handelen: ${euro(u.vergelijking.besparing_eur.min)} tot ${euro(u.vergelijking.besparing_eur.max)} per jaar`
+    );
+  }
+  regels.push(`Extra zelfverbruik: ${getal(u.extra_zelfverbruik_kwh.min)} tot ${getal(u.extra_zelfverbruik_kwh.max)} kWh per jaar`);
+  return regels;
 }
 
 // ── Mail 1: bevestiging aan de klant ────────────────────────────────────────
@@ -233,15 +247,15 @@ export function klantmailHtml(d: {
   const cijfers = toonCijfers && d.u
     ? `<tr><td style="padding:0 28px">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${MAIL_KLEUR.tint};border:1px solid ${P};border-radius:12px"><tr><td style="padding:20px 22px">
-   <p style="margin:0;font-size:13px;color:#555">Met een thuisbatterij bespaar je naar verwachting</p>
-   <p style="margin:4px 0 0;font-size:30px;font-weight:800;color:${P};line-height:1.15">${esc(euro(d.u.besparing_eur.min))} – ${esc(euro(d.u.besparing_eur.max))}</p>
-   <p style="margin:2px 0 0;font-size:13px;color:#555">per jaar</p>
+   <p style="margin:0;font-size:13px;color:#555">Met een thuisbatterij van 10 kWh bespaar je naar verwachting</p>
+   <p style="margin:4px 0 0;font-size:30px;font-weight:800;color:${P};line-height:1.15">${esc(euro(d.u.instap.besparing_eur.min))} – ${esc(euro(d.u.instap.besparing_eur.max))}</p>
+   <p style="margin:2px 0 0;font-size:13px;color:#555">per jaar, met een dynamisch contract en automatisch handelen zoals Limsolar het aanbiedt (inclusief ${esc(euro(d.u.constanten.JAARLIJKSE_KOSTEN))} per jaar aan kosten)</p>
   </td></tr></table>
  </td></tr>
  <tr><td style="padding:12px 24px 0">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-   ${blok("Batterij", `${kwh.format(d.u.product.capaciteit_kwh)} kWh`)}
-   ${blok("Terugverdientijd", `${jaren(d.u.terugverdientijd_jaar.min)} – ${jaren(d.u.terugverdientijd_jaar.max)} jaar`)}
+   ${blok("Instapmodel", `10 kWh vanaf ${euro(d.u.instap.product.prijs_eur)} (1-fase)`)}
+   ${blok("Terugverdientijd", `${jaren(d.u.instap.terugverdientijd_jaar.min)} – ${jaren(d.u.instap.terugverdientijd_jaar.max)} jaar`)}
    ${blok("Extra eigen stroom", `${getal(d.u.extra_zelfverbruik_kwh.min)}–${getal(d.u.extra_zelfverbruik_kwh.max)} kWh/jaar`)}
   </tr></table>
  </td></tr>`
