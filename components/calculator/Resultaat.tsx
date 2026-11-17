@@ -1,7 +1,7 @@
 "use client";
 
 import { euro, getal, jaren, TERUGLEVERKOSTEN_OPTIES, type Berekening, type TerugleverAntwoord } from "@/lib/calc";
-import { mag } from "@/lib/claims";
+import { CLAIMS, mag } from "@/lib/claims";
 import { REKEN_DISCLAIMER } from "@/lib/site";
 import { Knop } from "@/components/ui/Knop";
 import { Claim } from "@/components/ui/Claim";
@@ -57,7 +57,7 @@ export default function Resultaat({
   return (
     <div>
       <p className="mb-s1 inline-flex items-center gap-s1 rounded-full bg-paars-tint px-s2 py-[3px] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-paars">
-        Salderen stopt op 1 januari 2027
+        {CLAIMS.R5.tekst}
       </p>
       <h3 className="mb-s3 mt-s2 text-[1.1rem] font-semibold text-n-500">
         Met een thuisbatterij van 10 kWh bespaar je naar verwachting
@@ -68,8 +68,11 @@ export default function Resultaat({
           <TelOpBereik min={i.besparing_eur.min} max={i.besparing_eur.max} opmaak={euro} />
         </p>
         <p className="text-[0.85rem] text-n-500">
-          per jaar, met een dynamisch contract en automatisch handelen zoals Limsolar het aanbiedt
-          (inclusief {euro(uitkomst.constanten.JAARLIJKSE_KOSTEN)} per jaar aan kosten)
+          {/* Juridische chat stap 1 §1 (prikbord r. 71): letterlijk; bedrag uit de constante. */}
+          per jaar, met een dynamisch contract en automatisch handelen zoals Limsolar het aanbiedt.
+          Hierin is {euro(uitkomst.constanten.JAARLIJKSE_KOSTEN)} per jaar aan kosten voor het
+          energiebeheersysteem meegerekend: een gemiddelde marktprijs. Wat het bij Limsolar kost,
+          staat in de offerte.
         </p>
       </div>
 
@@ -125,7 +128,14 @@ export default function Resultaat({
                 Bij een 3-fase-aansluiting: 10 kWh vanaf {euro(i.product_3fase.prijs_eur)}, terugverdientijd{" "}
                 {jaren(i.terugverdientijd_3fase_jaar.min)} – {jaren(i.terugverdientijd_3fase_jaar.max)} jaar.
               </p>
-              <p>Prijs gedeeld door de besparing per jaar.</p>
+              {/* Label R3 (juridische chat stap 1 §2): verplicht bij het getal, dus
+                  bewust géén <Claim> eromheen. Bedrag uit de constante. */}
+              <p>
+                Gerekend met een dynamisch contract en automatisch handelen, zoals Limsolar die
+                aanbiedt, en {euro(uitkomst.constanten.JAARLIJKSE_KOSTEN)} per jaar aan kosten. Prijs
+                gedeeld door de besparing per jaar, met gelijke energieprijzen over de hele periode.
+                Een indicatie, geen garantie.
+              </p>
             </div>
           </details>
         )}

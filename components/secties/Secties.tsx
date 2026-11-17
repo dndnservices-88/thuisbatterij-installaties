@@ -213,7 +213,7 @@ export function WaaromNu() {
         boven="Waarom nu"
         onder="Feiten, geen paniek. Wat er verandert en wat dat betekent voor wat je opwekt."
       >
-        Salderen verdwijnt per 1 januari 2027
+        {CLAIMS.R5.tekst}
       </Kop>
       <div className="grid gap-s4 sm:grid-cols-3">
         <Blok titel="Wat er nu gebeurt">

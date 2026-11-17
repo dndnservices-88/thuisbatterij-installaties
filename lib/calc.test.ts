@@ -351,8 +351,8 @@ test("de maat volgt de avondbehoefte, niet het kale overschot", () => {
   assert.ok(u.product.capaciteit_kwh <= 15, `${u.product.capaciteit_kwh} kWh is te groot voor dit huishouden`);
 });
 
-test("jaarlijkse kosten € 140 (1.6.0, r. 65); btw-teruggave en subsidie op nul", () => {
-  assert.equal(CONSTANTEN.JAARLIJKSE_KOSTEN, 140);
+test("jaarlijkse kosten € 120 (1.6.1, r. 71; was € 140 in 1.6.0); btw-teruggave en subsidie op nul", () => {
+  assert.equal(CONSTANTEN.JAARLIJKSE_KOSTEN, 120);
   assert.equal(CONSTANTEN.BTW_TERUGGAVE, 0);
   assert.equal(CONSTANTEN.SUBSIDIE, 0);
   const u = bereken(basis);
@@ -412,17 +412,19 @@ test("terugverdientijd (1.6.0): band alleen met de 1-fase-prijs, 3-fase als loss
 
 
 // ── Rekenversie 1.6.0 (17 nov 2026, prikbord r. 61 + 65) ─────────────────────
-test("1.6.0 voorbeeld r. 65: 12 panelen, 3.500 kWh — advies 15 kWh € 866/jr, 6,9–10,4 jaar", () => {
+// 1.6.1 (r. 71): kosten € 120 i.p.v. € 140 → midden + € 20. In 1.6.0 was dit
+// advies € 866 (6,9–10,4 jr) en instap € 565–847 (6,8–10,3 jr).
+test("1.6.1 voorbeeld r. 65: 12 panelen, 3.500 kWh — advies 15 kWh € 886/jr, 6,8–10,2 jaar", () => {
   const u = bereken({ zonnepanelen: "ja", panelen: { soort: "aantal", aantal: 12 }, verbruik: { soort: "kwh", kwh: 3500 }, contract: "vast", eigenaar: true });
   if (u.route !== "lead") return assert.fail(u.route);
   assert.equal(u.product.capaciteit_kwh, 15);
-  assert.equal(u.besparing_eur.midden, 866);
-  assert.deepEqual([u.terugverdientijd_jaar.min, u.terugverdientijd_jaar.max], [6.9, 10.4]);
+  assert.equal(u.besparing_eur.midden, 886);
+  assert.deepEqual([u.terugverdientijd_jaar.min, u.terugverdientijd_jaar.max], [6.8, 10.2]);
   // Instapmodel 10 kWh voorop, met eigen besparing.
   assert.equal(u.instap.product.prijs_eur, 5799);
   assert.equal(u.instap.product_3fase.prijs_eur, 7199);
-  assert.deepEqual([u.instap.besparing_eur.min, u.instap.besparing_eur.max], [565, 847]);
-  assert.deepEqual([u.instap.terugverdientijd_jaar.min, u.instap.terugverdientijd_jaar.max], [6.8, 10.3]);
+  assert.deepEqual([u.instap.besparing_eur.min, u.instap.besparing_eur.max], [581, 871]);
+  assert.deepEqual([u.instap.terugverdientijd_jaar.min, u.instap.terugverdientijd_jaar.max], [6.7, 10.0]);
   // Vergelijking met het eigen vaste contract: zonder handelen en zonder kosten.
   assert.deepEqual([u.vergelijking.besparing_eur.min, u.vergelijking.besparing_eur.max], [420, 630]);
 });

@@ -43,8 +43,12 @@
  *  - Instapmodel 10 kWh (1-fase) voorop met een eigen besparing; het advies
  *    (vuistregel ÷200) als tweede optie.
  *  - Terugverdientijd alleen met de 1-fase-prijs; 3-fase als losse regel.
+ *
+ * 1.6.1 (17 nov 2026, prikbord stap 2, r. 71; besluit Dieudonné 19:49):
+ * JAARLIJKSE_KOSTEN € 140 → € 120 (gemiddelde marktprijs, juridische chat stap 1
+ * §1). Andere uitkomst = nieuwe versie (R4).
  */
-export const REKENVERSIE = "1.6.0";
+export const REKENVERSIE = "1.6.1";
 export const PEILDATUM_TARIEVEN = "6 oktober 2026";
 
 /**
@@ -69,6 +73,7 @@ export const TARIEFBRONNEN = [
   "Dagaandeel verbruik: aandeel van het jaarverbruik dat in de zonuren valt. Wij rekenen met een derde. Marktonderzoek 26 aug 2026 (Milieu Centraal, 1KOMMA5) — nog geen puntbron, daarom voorzichtig gekozen en als voorstel gemarkeerd.",
   "Cycli per jaar: 300–500 bij gewoon zelfverbruik, tot 700 bij actieve handel (1komma5.nl, zonneplan.nl, aug 2026). Wij rekenen met 250, onder de onderkant van de band, als korting voor de wintermaanden waarin er geen zonoverschot is.",
   "Handelsmarge restcycli: netto € 0,05–0,08 per kWh in 2026 na energiebelasting en leverancierskosten (energienerds.nl, aug 2026). Wij rekenen met € 0,05, de onderkant, en alleen bij een dynamisch contract.",
+  "Kosten energiebeheersysteem/handelsplatform: € 120 per jaar. Gemiddelde marktprijs (vergelijkingssites noemen € 0 tot ± € 10–15 per maand; batterijenplan.nl, thuisbatterijenhulp.nl, duurzamebatterijsystemen.nl, november 2026). Besluit Dieudonné 17 nov 2026, tot Limsolar het werkelijke bedrag geeft (vraag 13 aan Fabian).",
 ] as const;
 
 export const CONSTANTEN = {
@@ -168,14 +173,15 @@ export const CONSTANTEN = {
   BTW: 0.21,
   /**
    * Terugkerende kosten per jaar voor handelen/EMS, alleen in het scenario
-   * "zoals Limsolar aanbiedt". € 140 = voorzichtige kant (besluit Dieudonné
-   * 17 nov 2026, prikbord r. 65). Bronnen: Frank Energie houdt ±15% van de
+   * "zoals Limsolar aanbiedt". € 120 = gemiddelde marktprijs (besluit
+   * Dieudonné 17 nov 2026 19:49, prikbord r. 71, rekenversie 1.6.1; bron in
+   * TARIEFBRONNEN). Was € 140 in 1.6.0 (voorzichtige kant). Eerdere bronnen: Frank Energie houdt ±15% van de
    * handelswinst in (klantenservice Frank + FAQ Sessy), ≈ € 72/jr in het
    * voorbeeld; CE Delft (Solar Magazine 10 sep 2026) € 35 software + € 35 EMS;
    * EMS-abonnementen € 6,95–11,90 per maand (Jullix). Vervangen zodra Fabian
    * het echte bedrag geeft (vraag 13).
    */
-  JAARLIJKSE_KOSTEN: 140,
+  JAARLIJKSE_KOSTEN: 120,
   /**
    * Btw-teruggave en subsidie, in mindering op de investering. Standaard € 0:
    * de teruggave is voorwaardelijk (claim U10) en er is geen landelijke subsidie.

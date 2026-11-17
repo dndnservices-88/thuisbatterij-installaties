@@ -3,6 +3,7 @@ import Calculator from "@/components/calculator/Calculator";
 import Keurmerken from "@/components/Keurmerken";
 import type { Variant } from "@/lib/varianten";
 import PrijsBlok from "./PrijsBlok";
+import { CLAIMS } from "@/lib/claims";
 
 const v = (ms: number) => ({ "--vertraging": `${ms}ms` }) as CSSProperties;
 
@@ -42,7 +43,7 @@ export default function HeroOntwerp(_props: { variant: Variant }) {
             style={v(0)}
           >
             <span className="puls inline-block h-2 w-2 rounded-full bg-[#CBB6E8]" />
-            Salderen stopt op 1 januari 2027
+            {CLAIMS.R5.tekst}
           </p>
 
           <h1

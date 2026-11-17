@@ -169,9 +169,22 @@ export const CONSENT = {
   // ACM "Spam voorkomen") en vraagt toestemming vooraf (art. 11.7 lid 1 Tw).
   // Leads met v1.3 of lager krijgen GEEN commerciële WhatsApp; elk bericht
   // noemt de afzender en hoe je je afmeldt.
-  versie: "1.4",
-  tekst:
-    "Ja, Thuisbatterij-installaties (KvK " + ENTITEIT.kvk + ") mag mij telefonisch, per e-mail en via WhatsApp benaderen over mijn berekening, mij adviseren en mij namens Limsolar B.V. een offerte doen. Thuisbatterij-installaties mag mijn gegevens daarvoor doorgeven aan Limsolar B.V., dat de thuisbatterij levert en installeert en mij daarover ook mag benaderen. Ik kan deze toestemming op elk moment intrekken. Zie de bedrijfsgegevens en de privacyverklaring.",
+  // v1.5 (17 nov 2026, juridische chat, prikbord r. 62/67): gelaagd — kern in
+  // eerste laag, rest in uitklapper. Letterlijk uit juridische chat stap 1 §5.
+  // De eerste laag noemt de vijf kernpunten (wie, kanalen, doel, doorgifte aan
+  // Limsolar + Limsolar mag zelf benaderen, intrekken); EDPB 05/2020 staat
+  // gelaagde informatie toe. Inhoudelijk gelijk aan v1.4 ("adviseren" valt onder
+  // "over mijn berekening"): oude leads hoeven niet opnieuw toestemming te geven
+  // en houden hun eigen versie. Per lead wordt `tekst` opgeslagen = eerste laag
+  // PLUS uitklapper, zodat aantoonbaar is wat de bezoeker kon lezen.
+  versie: "1.5",
+  eersteLaag:
+    "Ja, Thuisbatterij-installaties (KvK " + ENTITEIT.kvk + ") mag mij bellen, mailen en WhatsAppen over mijn berekening en mij namens Limsolar B.V. een offerte doen. Mijn gegevens gaan daarvoor naar Limsolar B.V., dat mij daarover ook mag benaderen. Intrekken kan altijd.",
+  uitklapper:
+    "Thuisbatterij-installaties is een handelsnaam; de bedrijfsnaam en het adres staan in de bedrijfsgegevens. Wij maken je berekening, nemen contact met je op en doen je een offerte namens Limsolar B.V. Limsolar B.V. levert en installeert de thuisbatterij. Daarom geven we je naam, telefoonnummer, e-mailadres, adres en berekening door aan Limsolar B.V. Elk bericht van ons noemt wie het stuurt en hoe je je afmeldt. Je kunt je toestemming altijd intrekken door ons te bellen, te mailen of een WhatsApp-bericht te sturen. Lees ook de privacyverklaring.",
+  get tekst(): string {
+    return this.eersteLaag + " Meer informatie: " + this.uitklapper;
+  },
 };
 
 /** Disclaimer onder het rekenresultaat. Staat er direct onder, niet in de voettekst. */

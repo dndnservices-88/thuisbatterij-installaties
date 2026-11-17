@@ -1,4 +1,5 @@
 import { Onthul } from "./Onthul";
+import { CLAIMS } from "@/lib/claims";
 
 /**
  * "Waarom nu" in de nieuwe vormgeving. De tekst is letterlijk die van de
@@ -30,7 +31,7 @@ export default function WaaromNuOntwerp() {
             <span className="inline-block h-2 w-2 rounded-full bg-paars" /> Waarom nu
           </p>
           <h2 className="max-w-[20ch]">
-            Salderen verdwijnt per 1 januari 2027.{" "}
+            {CLAIMS.R5.tekst}.{" "}
             <span className="kop-licht">Feiten, geen paniek.</span>
           </h2>
         </Onthul>

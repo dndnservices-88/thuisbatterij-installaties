@@ -37,6 +37,7 @@ const fontAccent = localFont({
 
 import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
+import BezoekersStatistiek from "@/components/BezoekersStatistiek";
 import { toestemmingUitCookieHeader } from "@/lib/toestemming";
 import Bouwstatus from "@/components/Bouwstatus";
 import Kopbalk from "@/components/Kopbalk";
@@ -206,6 +207,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             worden. */}
         {children}
         <ConsentBanner direct={vraagCookiekeuze} />
+        <BezoekersStatistiek />
       </body>
     </html>
   );

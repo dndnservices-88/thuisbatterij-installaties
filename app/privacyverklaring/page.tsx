@@ -149,6 +149,17 @@ export default function Privacy() {
 
           <Blok titel="Cookies en meten">
             <p>Noodzakelijke cookies zorgen dat de site werkt en onthouden je cookiekeuze.</p>
+            {/* 2.5 (17 nov 2026): letterlijk uit juridische chat stap 1 §4 (prikbord r. 63/64/66).
+                Art. 11.7a lid 3 sub b Tw (analytische uitzondering); grondslag art. 6 lid 1 sub f AVG. */}
+            <p>
+              <strong>Bezoekersstatistieken zonder cookies.</strong> Om te weten hoeveel mensen de site
+              bezoeken en hoe vaak er ja of nee wordt gekozen bij de cookies, gebruiken we Vercel Web
+              Analytics. Dat zet niets op je apparaat. Vercel maakt van je IP-adres en browser een code die
+              na één dag vervalt, zodat je niet over dagen of andere websites heen te volgen bent. We
+              koppelen deze cijfers niet aan je aanvraag en niet aan advertenties. Dit doen we op grond van
+              ons gerechtvaardigd belang om de site te verbeteren. Vercel verwerkt deze gegevens in onze
+              opdracht.
+            </p>
             {COOKIE_VARIANT === 1 ? (
               <p>
                 Op de site draait Google Tag Manager. Zolang je geen toestemming geeft, sturen de
@@ -271,7 +282,7 @@ export default function Privacy() {
           </Blok>
 
           <p className="text-[0.85rem] italic">
-            Versie {PRIVACY_VERSIE} · 13 november 2026
+            Versie {PRIVACY_VERSIE} · 17 november 2026
           </p>
         </div>
       </Sectie>

@@ -3,7 +3,7 @@
  * (tekst: juridische chat, "Limsolar_Concept_Privacyverklaring_en_Sitepakket_7okt2026.docx", onderdeel A).
  */
 
-export const PRIVACY_VERSIE = "2.4"; // 13 nov 2026: publicatiedatum ingevuld, Make = gratis plan (r. 57). 2.3 (28 okt): WhatsApp als contactkanaal (toestemming v1.4). 2.2 (28 okt): adrescontrole via PDOK (Kadaster). 2.1 (25 okt): Rinkel, geen gespreksopname
+export const PRIVACY_VERSIE = "2.5"; // 17 nov 2026: bezoekersstatistieken zonder cookies (Vercel Web Analytics, juridische chat stap 1 §4). 2.4 (13 nov): publicatiedatum ingevuld, Make = gratis plan (r. 57). 2.3 (28 okt): WhatsApp als contactkanaal (toestemming v1.4). 2.2 (28 okt): adrescontrole via PDOK (Kadaster). 2.1 (25 okt): Rinkel, geen gespreksopname
 
 /**
  * Welke tekst bij "Cookies en meten". Keuze ligt bij de meetchat:

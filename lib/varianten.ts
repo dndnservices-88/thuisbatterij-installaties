@@ -29,7 +29,7 @@ export const VARIANTEN: Record<VariantId, Variant> = {
     domein: "thuisbatterij-installaties.nl",
     hero: {
       kop: "Eerst rekenen. Dan installeren.",
-      sub: "De salderingsregeling stopt in 2027. Reken in twee minuten uit wat een thuisbatterij in jouw situatie oplevert — met een eerlijke bandbreedte.",
+      sub: "Vanaf 1 januari 2027 vervalt de salderingsregeling. Reken in twee minuten uit wat een thuisbatterij in jouw situatie oplevert — met een eerlijke bandbreedte.",
       knop: "Bereken mijn situatie",
     },
     toelichting:

@@ -12,6 +12,7 @@ import {
   type Toestemming,
 } from "@/lib/tracking";
 import { bewaarKlikIds, vangKlikIds, wisKlikIds } from "@/lib/klikids";
+import { track } from "@vercel/analytics";
 import { laadGtm } from "@/lib/gtm";
 
 /**
@@ -88,6 +89,18 @@ export default function ConsentBanner({ direct = false }: { direct?: boolean }) 
     if (keuze.marketing) bewaarKlikIds();
     else wisKlikIds();
     if (keuze.statistieken || keuze.marketing) laadGtm();
+    // Acceptatiegraad cookiebanner (prikbord r. 64, juridische chat stap 1 §4):
+    // alleen de keuze zelf, ook bij weigeren; geen ID's, niet gekoppeld aan
+    // een aanvraag. Vercel Web Analytics is cookieloos. Elke keuze telt, ook
+    // een latere wijziging via "Cookievoorkeuren" (aanname, akkoord D. 17 nov).
+    try {
+      track("cookiekeuze", {
+        statistieken: keuze.statistieken ? "ja" : "nee",
+        marketing: keuze.marketing ? "ja" : "nee",
+      });
+    } catch {
+      /* statistiek mag de banner nooit breken */
+    }
     setStatistieken(keuze.statistieken);
     setMarketing(keuze.marketing);
     setZichtbaar(false);

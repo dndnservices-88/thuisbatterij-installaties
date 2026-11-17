@@ -47,8 +47,11 @@ export default function Formulier({
   zacht: boolean;
   /**
    * "terugbel" (13 nov 2026, prikbord r. 34): kort terugbelverzoek vanuit het
-   * prijsblok, zonder berekening en zonder achternaam. Zelfde toestemming,
-   * zelfde belmoment, zelfde Lead-event.
+   * prijsblok, zonder berekening. Zelfde toestemming, zelfde belmoment, zelfde
+   * Lead-event. Sinds 17 nov (r. 62/67) hebben beide formulieren dezelfde
+   * velden: voornaam, telefoon, postcode, huisnummer (+ toevoeging) en e-mail
+   * als laatste, verplicht veld. Achternaam vervallen; de lead stuurt een lege
+   * achternaam door (zoals het terugbelformulier al deed).
    */
   soort?: "rekentool" | "terugbel";
 }) {
@@ -66,6 +69,7 @@ export default function Formulier({
     toevoeging: "",
   });
   const [consent, setConsent] = useState(false);
+  const [meer, setMeer] = useState(false);
   const [fouten, setFouten] = useState<Record<string, string>>({});
   const [bezig, setBezig] = useState(false);
   const [serverfout, setServerfout] = useState<string | null>(null);
@@ -78,7 +82,6 @@ export default function Formulier({
   function controleer() {
     const f: Record<string, string> = {};
     if (v.voornaam.trim().length < 2) f.voornaam = "Vul je voornaam in.";
-    if (!tb && v.achternaam.trim().length < 2) f.achternaam = "Vul je achternaam in.";
     if (v.telefoon.replace(/\D/g, "").length < 10) f.telefoon = "Vul een geldig telefoonnummer in.";
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v.email)) f.email = "Vul een geldig e-mailadres in.";
     if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(v.postcode.trim()))
@@ -201,16 +204,6 @@ export default function Formulier({
           fout={fouten.voornaam}
           onChange={(e) => setV({ ...v, voornaam: e.target.value })}
         />
-        {!tb && (
-          <Veld
-            id={`${p}achternaam`}
-            label="Achternaam"
-            autoComplete="family-name"
-            value={v.achternaam}
-            fout={fouten.achternaam}
-            onChange={(e) => setV({ ...v, achternaam: e.target.value })}
-          />
-        )}
         <Veld
           id={`${p}telefoon`}
           label="Telefoonnummer"
@@ -220,16 +213,6 @@ export default function Formulier({
           value={v.telefoon}
           fout={fouten.telefoon}
           onChange={(e) => setV({ ...v, telefoon: e.target.value })}
-        />
-        <Veld
-          id={`${p}email`}
-          label="E-mailadres"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          value={v.email}
-          fout={fouten.email}
-          onChange={(e) => setV({ ...v, email: e.target.value })}
         />
         <Veld
           id={`${p}postcode`}
@@ -265,6 +248,21 @@ export default function Formulier({
       </div>
       <AdresRegel adres={adres} huisnummer={v.huisnummer} toevoeging={v.toevoeging} />
 
+      {/* E-mail als laatste veld, verplicht (juridische chat stap 1 §5): nodig voor
+          de bevestigingsmail met de kopie van de toestemming en voor de offerte. */}
+      <div className="mt-s3">
+        <Veld
+          id={`${p}email`}
+          label="E-mailadres"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          value={v.email}
+          fout={fouten.email}
+          onChange={(e) => setV({ ...v, email: e.target.value })}
+        />
+      </div>
+
       <label
         htmlFor={`${p}consent`}
         className={`mt-s4 flex cursor-pointer gap-s2 rounded-merk border p-s3 text-[0.88rem] leading-relaxed ${
@@ -279,18 +277,50 @@ export default function Formulier({
           className="mt-[3px] h-[20px] w-[20px] flex-none accent-[#370060]"
         />
         <span className="text-n-500">
-          {CONSENT.tekst.replace(" Zie de bedrijfsgegevens en de privacyverklaring.", " ")}
-          Zie de{" "}
-          <Link href="/bedrijfsgegevens" className="font-semibold text-paars underline">
-            bedrijfsgegevens
-          </Link>{" "}
-          en de{" "}
+          {/* Toestemming v1.5, eerste laag (letterlijk, juridische chat stap 1 §5). */}
+          {CONSENT.eersteLaag}{" "}
+          <button
+            type="button"
+            aria-expanded={meer}
+            aria-controls={`${p}consent-meer`}
+            onClick={(e) => {
+              // Niet het vinkje laten omklappen: de knop staat binnen het label.
+              e.preventDefault();
+              setMeer((m) => !m);
+            }}
+            className="font-semibold text-paars underline"
+          >
+            Meer informatie
+          </button>
+        </span>
+      </label>
+      {meer && (
+        <div
+          id={`${p}consent-meer`}
+          className="mt-s1 rounded-merk bg-n-100 p-s3 text-[0.85rem] leading-relaxed text-n-500"
+        >
+          {/* Uitklapper v1.5 (letterlijk). Links naar bedrijfsgegevens en
+              privacyverklaring op de woorden die ernaar verwijzen. */}
+          {CONSENT.uitklapper
+            .replace(" Lees ook de privacyverklaring.", "")
+            .split("de bedrijfsgegevens")
+            .flatMap((deel, i) =>
+              i === 0
+                ? [deel]
+                : [
+                    <Link key="bg" href="/bedrijfsgegevens" className="font-semibold text-paars underline">
+                      de bedrijfsgegevens
+                    </Link>,
+                    deel,
+                  ]
+            )}{" "}
+          Lees ook de{" "}
           <Link href="/privacyverklaring" className="font-semibold text-paars underline">
             privacyverklaring
           </Link>
           .
-        </span>
-      </label>
+        </div>
+      )}
       {fouten.consent && (
         <p role="alert" className="mt-s1 text-[0.85rem] font-semibold text-red-700">
           {fouten.consent}

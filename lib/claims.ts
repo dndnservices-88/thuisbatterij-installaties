@@ -119,6 +119,38 @@ export const CLAIMS = {
       "Aftekening door Limsolar van de vier tarieven in lib/calc.ts (leveringstarief, terugleververgoeding, terugleverkosten, dynamische marge), met eigen peildatum. Bij aftekening ook TARIEVEN_STATUS op 'bevestigd' zetten en REKENVERSIE verhogen.",
   },
 
+  // R3 (17 nov 2026, juridische chat stap 1 §2, prikbord r. 72): spiegel van
+  // het register. NIET als <Claim> rond het label in de uitklapper gebruiken:
+  // met status "toegezegd" rendert <Claim> live niet, en dan zou het label
+  // wegvallen terwijl het getal blijft staan. Het label staat daarom gewoon in
+  // Resultaat.tsx. Aannames (register R3): (1) investering = vanaf-prijs incl.
+  // installatie, 1-fase, 3-fase als losse regel, geen btw-teruggave of subsidie;
+  // (2) besparing = band uit rekenversie 1.6.x, dynamisch + handelen, € 0,15/kWh,
+  // min JAARLIJKSE_KOSTEN; (3) besparing en tarieven gelijk over de hele periode,
+  // geen prijsontwikkeling, slijtage of vervanging; (4) prijs ÷ besparing per
+  // jaar, korte kant met de hoge besparing, lange kant met de lage.
+  R3: {
+    id: "R3",
+    tekst: "Gerekend met een dynamisch contract en automatisch handelen, zoals Limsolar die aanbiedt.",
+    status: "toegezegd",
+    nodig: "Schriftelijke bevestiging Fabian: € 0,15 dynamisch voordeel en dynamisch + handelen standaard. Nooit buiten de rekentool tonen (geen advertenties, mails, landingspagina's).",
+  },
+  // R5 (17 nov 2026, juridische chat stap 1 §3, prikbord r. 72): wettelijk feit,
+  // geen belofte van Limsolar — daarom "bevestigd" zonder aftekening. Alleen deze
+  // formuleringen: "Salderen stopt op 1 januari 2027" (badge/kop) en "Vanaf
+  // 1 januari 2027 vervalt de salderingsregeling." (lopende tekst). Niet: "laatste
+  // kans", "nog maar X dagen", countdowns, "wordt afgebouwd".
+  // Route 1: Eerste Kamer, wetsvoorstel 36611 (Wet beëindiging
+  // salderingsregeling), aangenomen 17 december 2024; inwerkingtreding
+  // 1 januari 2027. Route 2: Rijksoverheid, "Salderingsregeling stopt per
+  // 1 januari 2027" (onderwerp zonne-energie, pagina gewijzigd 11 augustus 2026).
+  R5: {
+    id: "R5",
+    tekst: "Salderen stopt op 1 januari 2027",
+    status: "bevestigd",
+    nodig: "Wettelijk feit: Wet beëindiging salderingsregeling (Kamerstuk 36611), aangenomen EK 17-12-2024, in werking 1-1-2027; Rijksoverheid, gewijzigd 11-08-2026. Halfjaarlijks nakijken.",
+  },
+
   // ── Uitvoerings- en servicebeloften (altijd op naam van Limsolar) ─────────
   U1: {
     // Op "bevestigd" gezet op besluit van Dieudonné, 6 okt 2026 ("dit stuk mag
