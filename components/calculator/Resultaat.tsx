@@ -106,19 +106,28 @@ export default function Resultaat({
       </dl>
 
       <div className="mt-s2 space-y-[3px] text-[0.83rem] leading-snug text-n-500">
+        {/* Terugverdientijd inklapbaar (DIRECTIE r. 65, akkoord D. 17 nov 19:20):
+            niet weghalen — verzwijgen kan als misleidende omissie gelden —
+            maar ook niet als eerste getal. */}
         {prijsZichtbaar && (
-          <p>
-            Terugverdientijd 10 kWh: {jaren(i.terugverdientijd_jaar.min)} – {jaren(i.terugverdientijd_jaar.max)} jaar
-            (1-fase).
-            {toonAdvies &&
-              ` ${cap} kWh: ${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(uitkomst.terugverdientijd_jaar.max)} jaar.`}
-          </p>
-        )}
-        {prijsZichtbaar && (
-          <p>
-            Bij een 3-fase-aansluiting: 10 kWh vanaf {euro(i.product_3fase.prijs_eur)}, terugverdientijd{" "}
-            {jaren(i.terugverdientijd_3fase_jaar.min)} – {jaren(i.terugverdientijd_3fase_jaar.max)} jaar.
-          </p>
+          <details className="group rounded-merk border border-n-200 px-s2 py-[6px]">
+            <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-paars marker:content-none">
+              Terugverdientijd bekijken
+              <span aria-hidden="true" className="transition group-open:rotate-180">▾</span>
+            </summary>
+            <div className="mt-[6px] space-y-[3px]">
+              <p>
+                10 kWh: {jaren(i.terugverdientijd_jaar.min)} – {jaren(i.terugverdientijd_jaar.max)} jaar (1-fase).
+                {toonAdvies &&
+                  ` ${cap} kWh: ${jaren(uitkomst.terugverdientijd_jaar.min)} – ${jaren(uitkomst.terugverdientijd_jaar.max)} jaar.`}
+              </p>
+              <p>
+                Bij een 3-fase-aansluiting: 10 kWh vanaf {euro(i.product_3fase.prijs_eur)}, terugverdientijd{" "}
+                {jaren(i.terugverdientijd_3fase_jaar.min)} – {jaren(i.terugverdientijd_3fase_jaar.max)} jaar.
+              </p>
+              <p>Prijs gedeeld door de besparing per jaar.</p>
+            </div>
+          </details>
         )}
         {uitkomst.vergelijking.contract !== "dynamisch" && (
           <p>
